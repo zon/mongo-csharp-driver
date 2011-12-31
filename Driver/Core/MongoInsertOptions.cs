@@ -28,9 +28,9 @@ namespace MongoDB.Driver
     public class MongoInsertOptions
     {
         // private fields
-        private bool checkElementNames;
-        private InsertFlags flags;
-        private SafeMode safeMode;
+        private bool _checkElementNames;
+        private InsertFlags _flags;
+        private SafeMode _safeMode;
 
         // constructors
         /// <summary>
@@ -39,9 +39,9 @@ namespace MongoDB.Driver
         /// <param name="collection">The collection from which to get default settings for the options.</param>
         public MongoInsertOptions(MongoCollection collection)
         {
-            this.checkElementNames = true;
-            this.flags = InsertFlags.None;
-            this.safeMode = collection.Settings.SafeMode;
+            _checkElementNames = true;
+            _flags = InsertFlags.None;
+            _safeMode = collection.Settings.SafeMode;
         }
 
         // public properties
@@ -50,8 +50,8 @@ namespace MongoDB.Driver
         /// </summary>
         public bool CheckElementNames
         {
-            get { return checkElementNames; }
-            set { checkElementNames = value; }
+            get { return _checkElementNames; }
+            set { _checkElementNames = value; }
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace MongoDB.Driver
         /// </summary>
         public InsertFlags Flags
         {
-            get { return flags; }
-            set { flags = value; }
+            get { return _flags; }
+            set { _flags = value; }
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace MongoDB.Driver
         /// </summary>
         public SafeMode SafeMode
         {
-            get { return safeMode; }
-            set { safeMode = value; }
+            get { return _safeMode; }
+            set { _safeMode = value; }
         }
     }
 }
