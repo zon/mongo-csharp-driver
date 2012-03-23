@@ -831,7 +831,10 @@ namespace MongoDB.Driver
         /// <param name="credentials">The credentials to use with this database.</param>
         /// <param name="safeMode">The safe mode to use with this database.</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase GetDatabase(string databaseName, MongoCredentials credentials, SafeMode safeMode)
+        public virtual MongoDatabase GetDatabase(
+            string databaseName,
+            MongoCredentials credentials,
+            SafeMode safeMode)
         {
             var databaseSettings = new MongoDatabaseSettings(this, databaseName)
             {

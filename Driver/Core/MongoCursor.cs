@@ -748,7 +748,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="serializationOptions">The serialization options.</param>
         /// <returns>The cursor (so you can chain method calls to it).</returns>
-        public new virtual MongoCursor<TDocument> SetSerializationOptions(IBsonSerializationOptions serializationOptions)
+        public new virtual MongoCursor<TDocument> SetSerializationOptions(
+            IBsonSerializationOptions serializationOptions)
         {
             return (MongoCursor<TDocument>)base.SetSerializationOptions(serializationOptions);
         }

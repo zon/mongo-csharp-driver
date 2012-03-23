@@ -344,7 +344,11 @@ namespace MongoDB.Driver
         /// <param name="update">The update to apply to the matching document.</param>
         /// <param name="returnNew">Whether to return the new or old version of the modified document in the <see cref="FindAndModifyResult"/>.</param>
         /// <returns>A <see cref="FindAndModifyResult"/>.</returns>
-        public virtual FindAndModifyResult FindAndModify(IMongoQuery query, IMongoSortBy sortBy, IMongoUpdate update, bool returnNew)
+        public virtual FindAndModifyResult FindAndModify(
+            IMongoQuery query,
+            IMongoSortBy sortBy,
+            IMongoUpdate update,
+            bool returnNew)
         {
             return FindAndModify(query, sortBy, update, returnNew, false);
         }
@@ -358,7 +362,12 @@ namespace MongoDB.Driver
         /// <param name="returnNew">Whether to return the new or old version of the modified document in the <see cref="FindAndModifyResult"/>.</param>
         /// <param name="upsert">Whether to do an upsert if no matching document is found.</param>
         /// <returns>A <see cref="FindAndModifyResult"/>.</returns>
-        public virtual FindAndModifyResult FindAndModify(IMongoQuery query, IMongoSortBy sortBy, IMongoUpdate update, bool returnNew, bool upsert)
+        public virtual FindAndModifyResult FindAndModify(
+            IMongoQuery query,
+            IMongoSortBy sortBy,
+            IMongoUpdate update,
+            bool returnNew,
+            bool upsert)
         {
             return FindAndModify(query, sortBy, update, Fields.Null, returnNew, upsert);
         }
@@ -373,7 +382,13 @@ namespace MongoDB.Driver
         /// <param name="returnNew">Whether to return the new or old version of the modified document in the <see cref="FindAndModifyResult"/>.</param>
         /// <param name="upsert">Whether to do an upsert if no matching document is found.</param>
         /// <returns>A <see cref="FindAndModifyResult"/>.</returns>
-        public virtual FindAndModifyResult FindAndModify(IMongoQuery query, IMongoSortBy sortBy, IMongoUpdate update, IMongoFields fields, bool returnNew, bool upsert)
+        public virtual FindAndModifyResult FindAndModify(
+            IMongoQuery query,
+            IMongoSortBy sortBy,
+            IMongoUpdate update,
+            IMongoFields fields,
+            bool returnNew,
+            bool upsert)
         {
             var command = new CommandDocument
             {
@@ -538,7 +553,10 @@ namespace MongoDB.Driver
         /// <param name="y">The y coordinate of the starting location.</param>
         /// <param name="options">The options for the geoHaystack search (null if none).</param>
         /// <returns>A <see cref="GeoNearResult{TDocument}"/>.</returns>
-        public virtual GeoHaystackSearchResult<TDocument> GeoHaystackSearchAs<TDocument>(double x, double y, IMongoGeoHaystackSearchOptions options)
+        public virtual GeoHaystackSearchResult<TDocument> GeoHaystackSearchAs<TDocument>(
+            double x,
+            double y,
+            IMongoGeoHaystackSearchOptions options)
         {
             return (GeoHaystackSearchResult<TDocument>)GeoHaystackSearchAs(typeof(TDocument), x, y, options);
         }
@@ -551,7 +569,11 @@ namespace MongoDB.Driver
         /// <param name="y">The y coordinate of the starting location.</param>
         /// <param name="options">The options for the geoHaystack search (null if none).</param>
         /// <returns>A <see cref="GeoNearResult{TDocument}"/>.</returns>
-        public virtual GeoHaystackSearchResult GeoHaystackSearchAs(Type documentType, double x, double y, IMongoGeoHaystackSearchOptions options)
+        public virtual GeoHaystackSearchResult GeoHaystackSearchAs(
+            Type documentType,
+            double x,
+            double y,
+            IMongoGeoHaystackSearchOptions options)
         {
             var command = new CommandDocument
             {
@@ -573,7 +595,11 @@ namespace MongoDB.Driver
         /// <param name="y">The y coordinate of the starting location.</param>
         /// <param name="limit">The maximum number of results returned.</param>
         /// <returns>A <see cref="GeoNearResult{TDocument}"/>.</returns>
-        public virtual GeoNearResult<TDocument> GeoNearAs<TDocument>(IMongoQuery query, double x, double y, int limit)
+        public virtual GeoNearResult<TDocument> GeoNearAs<TDocument>(
+            IMongoQuery query,
+            double x,
+            double y,
+            int limit)
         {
             return GeoNearAs<TDocument>(query, x, y, limit, GeoNearOptions.Null);
         }
@@ -588,7 +614,12 @@ namespace MongoDB.Driver
         /// <param name="limit">The maximum number of results returned.</param>
         /// <param name="options">The GeoNear command options (usually a GeoNearOptionsDocument or constructed using the GeoNearOptions builder).</param>
         /// <returns>A <see cref="GeoNearResult{TDocument}"/>.</returns>
-        public virtual GeoNearResult<TDocument> GeoNearAs<TDocument>(IMongoQuery query, double x, double y, int limit, IMongoGeoNearOptions options)
+        public virtual GeoNearResult<TDocument> GeoNearAs<TDocument>(
+            IMongoQuery query,
+            double x,
+            double y,
+            int limit,
+            IMongoGeoNearOptions options)
         {
             var command = new CommandDocument
             {
@@ -625,7 +656,13 @@ namespace MongoDB.Driver
         /// <param name="limit">The maximum number of results returned.</param>
         /// <param name="options">The GeoNear command options (usually a GeoNearOptionsDocument or constructed using the GeoNearOptions builder).</param>
         /// <returns>A <see cref="GeoNearResult{TDocument}"/>.</returns>
-        public virtual GeoNearResult GeoNearAs(Type documentType, IMongoQuery query, double x, double y, int limit, IMongoGeoNearOptions options)
+        public virtual GeoNearResult GeoNearAs(
+            Type documentType,
+            IMongoQuery query,
+            double x,
+            double y,
+            int limit,
+            IMongoGeoNearOptions options)
         {
             var command = new CommandDocument
             {
@@ -702,7 +739,12 @@ namespace MongoDB.Driver
         /// <param name="reduce">A JavaScript function that is called for each matching document in a group.</param>
         /// <param name="finalize">A JavaScript function that is called at the end of the group command.</param>
         /// <returns>A list of results as BsonDocuments.</returns>
-        public virtual IEnumerable<BsonDocument> Group(IMongoQuery query, BsonJavaScript keyFunction, BsonDocument initial, BsonJavaScript reduce, BsonJavaScript finalize)
+        public virtual IEnumerable<BsonDocument> Group(
+            IMongoQuery query,
+            BsonJavaScript keyFunction,
+            BsonDocument initial,
+            BsonJavaScript reduce,
+            BsonJavaScript finalize)
         {
             var command = new CommandDocument
             {
@@ -731,7 +773,12 @@ namespace MongoDB.Driver
         /// <param name="reduce">A JavaScript function that is called for each matching document in a group.</param>
         /// <param name="finalize">A JavaScript function that is called at the end of the group command.</param>
         /// <returns>A list of results as BsonDocuments.</returns>
-        public virtual IEnumerable<BsonDocument> Group(IMongoQuery query, IMongoGroupBy keys, BsonDocument initial, BsonJavaScript reduce, BsonJavaScript finalize)
+        public virtual IEnumerable<BsonDocument> Group(
+            IMongoQuery query,
+            IMongoGroupBy keys,
+            BsonDocument initial,
+            BsonJavaScript reduce,
+            BsonJavaScript finalize)
         {
             var command = new CommandDocument
             {
@@ -760,7 +807,12 @@ namespace MongoDB.Driver
         /// <param name="reduce">A JavaScript function that is called for each matching document in a group.</param>
         /// <param name="finalize">A JavaScript function that is called at the end of the group command.</param>
         /// <returns>A list of results as BsonDocuments.</returns>
-        public virtual IEnumerable<BsonDocument> Group(IMongoQuery query, string key, BsonDocument initial, BsonJavaScript reduce, BsonJavaScript finalize)
+        public virtual IEnumerable<BsonDocument> Group(
+            IMongoQuery query,
+            string key,
+            BsonDocument initial,
+            BsonJavaScript reduce,
+            BsonJavaScript finalize)
         {
             return Group(query, GroupBy.Keys(key), initial, reduce, finalize);
         }
@@ -901,7 +953,9 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(IEnumerable<TNominalType> documents, MongoInsertOptions options)
+        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(
+            IEnumerable<TNominalType> documents,
+            MongoInsertOptions options)
         {
             if (documents == null)
             {
@@ -917,7 +971,9 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="safeMode">The SafeMode to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(IEnumerable<TNominalType> documents, SafeMode safeMode)
+        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(
+            IEnumerable<TNominalType> documents,
+            SafeMode safeMode)
         {
             if (documents == null)
             {
@@ -944,7 +1000,10 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="safeMode">The SafeMode to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(Type nominalType, IEnumerable documents, SafeMode safeMode)
+        public virtual IEnumerable<SafeModeResult> InsertBatch(
+            Type nominalType,
+            IEnumerable documents,
+            SafeMode safeMode)
         {
             var options = new MongoInsertOptions(this) { SafeMode = safeMode };
             return InsertBatch(nominalType, documents, options);
@@ -957,7 +1016,10 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(Type nominalType, IEnumerable documents, MongoInsertOptions options)
+        public virtual IEnumerable<SafeModeResult> InsertBatch(
+            Type nominalType,
+            IEnumerable documents,
+            MongoInsertOptions options)
         {
             if (documents == null)
             {
@@ -1034,7 +1096,10 @@ namespace MongoDB.Driver
         /// <param name="reduce">A JavaScript function called on the values emitted by the map function.</param>
         /// <param name="options">Options for this map/reduce command (see <see cref="MapReduceOptionsDocument"/>, <see cref="MapReduceOptionsWrapper"/> and the <see cref="MapReduceOptions"/> builder).</param>
         /// <returns>A <see cref="MapReduceResult"/>.</returns>
-        public virtual MapReduceResult MapReduce(BsonJavaScript map, BsonJavaScript reduce, IMongoMapReduceOptions options)
+        public virtual MapReduceResult MapReduce(
+            BsonJavaScript map,
+            BsonJavaScript reduce,
+            IMongoMapReduceOptions options)
         {
             var command = new CommandDocument
             {
@@ -1056,7 +1121,11 @@ namespace MongoDB.Driver
         /// <param name="reduce">A JavaScript function called on the values emitted by the map function.</param>
         /// <param name="options">Options for this map/reduce command (see <see cref="MapReduceOptionsDocument"/>, <see cref="MapReduceOptionsWrapper"/> and the <see cref="MapReduceOptions"/> builder).</param>
         /// <returns>A <see cref="MapReduceResult"/>.</returns>
-        public virtual MapReduceResult MapReduce(IMongoQuery query, BsonJavaScript map, BsonJavaScript reduce, IMongoMapReduceOptions options)
+        public virtual MapReduceResult MapReduce(
+            IMongoQuery query,
+            BsonJavaScript map,
+            BsonJavaScript reduce,
+            IMongoMapReduceOptions options)
         {
             // create a new set of options because we don't want to modify caller's data
             options = MapReduceOptions.SetQuery(query).AddOptions(options.ToBsonDocument());
@@ -1396,7 +1465,11 @@ namespace MongoDB.Driver
         /// <param name="flags">The flags for this Update.</param>
         /// <param name="safeMode">The SafeMode to use for this operation.</param>
         /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(IMongoQuery query, IMongoUpdate update, UpdateFlags flags, SafeMode safeMode)
+        public virtual SafeModeResult Update(
+            IMongoQuery query,
+            IMongoUpdate update,
+            UpdateFlags flags,
+            SafeMode safeMode)
         {
             var options = new MongoUpdateOptions(this)
             {
@@ -1574,7 +1647,10 @@ namespace MongoDB.Driver
         /// <param name="y">The y coordinate of the starting location.</param>
         /// <param name="options">The options for the geoHaystack search (null if none).</param>
         /// <returns>A <see cref="GeoHaystackSearchResult{TDocument}"/>.</returns>
-        public virtual GeoHaystackSearchResult<TDefaultDocument> GeoHaystackSearch(double x, double y, IMongoGeoHaystackSearchOptions options)
+        public virtual GeoHaystackSearchResult<TDefaultDocument> GeoHaystackSearch(
+            double x,
+            double y,
+            IMongoGeoHaystackSearchOptions options)
         {
             return GeoHaystackSearchAs<TDefaultDocument>(x, y, options);
         }
@@ -1601,7 +1677,12 @@ namespace MongoDB.Driver
         /// <param name="limit">The maximum number of results returned.</param>
         /// <param name="options">Options for the GeoNear command (see <see cref="GeoNearOptionsDocument"/>, <see cref="GeoNearOptionsWrapper"/>, and the <see cref="GeoNearOptions"/> builder).</param>
         /// <returns>A <see cref="GeoNearResult{TDefaultDocument}"/>.</returns>
-        public virtual GeoNearResult<TDefaultDocument> GeoNear(IMongoQuery query, double x, double y, int limit, IMongoGeoNearOptions options)
+        public virtual GeoNearResult<TDefaultDocument> GeoNear(
+            IMongoQuery query,
+            double x,
+            double y,
+            int limit,
+            IMongoGeoNearOptions options)
         {
             return GeoNearAs<TDefaultDocument>(query, x, y, limit, options);
         }
@@ -1654,7 +1735,9 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(IEnumerable<TDefaultDocument> documents, MongoInsertOptions options)
+        public virtual IEnumerable<SafeModeResult> InsertBatch(
+            IEnumerable<TDefaultDocument> documents,
+            MongoInsertOptions options)
         {
             return InsertBatch<TDefaultDocument>(documents, options);
         }
@@ -1665,7 +1748,9 @@ namespace MongoDB.Driver
         /// <param name="documents">The documents to insert.</param>
         /// <param name="safeMode">The SafeMode to use for this Insert.</param>
         /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(IEnumerable<TDefaultDocument> documents, SafeMode safeMode)
+        public virtual IEnumerable<SafeModeResult> InsertBatch(
+            IEnumerable<TDefaultDocument> documents,
+            SafeMode safeMode)
         {
             return InsertBatch<TDefaultDocument>(documents, safeMode);
         }

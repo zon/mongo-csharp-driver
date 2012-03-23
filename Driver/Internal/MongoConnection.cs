@@ -403,7 +403,9 @@ namespace MongoDB.Driver.Internal
             return commandResult;
         }
 
-        internal MongoReplyMessage<TDocument> ReceiveMessage<TDocument>(BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+        internal MongoReplyMessage<TDocument> ReceiveMessage<TDocument>(
+            BsonBinaryReaderSettings readerSettings,
+            IBsonSerializationOptions serializationOptions)
         {
             if (_state == MongoConnectionState.Closed) { throw new InvalidOperationException("Connection is closed."); }
             lock (_connectionLock)
