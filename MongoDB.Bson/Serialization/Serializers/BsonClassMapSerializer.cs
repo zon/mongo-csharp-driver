@@ -473,21 +473,26 @@ namespace MongoDB.Bson.Serialization.Serializers
             try
             {
                 var nominalType = memberMap.MemberType;
-                object value;
+                object value = null;
 
                 var bsonType = bsonReader.GetCurrentBsonType();
-                if (memberMap.MemberTypeIsBsonValue)
+                if (bsonType == BsonType.Null && nominalType.IsInterface)
+                {
+                    bsonReader.ReadNull();
+                    goto setvalue;
+                }
+                else if (memberMap.MemberTypeIsBsonValue)
                 {
                     if (bsonType == BsonType.Document && IsCSharpNullRepresentation(bsonReader))
                     {
-                        value = null;
+                        // if IsCSharpNullRepresentation returns true it will have consumed the document representing C# null
                         goto setvalue;
                     }
 
                     // handle BSON null for backward compatibility with existing data (new data would have _csharpnull)
                     if (bsonType == BsonType.Null && (nominalType != typeof(BsonValue) && nominalType != typeof(BsonNull)))
                     {
-                        value = null;
+                        bsonReader.ReadNull();
                         goto setvalue;
                     }
                 }
@@ -590,7 +595,11 @@ namespace MongoDB.Bson.Serialization.Serializers
 
             bsonWriter.WriteName(memberMap.ElementName);
             var nominalType = memberMap.MemberType;
-            if (value == null && memberMap.MemberTypeIsBsonValue)
+            if (value == null && nominalType.IsInterface)
+            {
+                bsonWriter.WriteNull();
+            }
+            else if (value == null && memberMap.MemberTypeIsBsonValue)
             {
                 bsonWriter.WriteStartDocument();
                 bsonWriter.WriteBoolean("_csharpnull", true);
