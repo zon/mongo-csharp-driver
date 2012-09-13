@@ -22,15 +22,19 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents a BSON serialization options convention.
+    /// Represents an element name convention where the element name is the same as the member name.
     /// </summary>
-    public interface ISerializationOptionsConvention
+    [Obsolete("Use the new convention api.")]
+    public class MemberNameElementNameConvention : IElementNameConvention
     {
         /// <summary>
-        /// Gets the BSON serialization options for a member.
+        /// Gets the element name for a member.
         /// </summary>
-        /// <param name="memberInfo">The member.</param>
-        /// <returns>The BSON serialization options for the member; or null to use defaults.</returns>
-        IBsonSerializationOptions GetSerializationOptions(MemberInfo memberInfo);
+        /// <param name="member">The member.</param>
+        /// <returns>The element name.</returns>
+        public string GetElementName(MemberInfo member)
+        {
+            return member.Name;
+        }
     }
 }

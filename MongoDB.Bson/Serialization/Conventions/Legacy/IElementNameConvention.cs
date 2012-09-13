@@ -22,15 +22,16 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents a member finder convention.
+    /// Represents an element name convention.
     /// </summary>
-    public interface IMemberFinderConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IElementNameConvention
     {
         /// <summary>
-        /// Finds the members of a class that are serialized.
+        /// Gets the element name for a member.
         /// </summary>
-        /// <param name="type">The class.</param>
-        /// <returns>The members that are serialized.</returns>
-        IEnumerable<MemberInfo> FindMembers(Type type);
+        /// <param name="member">The member.</param>
+        /// <returns>The element name.</returns>
+        string GetElementName(MemberInfo member);
     }
 }

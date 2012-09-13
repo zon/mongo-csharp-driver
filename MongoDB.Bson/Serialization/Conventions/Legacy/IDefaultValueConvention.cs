@@ -22,18 +22,16 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention where the element name is the same as the member name.
+    /// Represents a default value convention.
     /// </summary>
-    public class MemberNameElementNameConvention : IElementNameConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IDefaultValueConvention
     {
         /// <summary>
-        /// Gets the element name for a member.
+        /// Gets the default value for a member.
         /// </summary>
-        /// <param name="member">The member.</param>
-        /// <returns>The element name.</returns>
-        public string GetElementName(MemberInfo member)
-        {
-            return member.Name;
-        }
+        /// <param name="memberInfo">The member.</param>
+        /// <returns>The default value.</returns>
+        object GetDefaultValue(MemberInfo memberInfo);
     }
 }

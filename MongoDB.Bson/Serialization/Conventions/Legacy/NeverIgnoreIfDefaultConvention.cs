@@ -22,20 +22,19 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents BSON serialiation options that use default values.
+    /// Represents an ignore if default convention where default values are never ignored.
     /// </summary>
-    public class NullSerializationOptionsConvention : ISerializationOptionsConvention
+    [Obsolete("Use the new convention api.")]
+    public class NeverIgnoreIfDefaultConvention : IIgnoreIfDefaultConvention
     {
         /// <summary>
-        /// Gets the BSON serialization options for a member.
+        /// Determines whether to ignore nulls for a member.
         /// </summary>
         /// <param name="memberInfo">The member.</param>
-        /// <returns>
-        /// The BSON serialization options for the member; or null to use defaults.
-        /// </returns>
-        public IBsonSerializationOptions GetSerializationOptions(MemberInfo memberInfo)
+        /// <returns>Whether to ignore nulls.</returns>
+        public bool IgnoreIfDefault(MemberInfo memberInfo)
         {
-            return null;
+            return false;
         }
     }
 }

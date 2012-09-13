@@ -24,6 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Represents an Id member convention where the Id member name is one of a set of possible Id member names.
     /// </summary>
+    [Obsolete("Use the new convention api.")]
     public class NamedIdMemberConvention : IIdMemberConvention
     {
         /// <summary>

@@ -16,21 +16,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore if default convention.
+    /// Represents an ignore extra elements convention.
     /// </summary>
-    public interface IIgnoreIfDefaultConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IIgnoreExtraElementsConvention
     {
         /// <summary>
-        /// Determines whether to ignore nulls for a member.
+        /// Determines whether to ignore extra elements for a class.
         /// </summary>
-        /// <param name="memberInfo">The member.</param>
-        /// <returns>Whether to ignore nulls.</returns>
-        bool IgnoreIfDefault(MemberInfo memberInfo);
+        /// <param name="type">The class.</param>
+        /// <returns>Whether to ignore extra elements.</returns>
+        bool IgnoreExtraElements(Type type);
     }
 }

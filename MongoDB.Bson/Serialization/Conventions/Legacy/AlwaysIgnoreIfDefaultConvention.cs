@@ -22,15 +22,19 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore if null convention.
+    /// Represents an ignore if default convention where default values are always ignored.
     /// </summary>
-    public interface IIgnoreIfNullConvention
+    [Obsolete("Use the new convention api.")]
+    public class AlwaysIgnoreIfDefaultConvention : IIgnoreIfDefaultConvention
     {
         /// <summary>
         /// Determines whether to ignore nulls for a member.
         /// </summary>
         /// <param name="memberInfo">The member.</param>
         /// <returns>Whether to ignore nulls.</returns>
-        bool IgnoreIfNull(MemberInfo memberInfo);
+        public bool IgnoreIfDefault(MemberInfo memberInfo)
+        {
+            return true;
+        }
     }
 }

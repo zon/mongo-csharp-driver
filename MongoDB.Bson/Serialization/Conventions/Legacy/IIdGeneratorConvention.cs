@@ -19,21 +19,21 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using MongoDB.Bson.Serialization;
+
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore if null convention where nulls are never ignored.
+    /// Represents an Id generator convention.
     /// </summary>
-    public class NeverIgnoreIfNullConvention : IIgnoreIfNullConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IIdGeneratorConvention
     {
         /// <summary>
-        /// Determines whether to ignore nulls for a member.
+        /// Gets the Id generator for an Id member.
         /// </summary>
         /// <param name="memberInfo">The member.</param>
-        /// <returns>Whether to ignore nulls.</returns>
-        public bool IgnoreIfNull(MemberInfo memberInfo)
-        {
-            return false;
-        }
+        /// <returns>An Id generator.</returns>
+        IIdGenerator GetIdGenerator(MemberInfo memberInfo);
     }
 }

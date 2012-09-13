@@ -24,6 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Represents a member finder convention where all public read/write fields and properties are serialized.
     /// </summary>
+    [Obsolete("Use the new convention api.")]
     public class PublicMemberFinderConvention : IMemberFinderConvention
     {
         /// <summary>

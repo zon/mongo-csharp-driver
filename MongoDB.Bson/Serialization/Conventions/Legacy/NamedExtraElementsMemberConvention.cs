@@ -22,15 +22,34 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an extra elements member convention.
+    /// Represents an extra elements member convention where the extra elements member has a certain name.
     /// </summary>
-    public interface IExtraElementsMemberConvention
+    [Obsolete("Use the new convention api.")]
+    public class NamedExtraElementsMemberConvention : IExtraElementsMemberConvention
     {
+        /// <summary>
+        /// Gets the name of the extra elements member.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the NamedExtraElementsMemberConvention class.
+        /// </summary>
+        /// <param name="name">The name of the extra elements member.</param>
+        public NamedExtraElementsMemberConvention(string name)
+        {
+            Name = name;
+        }
+
         /// <summary>
         /// Finds the extra elements member of a class.
         /// </summary>
         /// <param name="type">The class.</param>
         /// <returns>The extra elements member.</returns>
-        string FindExtraElementsMember(Type type);
+        public string FindExtraElementsMember(Type type)
+        {
+            var memberInfo = type.GetMember(Name).SingleOrDefault(x => x.MemberType == MemberTypes.Field || x.MemberType == MemberTypes.Property);
+            return (memberInfo != null) ? Name : null;
+        }
     }
 }

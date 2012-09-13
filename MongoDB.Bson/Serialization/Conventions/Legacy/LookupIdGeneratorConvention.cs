@@ -24,15 +24,19 @@ using MongoDB.Bson.Serialization;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an Id generator convention.
+    /// Represents an Id generator convention where the Id generator is looked up based on the member type.
     /// </summary>
-    public interface IIdGeneratorConvention
+    [Obsolete("Use the new convention api.")]
+    public class LookupIdGeneratorConvention : IIdGeneratorConvention
     {
         /// <summary>
         /// Gets the Id generator for an Id member.
         /// </summary>
         /// <param name="memberInfo">The member.</param>
         /// <returns>An Id generator.</returns>
-        IIdGenerator GetIdGenerator(MemberInfo memberInfo);
+        public IIdGenerator GetIdGenerator(MemberInfo memberInfo)
+        {
+            return BsonSerializer.LookupIdGenerator(BsonClassMap.GetMemberInfoType(memberInfo));
+        }
     }
 }

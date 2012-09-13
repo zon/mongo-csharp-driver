@@ -22,15 +22,16 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention.
+    /// Represents an ignore if null convention.
     /// </summary>
-    public interface IElementNameConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IIgnoreIfNullConvention
     {
         /// <summary>
-        /// Gets the element name for a member.
+        /// Determines whether to ignore nulls for a member.
         /// </summary>
-        /// <param name="member">The member.</param>
-        /// <returns>The element name.</returns>
-        string GetElementName(MemberInfo member);
+        /// <param name="memberInfo">The member.</param>
+        /// <returns>Whether to ignore nulls.</returns>
+        bool IgnoreIfNull(MemberInfo memberInfo);
     }
 }

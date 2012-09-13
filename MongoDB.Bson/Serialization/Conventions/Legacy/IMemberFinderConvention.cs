@@ -16,20 +16,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore extra elements convention.
+    /// Represents a member finder convention.
     /// </summary>
-    public interface IIgnoreExtraElementsConvention
+    [Obsolete("Use the new convention api.")]
+    public interface IMemberFinderConvention
     {
         /// <summary>
-        /// Determines whether to ignore extra elements for a class.
+        /// Finds the members of a class that are serialized.
         /// </summary>
         /// <param name="type">The class.</param>
-        /// <returns>Whether to ignore extra elements.</returns>
-        bool IgnoreExtraElements(Type type);
+        /// <returns>The members that are serialized.</returns>
+        IEnumerable<MemberInfo> FindMembers(Type type);
     }
 }

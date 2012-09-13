@@ -123,7 +123,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestMapIdField()
         {
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdField("f"));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdField("f")).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);
@@ -134,7 +134,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         public void TestMapIdMember()
         {
             var fieldInfo = typeof(C).GetField("f", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdMember(fieldInfo));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdMember(fieldInfo)).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);
@@ -144,7 +144,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestMapIdProperty()
         {
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdProperty("p"));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdProperty("p")).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);
@@ -197,7 +197,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestMapIdField()
         {
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdField(c => c.F));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdField(c => c.F)).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);
@@ -207,7 +207,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestMapIdMember()
         {
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdMember(c => c.F));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdMember(c => c.F)).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);
@@ -217,7 +217,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestMapIdProperty()
         {
-            var classMap = new BsonClassMap<C>(cm => cm.MapIdProperty(c => c.P));
+            var classMap = new BsonClassMap<C>(cm => cm.MapIdProperty(c => c.P)).Freeze();
             var idMemberMap = classMap.IdMemberMap;
             Assert.IsNotNull(idMemberMap);
             Assert.AreEqual("_id", idMemberMap.ElementName);

@@ -62,6 +62,7 @@ namespace MongoDB.Bson.Serialization
         public BsonMemberMap(BsonClassMap classMap, MemberInfo memberInfo)
         {
             _classMap = classMap;
+            _elementName = memberInfo.Name;
             _memberInfo = memberInfo;
             _memberType = BsonClassMap.GetMemberInfoType(memberInfo);
             _memberTypeIsBsonValue = typeof(BsonValue).IsAssignableFrom(_memberType);
@@ -107,14 +108,7 @@ namespace MongoDB.Bson.Serialization
         /// </summary>
         public string ElementName
         {
-            get
-            {
-                if (_elementName == null)
-                {
-                    _elementName = _classMap.Conventions.ElementNameConvention.GetElementName(_memberInfo);
-                }
-                return _elementName;
-            }
+            get { return _elementName; }
         }
 
         /// <summary>
@@ -183,24 +177,7 @@ namespace MongoDB.Bson.Serialization
         /// </summary>
         public IIdGenerator IdGenerator
         {
-            get
-            {
-                if (_idGenerator == null)
-                {
-                    // special case IdGenerator for strings represented externally as ObjectId
-                    var memberInfoType = BsonClassMap.GetMemberInfoType(_memberInfo);
-                    var representationOptions = _serializationOptions as RepresentationSerializationOptions;
-                    if (memberInfoType == typeof(string) && representationOptions != null && representationOptions.Representation == BsonType.ObjectId)
-                    {
-                        _idGenerator = StringObjectIdGenerator.Instance;
-                    }
-                    else
-                    {
-                        _idGenerator = _classMap.Conventions.IdGeneratorConvention.GetIdGenerator(_memberInfo);
-                    }
-                }
-                return _idGenerator;
-            }
+            get { return _idGenerator; }
         }
 
         /// <summary>
@@ -336,6 +313,11 @@ namespace MongoDB.Bson.Serialization
         /// <returns>The member map.</returns>
         public BsonMemberMap SetElementName(string elementName)
         {
+            if (elementName == null)
+            {
+                throw new ArgumentNullException("elementName");
+            }
+
             _elementName = elementName;
             return this;
         }

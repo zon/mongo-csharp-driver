@@ -22,15 +22,20 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an Id member convention.
+    /// Represents an element name convention where the element name is the member name with the first character lower cased.
     /// </summary>
-    public interface IIdMemberConvention
+    [Obsolete("Use the new convention api.")]
+    public class CamelCaseElementNameConvention : IElementNameConvention
     {
         /// <summary>
-        /// Finds the Id member of a class.
+        /// Gets the element name for a member.
         /// </summary>
-        /// <param name="type">The class.</param>
-        /// <returns>The name of the Id member.</returns>
-        string FindIdMember(Type type);
+        /// <param name="member">The member.</param>
+        /// <returns>The element name.</returns>
+        public string GetElementName(MemberInfo member)
+        {
+            string name = member.Name;
+            return Char.ToLowerInvariant(name[0]) + name.Substring(1);
+        }
     }
 }

@@ -16,23 +16,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore extra elements convention where extra elements are always ignored.
+    /// Represents BSON serialiation options that use default values.
     /// </summary>
-    public class AlwaysIgnoreExtraElementsConvention : IIgnoreExtraElementsConvention
+    [Obsolete("Use the new convention api.")]
+    public class NullSerializationOptionsConvention : ISerializationOptionsConvention
     {
         /// <summary>
-        /// Determines whether to ignore extra elements for a class.
+        /// Gets the BSON serialization options for a member.
         /// </summary>
-        /// <param name="type">The class.</param>
-        /// <returns>Whether to ignore extra elements.</returns>
-        public bool IgnoreExtraElements(Type type)
+        /// <param name="memberInfo">The member.</param>
+        /// <returns>
+        /// The BSON serialization options for the member; or null to use defaults.
+        /// </returns>
+        public IBsonSerializationOptions GetSerializationOptions(MemberInfo memberInfo)
         {
-            return true;
+            return null;
         }
     }
 }
