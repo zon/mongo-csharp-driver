@@ -186,6 +186,12 @@
     <Compile Include="DefaultSerializer\Serializers\BsonValueSerializerTests.cs" />
     <Compile Include="DefaultSerializer\Serializers\BsonPrimitiveSerializerTests.cs" />
     <Compile Include="DefaultSerializer\SerializeInterfaceTests.cs" />
+    <Compile Include="Serialization\Conventions\ConventionPackTests.cs" />
+    <Compile Include="Serialization\Conventions\ConventionRunnerTests.cs" />
+    <Compile Include="Serialization\Conventions\NamedExtraElementsConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\NamedIdConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\ReadWriteMemberFinderConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\StringObjectIdGeneratorConventionsTests.cs" />
     <Compile Include="Serialization\IdGeneratorsTests.cs" />
   </ItemGroup>
   <ItemGroup>

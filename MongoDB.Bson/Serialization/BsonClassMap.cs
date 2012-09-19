@@ -86,7 +86,7 @@ namespace MongoDB.Bson.Serialization
             _declaredMemberMaps = new List<BsonMemberMap>();
             _allMemberMapsReadonly = _allMemberMaps.AsReadOnly();
             _elementTrie = new BsonTrie<int>();
-            _ignoreExtraElements = true; // NOTE: this is weird that we set it to true and automap (via conventions, sets this to false).
+            _ignoreExtraElements = true; // NOTE: this is weird that we set it to true and automap (via conventions) sets this to false.
         }
 
         // public properties
@@ -330,7 +330,7 @@ namespace MongoDB.Bson.Serialization
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The conventions profile for that type.</returns>
-        public static ConventionPack LookupConventions(Type type)
+        public static IConventionPack LookupConventions(Type type)
         {
             if (type == null)
             {
