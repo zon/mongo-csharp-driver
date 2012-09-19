@@ -107,7 +107,13 @@
     <Compile Include="Serialization\Conventions\ConditionalBsonMemberMapConvention.cs" />
     <Compile Include="Serialization\Conventions\ConventionPack.cs" />
     <Compile Include="Serialization\Conventions\ConventionRunner.cs" />
+    <Compile Include="Serialization\Conventions\StringObjectIdIdGeneratorConvention.cs" />
+    <Compile Include="Serialization\Conventions\IgnoreExtraElementsConvention.cs" />
+    <Compile Include="Serialization\Conventions\IdGeneratorLookupConvention.cs" />
+    <Compile Include="Serialization\Conventions\NamedExtraElementsConvention.cs" />
     <Compile Include="Serialization\Conventions\DefaultConventionPack.cs" />
+    <Compile Include="Serialization\Conventions\NamedIdConvention.cs" />
+    <Compile Include="Serialization\Conventions\ReadWriteMemberFinderConvention.cs" />
     <Compile Include="Serialization\Conventions\IAfterMembersBsonClassMapConvention.cs" />
     <Compile Include="Serialization\Conventions\IBeforeMembersBsonClassMapConvention.cs" />
     <Compile Include="Serialization\Conventions\IBsonMemberMapConvention.cs" />

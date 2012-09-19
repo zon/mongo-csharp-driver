@@ -59,7 +59,7 @@ namespace MongoDB.Bson.Serialization
         private readonly ReadOnlyCollection<BsonMemberMap> _allMemberMapsReadonly;
         private readonly List<BsonMemberMap> _declaredMemberMaps; // only the members declared in this class
         private readonly BsonTrie<int> _elementTrie;
-        private bool _ignoreExtraElements = true;
+        private bool _ignoreExtraElements;
         private bool _ignoreExtraElementsIsInherited = false;
         private BsonMemberMap _extraElementsMemberMap;
         private int _extraElementsMemberIndex = -1;
@@ -86,6 +86,7 @@ namespace MongoDB.Bson.Serialization
             _declaredMemberMaps = new List<BsonMemberMap>();
             _allMemberMapsReadonly = _allMemberMaps.AsReadOnly();
             _elementTrie = new BsonTrie<int>();
+            _ignoreExtraElements = true; // NOTE: this is weird that we set it to true and automap (via conventions, sets this to false).
         }
 
         // public properties
