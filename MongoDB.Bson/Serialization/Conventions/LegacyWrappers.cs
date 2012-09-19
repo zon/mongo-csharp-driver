@@ -98,7 +98,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
     }
 
-    internal class IdGeneratorConventionWrapper : ConditionalAfterMembersBsonClassMapConvention
+    internal class IdGeneratorConventionWrapper : IAfterMembersBsonClassMapConvention
     {
         private readonly IIdGeneratorConvention _convention;
 
@@ -112,14 +112,19 @@ namespace MongoDB.Bson.Serialization.Conventions
             _convention = convention;
         }
 
-        public override string Name
+        public string Name
         {
             get { return _convention.GetType().Name; }
         }
 
-        protected override void Apply(BsonClassMap classMap)
+        public void Apply(BsonClassMap classMap)
         {
             var idMemberMap = classMap.IdMemberMap;
+            if (idMemberMap == null)
+            {
+                return;
+            }
+
             var representationOptions = idMemberMap.SerializationOptions as RepresentationSerializationOptions;
             if (idMemberMap.MemberType == typeof(string) && representationOptions != null && representationOptions.Representation == BsonType.ObjectId)
             {
@@ -130,11 +135,6 @@ namespace MongoDB.Bson.Serialization.Conventions
                 var generator = _convention.GetIdGenerator(classMap.IdMemberMap.MemberInfo);
                 idMemberMap.SetIdGenerator(generator);
             }
-        }
-
-        protected override bool Matches(BsonClassMap classMap)
-        {
-            return classMap.IdMemberMap != null;
         }
     }
 
