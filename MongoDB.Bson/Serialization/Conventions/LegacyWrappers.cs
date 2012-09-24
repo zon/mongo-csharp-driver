@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+#pragma warning disable 0618
 namespace MongoDB.Bson.Serialization.Conventions
 {
     internal class DefaultValueConventionWrapper : IBsonMemberMapConvention
@@ -326,3 +327,4 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
     }
 }
+#pragma warning restore 0618

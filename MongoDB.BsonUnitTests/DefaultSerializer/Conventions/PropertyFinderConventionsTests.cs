@@ -39,7 +39,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestPublicPropertyFinderConvention()
         {
+#pragma warning disable 0618
             var convention = new PublicMemberFinderConvention();
+#pragma warning restore 0618
 
             var properties = convention.FindMembers(typeof(TestClass)).ToList();
 

@@ -402,6 +402,8 @@ namespace MongoDB.Bson.Serialization
         /// </summary>
         /// <param name="conventions">The conventions profile.</param>
         /// <param name="filter">The filter function that determines which types this profile applies to.</param>
+#pragma warning disable 0618
+        [Obsolete("Use the new convention api.")]
         public static void RegisterConventions(ConventionProfile conventions, Func<Type, bool> filter)
         {
             if (conventions == null)
@@ -415,6 +417,7 @@ namespace MongoDB.Bson.Serialization
 
             RegisterConventions("ConventionProfile", ConventionPack.FromConventionProfile(conventions), filter);
         }
+#pragma warning restore 0618
 
         /// <summary>
         /// Registers the conventions.

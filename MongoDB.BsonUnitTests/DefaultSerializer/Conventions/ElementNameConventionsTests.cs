@@ -38,7 +38,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestMemberNameElementNameConvention()
         {
+#pragma warning disable 0618
             var convention = new MemberNameElementNameConvention();
+#pragma warning restore 0618
             Assert.AreEqual("FirstName", convention.GetElementName(typeof(TestClass).GetProperty("FirstName")));
             Assert.AreEqual("Age", convention.GetElementName(typeof(TestClass).GetProperty("Age")));
             Assert.AreEqual("_DumbName", convention.GetElementName(typeof(TestClass).GetProperty("_DumbName")));
@@ -48,7 +50,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestCamelCaseElementNameConvention()
         {
+#pragma warning disable 0618
             var convention = new CamelCaseElementNameConvention();
+#pragma warning restore 0618
             Assert.AreEqual("firstName", convention.GetElementName(typeof(TestClass).GetProperty("FirstName")));
             Assert.AreEqual("age", convention.GetElementName(typeof(TestClass).GetProperty("Age")));
             Assert.AreEqual("_DumbName", convention.GetElementName(typeof(TestClass).GetProperty("_DumbName")));

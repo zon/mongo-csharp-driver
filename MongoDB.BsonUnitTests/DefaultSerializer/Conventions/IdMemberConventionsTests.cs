@@ -52,7 +52,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestNamedIdMemberConvention()
         {
+#pragma warning disable 0618
             var convention = new NamedIdMemberConvention("Id", "id", "_id");
+#pragma warning restore 0618
 
             var idMemberName = convention.FindIdMember(typeof(TestClassA));
             Assert.IsNotNull(idMemberName);

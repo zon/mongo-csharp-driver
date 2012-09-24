@@ -38,7 +38,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestLookupIdGeneratorConvention()
         {
+#pragma warning disable 0618
             var convention = new LookupIdGeneratorConvention();
+#pragma warning restore 0618
 
             var guidProperty = typeof(TestClass).GetProperty("GuidId");
             var objectIdProperty = typeof(TestClass).GetProperty("ObjectId");

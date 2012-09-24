@@ -35,28 +35,41 @@ namespace MongoDB.BsonUnitTests.Jira
             public Guid G = Guid.Empty;
         }
 
-        private class EmptyGuidDefaultValueConvention : IDefaultValueConvention
+        private class EmptyGuidDefaultValueConvention : IBsonMemberMapConvention
         {
-            public object GetDefaultValue(MemberInfo memberInfo)
+            public string Name
             {
-                var type = (memberInfo.MemberType == MemberTypes.Field) ? ((FieldInfo)memberInfo).FieldType : ((PropertyInfo)memberInfo).PropertyType;
-                if (type == typeof(Guid))
+                get { return "EmptyGuidDefaultValue"; }
+            }
+
+            public void Apply(BsonMemberMap memberMap)
+            {
+                if (memberMap.MemberType == typeof(Guid))
                 {
-                    return Guid.Empty;
+                    memberMap.SetDefaultValue(Guid.Empty);
                 }
-                else
-                {
-                    return null;
-                }
+            }
+        }
+
+        private class AlwaysIgnoreDefaultValueConvention : IBsonMemberMapConvention
+        {
+            public string Name
+            {
+                get { return "AlwaysIngoreDefaultValueConvention"; }
+            }
+
+            public void Apply(BsonMemberMap memberMap)
+            {
+                memberMap.SetIgnoreIfDefault(true);
             }
         }
 
         private static void InitializeSerialization()
         {
-            var conventions = new ConventionProfile();
-            conventions.SetDefaultValueConvention(new EmptyGuidDefaultValueConvention());
-            conventions.SetIgnoreIfDefaultConvention(new AlwaysIgnoreIfDefaultConvention());
-            BsonClassMap.RegisterConventions(conventions, type => type.FullName.StartsWith("MongoDB.BsonUnitTests.Jira.CSharp310Tests", StringComparison.Ordinal));
+            var conventions = new ConventionPack();
+            conventions.Add(new EmptyGuidDefaultValueConvention());
+            conventions.Add(new AlwaysIgnoreDefaultValueConvention());
+            BsonClassMap.RegisterConventions("CSharp310", conventions, type => type.FullName.StartsWith("MongoDB.BsonUnitTests.Jira.CSharp310Tests", StringComparison.Ordinal));
         }
 
         [Test]

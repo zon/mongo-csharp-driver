@@ -7,7 +7,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Finds an extra elements member convention by name that is of type <see cref="BsonDocument" /> or implements <see cref="IDictionary{string,object}"/>.
+    /// Finds an extra elements member convention by name that is of type BsonDocument or an IDictionary&lt;string,object&gt;.
     /// </summary>
     public class NamedExtraElementsConvention : IAfterMembersBsonClassMapConvention
     {

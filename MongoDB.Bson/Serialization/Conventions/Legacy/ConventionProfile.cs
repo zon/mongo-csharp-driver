@@ -17,12 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+#pragma warning disable 0618
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
     /// Represents a set of conventions.
     /// </summary>
+    [Obsolete("Use the new convention api.")]
     public sealed class ConventionProfile
     {
         // public properties
@@ -256,3 +257,4 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
     }
 }
+#pragma warning restore 0618

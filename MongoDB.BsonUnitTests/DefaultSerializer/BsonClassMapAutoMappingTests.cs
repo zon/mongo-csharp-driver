@@ -43,10 +43,12 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         [Test]
         public void TestMappingUsesBsonSerializationOptionsConvention()
         {
+#pragma warning disable 0618
             var profile = new ConventionProfile()
                 .SetSerializationOptionsConvention(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
 
             BsonClassMap.RegisterConventions(profile, t => t == typeof(A));
+#pragma warning restore 0618
 
             var classMap = BsonClassMap.LookupClassMap(typeof(A));
 
@@ -58,10 +60,12 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         [Test]
         public void TestMappingUsesBsonSerializationOptionsConventionDoesNotMatchWrongProperty()
         {
+#pragma warning disable 0618
             var profile = new ConventionProfile()
                 .SetSerializationOptionsConvention(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
 
             BsonClassMap.RegisterConventions(profile, t => t == typeof(A));
+#pragma warning restore 0618
 
             var classMap = BsonClassMap.LookupClassMap(typeof(A));
 
@@ -72,10 +76,12 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         [Test]
         public void TestMappingWithAMatchingSerializationOptionsConventionDoesNotOverrideAttribute()
         {
+#pragma warning disable 0618
             var profile = new ConventionProfile()
                 .SetSerializationOptionsConvention(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
 
             BsonClassMap.RegisterConventions(profile, t => t == typeof(B));
+#pragma warning restore 0618
 
             var classMap = BsonClassMap.LookupClassMap(typeof(B));
 

@@ -42,7 +42,9 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void TestNamedExtraElementsMemberConvention()
         {
+#pragma warning disable 0618
             var convention = new NamedExtraElementsMemberConvention("ExtraElements");
+#pragma warning restore 0618
 
             var extraElementsMemberName = convention.FindExtraElementsMember(typeof(TestClassA));
             Assert.IsNotNull(extraElementsMemberName);
