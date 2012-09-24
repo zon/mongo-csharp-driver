@@ -43,6 +43,7 @@ namespace MongoDB.Driver
         private ReadPreference _readPreference;
         private string _replicaSetName;
         private SafeMode _safeMode;
+        private TimeSpan _secondaryAcceptableLatency;
         private List<MongoServerAddress> _servers;
         private ReadOnlyCollection<MongoServerAddress> _serversReadOnly;
         private TimeSpan _socketTimeout;
@@ -75,6 +76,7 @@ namespace MongoDB.Driver
             _readPreference = ReadPreference.Primary;
             _replicaSetName = null;
             _safeMode = MongoDefaults.SafeMode;
+            _secondaryAcceptableLatency = TimeSpan.FromMilliseconds(15);
             _servers = new List<MongoServerAddress> { new MongoServerAddress("localhost") };
             _serversReadOnly = new ReadOnlyCollection<MongoServerAddress>(_servers);
             _socketTimeout = MongoDefaults.SocketTimeout;
@@ -120,6 +122,7 @@ namespace MongoDB.Driver
             ReadPreference readPreference,
             string replicaSetName,
             SafeMode safeMode,
+            TimeSpan secondaryAcceptableLatency,
             IEnumerable<MongoServerAddress> servers,
             TimeSpan socketTimeout,
             bool useSsl,
@@ -153,6 +156,7 @@ namespace MongoDB.Driver
             _readPreference = readPreference;
             _replicaSetName = replicaSetName;
             _safeMode = safeMode;
+            _secondaryAcceptableLatency = secondaryAcceptableLatency;
             _servers = new List<MongoServerAddress>(servers);
             _serversReadOnly = new ReadOnlyCollection<MongoServerAddress>(_servers);
             _socketTimeout = socketTimeout;
@@ -361,6 +365,20 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
+        /// Gets or sets the acceptable latency for considering a replica set member for inclusion in load balancing
+        /// when using a read preference of Secondary, SecondaryPreferred, and Nearest.
+        /// </summary>
+        public TimeSpan SecondaryAcceptableLatency
+        {
+            get { return _secondaryAcceptableLatency; }
+            set
+            {
+                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                _secondaryAcceptableLatency = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the address of the server (see also Servers if using more than one address).
         /// </summary>
         public MongoServerAddress Server
@@ -470,8 +488,8 @@ namespace MongoDB.Driver
         {
             return new MongoServerSettings(_connectionMode, _connectTimeout, _credentialsStore.Clone(), _defaultCredentials,
                 _guidRepresentation, _ipv6, _maxConnectionIdleTime, _maxConnectionLifeTime, _maxConnectionPoolSize,
-                _minConnectionPoolSize, _readPreference, _replicaSetName, _safeMode, _servers, _socketTimeout, _useSsl, _verifySslCertificate,
-                _waitQueueSize, _waitQueueTimeout);
+                _minConnectionPoolSize, _readPreference, _replicaSetName, _safeMode, _secondaryAcceptableLatency, _servers, 
+                _socketTimeout, _useSsl, _verifySslCertificate, _waitQueueSize, _waitQueueTimeout);
         }
 
         /// <summary>
@@ -508,6 +526,7 @@ namespace MongoDB.Driver
                         _readPreference == rhs._readPreference &&
                         _replicaSetName == rhs._replicaSetName &&
                         _safeMode == rhs._safeMode &&
+                        _secondaryAcceptableLatency == rhs._secondaryAcceptableLatency &&
                         _servers.SequenceEqual(rhs._servers) &&
                         _socketTimeout == rhs._socketTimeout &&
                         _useSsl == rhs._useSsl &&
@@ -608,6 +627,7 @@ namespace MongoDB.Driver
             hash = 37 * hash + _readPreference.GetHashCode();
             hash = 37 * hash + ((_replicaSetName == null) ? 0 : _replicaSetName.GetHashCode());
             hash = 37 * hash +  _safeMode.GetHashCode();
+            hash = 37 * hash + _secondaryAcceptableLatency.GetHashCode();
             foreach (var server in _servers)
             {
                 hash = 37 * hash + server.GetHashCode();
@@ -645,6 +665,7 @@ namespace MongoDB.Driver
             sb.AppendFormat("ReadPreference={0};", _readPreference);
             sb.AppendFormat("ReplicaSetName={0};", _replicaSetName);
             sb.AppendFormat("SafeMode={0};", _safeMode);
+            sb.AppendFormat("SecondaryAcceptableLatency={0};", _secondaryAcceptableLatency);
             sb.AppendFormat("Servers={0};", string.Join(",", _servers.Select(s => s.ToString()).ToArray()));
             sb.AppendFormat("SocketTimeout={0};", _socketTimeout);
             sb.AppendFormat("Ssl={0};", _useSsl);

@@ -45,6 +45,7 @@ namespace MongoDB.Driver
         private ReadPreference _readPreference;
         private string _replicaSetName;
         private SafeMode _safeMode;
+        private TimeSpan _secondaryAcceptableLatency;
         private IEnumerable<MongoServerAddress> _servers;
         private TimeSpan _socketTimeout;
         private bool _useSsl;
@@ -205,6 +206,16 @@ namespace MongoDB.Driver
         {
             get { return _safeMode; }
             set { _safeMode = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the acceptable latency for considering a replica set member for inclusion in load balancing
+        /// when using a read preference of Secondary, SecondaryPreferred, and Nearest.
+        /// </summary>
+        public TimeSpan SecondaryAcceptableLatency
+        {
+            get { return _secondaryAcceptableLatency; }
+            set { _secondaryAcceptableLatency = value; }
         }
 
         /// <summary>
@@ -581,6 +592,10 @@ namespace MongoDB.Driver
                                 if (_safeMode == null) { _safeMode = new SafeMode(false); }
                                 SafeMode.Enabled = ParseBoolean(name, value);
                                 break;
+                            case "secondaryacceptablelatency":
+                            case "secondaryacceptablelatencyms":
+                                _secondaryAcceptableLatency = ParseTimeSpan(name, value);
+                                break;
                             case "sockettimeout":
                             case "sockettimeoutms":
                                 _socketTimeout = ParseTimeSpan(name, value);
@@ -647,7 +662,8 @@ namespace MongoDB.Driver
             var readPreference = ReadPreference ?? ReadPreference.Primary;
             return new MongoServerSettings(_connectionMode, _connectTimeout, null, _defaultCredentials, _guidRepresentation, _ipv6,
                 _maxConnectionIdleTime, _maxConnectionLifeTime, _maxConnectionPoolSize, _minConnectionPoolSize, readPreference, _replicaSetName,
-                _safeMode ?? MongoDefaults.SafeMode, _servers, _socketTimeout, _useSsl, _verifySslCertificate, ComputedWaitQueueSize, _waitQueueTimeout);
+                _safeMode ?? MongoDefaults.SafeMode, _secondaryAcceptableLatency, _servers, _socketTimeout, _useSsl, _verifySslCertificate, 
+                ComputedWaitQueueSize, _waitQueueTimeout);
         }
 
         /// <summary>
@@ -764,6 +780,10 @@ namespace MongoDB.Driver
             {
                 query.AppendFormat("minPoolSize={0};", _minConnectionPoolSize);
             }
+            if (_secondaryAcceptableLatency != MongoDefaults.SecondaryAcceptableLatency)
+            {
+                query.AppendFormat("secondaryAcceptableLatency={0};", FormatTimeSpan(_secondaryAcceptableLatency));
+            }
             if (_socketTimeout != MongoDefaults.SocketTimeout)
             {
                 query.AppendFormat("socketTimeout={0};", FormatTimeSpan(_socketTimeout));
@@ -813,6 +833,7 @@ namespace MongoDB.Driver
             _readPreference = null;
             _replicaSetName = null;
             _safeMode = null;
+            _secondaryAcceptableLatency = MongoDefaults.SecondaryAcceptableLatency;
             _servers = null;
             _socketTimeout = MongoDefaults.SocketTimeout;
             _useSsl = false;
