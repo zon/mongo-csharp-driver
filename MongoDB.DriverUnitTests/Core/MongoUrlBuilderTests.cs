@@ -48,6 +48,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(null, builder.ReadPreference);
             Assert.AreEqual(null, builder.ReplicaSetName);
             Assert.AreEqual(null, builder.SafeMode);
+            Assert.AreEqual(MongoDefaults.SecondaryAcceptableLatency, builder.SecondaryAcceptableLatency);
             Assert.AreEqual(MongoDefaults.SocketTimeout, builder.SocketTimeout);
             Assert.AreEqual(false, builder.UseSsl);
             Assert.AreEqual(MongoDefaults.WaitQueueMultiple, builder.WaitQueueMultiple);
