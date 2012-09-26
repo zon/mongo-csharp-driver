@@ -71,11 +71,7 @@ namespace MongoDB.Bson.Serialization.Serializers
             switch (bsonType)
             {
                 case BsonType.ObjectId:
-                    int timestamp, machine, increment;
-                    short pid;
-                    bsonReader.ReadObjectId(out timestamp, out machine, out pid, out increment);
-                    var objectId = new ObjectId(timestamp, machine, pid, increment);
-                    return new BsonObjectId(objectId);
+                    return new BsonObjectId(bsonReader.ReadObjectId());
                 default:
                     var message = string.Format("Cannot deserialize BsonObjectId from BsonType {0}.", bsonType);
                     throw new FileFormatException(message);
@@ -101,7 +97,7 @@ namespace MongoDB.Bson.Serialization.Serializers
             }
 
             var objectId = ((BsonObjectId)value).Value;
-            bsonWriter.WriteObjectId(objectId.Timestamp, objectId.Machine, objectId.Pid, objectId.Increment);
+            bsonWriter.WriteObjectId(objectId);
         }
     }
 }

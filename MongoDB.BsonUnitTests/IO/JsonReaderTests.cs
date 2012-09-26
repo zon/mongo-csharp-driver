@@ -532,10 +532,7 @@ namespace MongoDB.BsonUnitTests.IO
             using (_bsonReader = BsonReader.Create(json))
             {
                 Assert.AreEqual(BsonType.ObjectId, _bsonReader.ReadBsonType());
-                int timestamp, machine, increment;
-                short pid;
-                _bsonReader.ReadObjectId(out timestamp, out machine, out pid, out increment);
-                var objectId = new ObjectId(timestamp, machine, pid, increment);
+                var objectId = _bsonReader.ReadObjectId();
                 Assert.AreEqual("4d0ce088e447ad08b4721a37", objectId.ToString());
                 Assert.AreEqual(BsonReaderState.Done, _bsonReader.State);
             }
@@ -549,10 +546,7 @@ namespace MongoDB.BsonUnitTests.IO
             using (_bsonReader = BsonReader.Create(json))
             {
                 Assert.AreEqual(BsonType.ObjectId, _bsonReader.ReadBsonType());
-                int timestamp, machine, increment;
-                short pid;
-                _bsonReader.ReadObjectId(out timestamp, out machine, out pid, out increment);
-                var objectId = new ObjectId(timestamp, machine, pid, increment);
+                var objectId = _bsonReader.ReadObjectId();
                 Assert.AreEqual("4d0ce088e447ad08b4721a37", objectId.ToString());
                 Assert.AreEqual(BsonReaderState.Done, _bsonReader.State);
             }
@@ -567,10 +561,7 @@ namespace MongoDB.BsonUnitTests.IO
             using (_bsonReader = BsonReader.Create(json))
             {
                 Assert.AreEqual(BsonType.ObjectId, _bsonReader.ReadBsonType());
-                int timestamp, machine, increment;
-                short pid;
-                _bsonReader.ReadObjectId(out timestamp, out machine, out pid, out increment);
-                var objectId = new ObjectId(timestamp, machine, pid, increment);
+                var objectId = _bsonReader.ReadObjectId();
                 Assert.AreEqual("4d0ce088e447ad08b4721a37", objectId.ToString());
                 Assert.AreEqual(BsonReaderState.Done, _bsonReader.State);
             }
@@ -585,10 +576,9 @@ namespace MongoDB.BsonUnitTests.IO
             using (_bsonReader = BsonReader.Create(json))
             {
                 Assert.AreEqual(BsonType.RegularExpression, _bsonReader.ReadBsonType());
-                string pattern, options;
-                _bsonReader.ReadRegularExpression(out pattern, out options);
-                Assert.AreEqual("pattern", pattern);
-                Assert.AreEqual("imxs", options);
+                var regex = _bsonReader.ReadRegularExpression();
+                Assert.AreEqual("pattern", regex.Pattern);
+                Assert.AreEqual("imxs", regex.Options);
                 Assert.AreEqual(BsonReaderState.Done, _bsonReader.State);
             }
             Assert.AreEqual(json, BsonSerializer.Deserialize<BsonRegularExpression>(new StringReader(json)).ToJson());
@@ -601,10 +591,9 @@ namespace MongoDB.BsonUnitTests.IO
             using (_bsonReader = BsonReader.Create(json))
             {
                 Assert.AreEqual(BsonType.RegularExpression, _bsonReader.ReadBsonType());
-                string pattern, options;
-                _bsonReader.ReadRegularExpression(out pattern, out options);
-                Assert.AreEqual("pattern", pattern);
-                Assert.AreEqual("imxs", options);
+                var regex = _bsonReader.ReadRegularExpression();
+                Assert.AreEqual("pattern", regex.Pattern);
+                Assert.AreEqual("imxs", regex.Options);
                 Assert.AreEqual(BsonReaderState.Done, _bsonReader.State);
             }
             var settings = new JsonWriterSettings { OutputMode = JsonOutputMode.Strict };

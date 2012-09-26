@@ -71,9 +71,7 @@ namespace MongoDB.Bson.Serialization.Serializers
             switch (bsonType)
             {
                 case BsonType.RegularExpression:
-                    string regexPattern, regexOptions;
-                    bsonReader.ReadRegularExpression(out regexPattern, out regexOptions);
-                    return new BsonRegularExpression(regexPattern, regexOptions);
+                    return bsonReader.ReadRegularExpression();
                 default:
                     var message = string.Format("Cannot deserialize BsonRegularExpression from BsonType {0}.", bsonType);
                     throw new FileFormatException(message);
@@ -99,7 +97,7 @@ namespace MongoDB.Bson.Serialization.Serializers
             }
 
             var regex = (BsonRegularExpression)value;
-            bsonWriter.WriteRegularExpression(regex.Pattern, regex.Options);
+            bsonWriter.WriteRegularExpression(regex);
         }
     }
 }

@@ -574,43 +574,35 @@ namespace MongoDB.Bson.IO
         /// <summary>
         /// Reads a BSON ObjectId from the reader.
         /// </summary>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="machine">The machine hash.</param>
-        /// <param name="pid">The PID.</param>
-        /// <param name="increment">The increment.</param>
-        public abstract void ReadObjectId(out int timestamp, out int machine, out short pid, out int increment);
+        /// <returns>An ObjectId.</returns>
+        public abstract ObjectId ReadObjectId();
 
         /// <summary>
         /// Reads a BSON ObjectId element from the reader.
         /// </summary>
         /// <param name="name">The name of the element.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="machine">The machine hash.</param>
-        /// <param name="pid">The PID.</param>
-        /// <param name="increment">The increment.</param>
-        public void ReadObjectId(string name, out int timestamp, out int machine, out short pid, out int increment)
+        /// <returns>An ObjectId.</returns>
+        public ObjectId ReadObjectId(string name)
         {
             VerifyName(name);
-            ReadObjectId(out timestamp, out machine, out pid, out increment);
+            return ReadObjectId();
         }
 
         /// <summary>
         /// Reads a BSON regular expression from the reader.
         /// </summary>
-        /// <param name="pattern">A regular expression pattern.</param>
-        /// <param name="options">A regular expression options.</param>
-        public abstract void ReadRegularExpression(out string pattern, out string options);
+        /// <returns>A BsonRegularExpression.</returns>
+        public abstract BsonRegularExpression ReadRegularExpression();
 
         /// <summary>
         /// Reads a BSON regular expression element from the reader.
         /// </summary>
         /// <param name="name">The name of the element.</param>
-        /// <param name="pattern">A regular expression pattern.</param>
-        /// <param name="options">A regular expression options.</param>
-        public void ReadRegularExpression(string name, out string pattern, out string options)
+        /// <returns>A BsonRegularExpression.</returns>
+        public BsonRegularExpression ReadRegularExpression(string name)
         {
             VerifyName(name);
-            ReadRegularExpression(out pattern, out options);
+            return ReadRegularExpression();
         }
 
         /// <summary>

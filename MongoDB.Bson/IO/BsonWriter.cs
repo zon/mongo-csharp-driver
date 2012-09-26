@@ -479,43 +479,35 @@ namespace MongoDB.Bson.IO
         /// <summary>
         /// Writes a BSON ObjectId to the writer.
         /// </summary>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="machine">The machine hash.</param>
-        /// <param name="pid">The PID.</param>
-        /// <param name="increment">The increment.</param>
-        public abstract void WriteObjectId(int timestamp, int machine, short pid, int increment);
+        /// <param name="objectId">The ObjectId.</param>
+        public abstract void WriteObjectId(ObjectId objectId);
 
         /// <summary>
         /// Writes a BSON ObjectId element to the writer.
         /// </summary>
         /// <param name="name">The name of the element.</param>
-        /// <param name="timestamp">The timestamp.</param>
-        /// <param name="machine">The machine hash.</param>
-        /// <param name="pid">The PID.</param>
-        /// <param name="increment">The increment.</param>
-        public void WriteObjectId(string name, int timestamp, int machine, short pid, int increment)
+        /// <param name="objectId">The ObjectId.</param>
+        public void WriteObjectId(string name, ObjectId objectId)
         {
             WriteName(name);
-            WriteObjectId(timestamp, machine, pid, increment);
+            WriteObjectId(objectId);
         }
 
         /// <summary>
         /// Writes a BSON regular expression to the writer.
         /// </summary>
-        /// <param name="pattern">A regular expression pattern.</param>
-        /// <param name="options">A regular expression options.</param>
-        public abstract void WriteRegularExpression(string pattern, string options);
+        /// <param name="regex">A BsonRegularExpression.</param>
+        public abstract void WriteRegularExpression(BsonRegularExpression regex);
 
         /// <summary>
         /// Writes a BSON regular expression element to the writer.
         /// </summary>
         /// <param name="name">The name of the element.</param>
-        /// <param name="pattern">A regular expression pattern.</param>
-        /// <param name="options">A regular expression options.</param>
-        public void WriteRegularExpression(string name, string pattern, string options)
+        /// <param name="regex">A BsonRegularExpression.</param>
+        public void WriteRegularExpression(string name, BsonRegularExpression regex)
         {
             WriteName(name);
-            WriteRegularExpression(pattern, options);
+            WriteRegularExpression(regex);
         }
 
         /// <summary>
