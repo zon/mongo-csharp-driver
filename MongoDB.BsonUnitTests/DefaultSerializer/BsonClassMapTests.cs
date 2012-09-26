@@ -342,4 +342,24 @@ namespace MongoDB.BsonUnitTests.Serialization
         }
 
     }
+
+    [TestFixture]
+    public class NonStandardIdTests
+    {
+        public class TestClass
+        {
+            [BsonId]
+            public int MyId;
+            public int Id;
+        }
+
+        [Test]
+        public void TestConventionsMapTheCorrectId()
+        {
+            var classMap = new BsonClassMap<TestClass>();
+            classMap.AutoMap();
+
+            Assert.AreEqual("MyId", classMap.IdMemberMap.MemberName);
+        }
+    }
 }

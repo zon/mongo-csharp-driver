@@ -9,7 +9,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Finds an id member convention by name.
     /// </summary>
-    public class NamedIdMemberConvention : ConventionBase, IAfterMembersBsonClassMapConvention
+    public class NamedIdMemberConvention : ConventionBase, IBeforeMembersBsonClassMapConvention
     {
         private readonly IEnumerable<string> _names;
         private readonly MemberTypes _memberTypes;
