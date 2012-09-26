@@ -8,16 +8,8 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Convention for setting an id generator for a string member with a bson representation of ObjectId.
     /// </summary>
-    public class StringObjectIdIdGeneratorConvention : IAfterMembersBsonClassMapConvention
+    public class StringObjectIdIdGeneratorConvention : ConventionBase, IAfterMembersBsonClassMapConvention
     {
-        /// <summary>
-        /// Gets the name of the convention.
-        /// </summary>
-        public string Name
-        {
-            get { return "StringObjectIdIdGenerator"; }
-        }
-
         /// <summary>
         /// Applies a modification to the class map.
         /// </summary>

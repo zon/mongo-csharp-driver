@@ -12,12 +12,12 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
     [TestFixture]
     public class NamedIdConventionsTests
     {
-        private NamedIdConvention _subject;
+        private NamedIdMemberConvention _subject;
 
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            _subject = new NamedIdConvention(new[] { "One", "Two" });
+            _subject = new NamedIdMemberConvention(new[] { "One", "Two" });
         }
 
         [Test]

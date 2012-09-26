@@ -28,6 +28,30 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         }
 
         [Test]
+        public void TestAddAfterMembersBsonClassMapConvention()
+        {
+            _pack.AddAfterMembersBsonClassMapConvention("test", a => { });
+
+            Assert.IsInstanceOf<DelegateAfterMembersBsonClassMapConvention>(_pack.Conventions.Single());
+        }
+
+        [Test]
+        public void TestAddBeforeMembersBsonClassMapConvention()
+        {
+            _pack.AddBeforeMembersBsonClassMapConvention("test", a => { });
+
+            Assert.IsInstanceOf<DelegateBeforeMembersBsonClassMapConvention>(_pack.Conventions.Single());
+        }
+
+        [Test]
+        public void TestAddBsonMemberMapConvention()
+        {
+            _pack.AddBsonMemberMapConvention("test", a => { });
+
+            Assert.IsInstanceOf<DelegateBsonMemberMapConvention>(_pack.Conventions.Single());
+        }
+
+        [Test]
         public void TestAddRange()
         {
             _pack.AddRange(new IConvention[] 

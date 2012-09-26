@@ -85,11 +85,11 @@
     <Compile Include="DefaultSerializer\BsonClassMapAutoMappingTests.cs" />
     <Compile Include="DefaultSerializer\BsonClassMapTests.cs" />
     <Compile Include="DefaultSerializer\BsonMemberMapTests.cs" />
-    <Compile Include="DefaultSerializer\Conventions\ExtraElementsConventionsTests.cs" />
-    <Compile Include="DefaultSerializer\Conventions\IdGeneratorConventionsTests.cs" />
-    <Compile Include="DefaultSerializer\Conventions\IdMemberConventionsTests.cs" />
-    <Compile Include="DefaultSerializer\Conventions\PropertyFinderConventionsTests.cs" />
-    <Compile Include="DefaultSerializer\Conventions\ElementNameConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\DelegateAfterMembersBsonClassMapConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\DelegateBeforeMembersBsonClassMapConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\DelegateBsonMemberMapConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\MemberNameElementNameConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\CamelCaseElementNameConventionsTests.cs" />
     <Compile Include="DefaultSerializer\ExtraElementsTests.cs" />
     <Compile Include="DefaultSerializer\SerializationOptions\RepresentationSerializationOptionsTests.cs" />
     <Compile Include="DefaultSerializer\SerializeFlagsTests.cs" />

@@ -20,35 +20,31 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization;
 
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
     [TestFixture]
-    public class PropertyFinderConventionsTests
+    public class DelegateBeforeMembersBsonClassMapConventionTests
     {
         private class TestClass
         {
-            public string Public { get; set; }
-            public string PrivateWrite { get; private set; }
-            public string PrivateRead { private get; set; }
-            private string NotFound { get; set; }
+            public string FirstName { get; set; }
         }
 
         [Test]
-        public void TestPublicPropertyFinderConvention()
+        public void Test()
         {
-#pragma warning disable 0618
-            var convention = new PublicMemberFinderConvention();
-#pragma warning restore 0618
+            var convention = new DelegateBeforeMembersBsonClassMapConvention("test", c => c.SetDiscriminator("blah"));
 
-            var properties = convention.FindMembers(typeof(TestClass)).ToList();
+            Assert.AreEqual("test", convention.Name);
 
-            Assert.AreEqual(3, properties.Count);
-            Assert.IsTrue(properties.Any(x => x.Name == "Public"));
-            Assert.IsTrue(properties.Any(x => x.Name == "PrivateWrite"));
-            Assert.IsTrue(properties.Any(x => x.Name == "PrivateRead"));
+            var classMap = new BsonClassMap<TestClass>();
+
+            convention.Apply(classMap);
+
+            Assert.AreEqual("blah", classMap.Discriminator);
         }
     }
 }

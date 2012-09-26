@@ -24,8 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Sets serialization options for a member of a given type.
     /// </summary>
-    [Obsolete("Use the new convention api.")]
-    public class TypeRepresentationSerializationOptionsConvention : ISerializationOptionsConvention
+    public class TypeRepresentationSerializationOptionsConvention : ConventionBase, IBsonMemberMapConvention
     {
         private readonly Type _type;
         private readonly BsonType _representation;
@@ -42,27 +41,15 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
-        /// Gets the BSON serialization options for a member.
+        /// Applies a modification to the member map.
         /// </summary>
-        /// <param name="memberInfo">The member.</param>
-        /// <returns>
-        /// The BSON serialization options for the member; or null to use defaults.
-        /// </returns>
-        public IBsonSerializationOptions GetSerializationOptions(MemberInfo memberInfo)
+        /// <param name="memberMap">The member map.</param>
+        public void Apply(BsonMemberMap memberMap)
         {
-            var propertyInfo = memberInfo as PropertyInfo;
-            if (propertyInfo != null && propertyInfo.PropertyType == _type)
+            if (memberMap.MemberType == _type)
             {
-                return new RepresentationSerializationOptions(_representation);
+                memberMap.SetSerializationOptions(new RepresentationSerializationOptions(_representation));
             }
-
-            var fieldInfo = memberInfo as FieldInfo;
-            if (fieldInfo != null && fieldInfo.FieldType == _type)
-            {
-                return new RepresentationSerializationOptions(_representation);
-            }
-
-            return null;
         }
     }
 }

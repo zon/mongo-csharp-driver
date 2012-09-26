@@ -22,10 +22,10 @@ namespace MongoDB.Bson.Serialization.Conventions
             _conventions = new List<IConvention>
             {
                 new ReadWriteMemberFinderConvention(),
-                new NamedIdConvention(new [] { "Id", "id", "_id" }),
-                new NamedExtraElementsConvention(new [] { "ExtraElements" }),
-                new IgnoreExtraElementsConvention(false),
-                new IdGeneratorLookupConvention(),
+                new NamedIdMemberConvention(new [] { "Id", "id", "_id" }),
+                new NamedExtraElementsMemberConvention(new [] { "ExtraElements" }),
+                new NeverIgnoreExtraElementsConvention(),
+                new LookupIdGeneratorConvention(),
                 new StringObjectIdIdGeneratorConvention()
             };
         }

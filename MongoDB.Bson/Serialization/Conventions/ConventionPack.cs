@@ -44,6 +44,36 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
+        /// Adds a convention for a BsonClassMap to run after the members have been mapped.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="action">The action.</param>
+        public void AddAfterMembersBsonClassMapConvention(string name, Action<BsonClassMap> action)
+        {
+            Add(new DelegateAfterMembersBsonClassMapConvention(name, action));
+        }
+
+        /// <summary>
+        /// Adds a convention for a BsonClassMap to run before the members have been mapped.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="action">The action.</param>
+        public void AddBeforeMembersBsonClassMapConvention(string name, Action<BsonClassMap> action)
+        {
+            Add(new DelegateBeforeMembersBsonClassMapConvention(name, action));
+        }
+
+        /// <summary>
+        /// Adds a convention for a BsonMemberMap.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="action">The action.</param>
+        public void AddBsonMemberMapConvention(string name, Action<BsonMemberMap> action)
+        {
+            Add(new DelegateBsonMemberMapConvention(name, action));
+        }
+
+        /// <summary>
         /// Adds the range of conventions.
         /// </summary>
         /// <param name="conventions">The conventions.</param>
@@ -108,62 +138,6 @@ namespace MongoDB.Bson.Serialization.Conventions
         public void Remove(string name)
         {
             _conventions.RemoveAll(x => x.Name == name);
-        }
-
-        /// <summary>
-        /// Creates a convention pack from a legacy ConventionProfile.
-        /// </summary>
-        /// <param name="profile">The profile.</param>
-        /// <returns></returns>
-        [Obsolete("This is a helper method and will be removed when the old conventions are removed.")]
-        public static IConventionPack FromConventionProfile(ConventionProfile profile)
-        {
-            var pack = new ConventionPack();
-
-            // class mapping conventions
-            if (profile.MemberFinderConvention != null)
-            {
-                pack.Add(new MemberFinderConventionWrapper(profile.MemberFinderConvention));
-            }
-            if (profile.IdMemberConvention != null)
-            {
-                pack.Add(new IdMemberConventionWrapper(profile.IdMemberConvention));
-            }
-            if (profile.IdGeneratorConvention != null)
-            {
-                pack.Add(new IdGeneratorConventionWrapper(profile.IdGeneratorConvention));
-            }
-            if (profile.ExtraElementsMemberConvention != null)
-            {
-                pack.Add(new ExtraElementsConventionWrapper(profile.ExtraElementsMemberConvention));
-            }
-            if (profile.IgnoreExtraElementsConvention != null)
-            {
-                pack.Add(new IgnoreExtraElementsConventionWrapper(profile.IgnoreExtraElementsConvention));
-            }
-
-            // member mapping conventions
-            if (profile.DefaultValueConvention != null)
-            {
-                pack.Add(new DefaultValueConventionWrapper(profile.DefaultValueConvention));
-            }
-            if (profile.IgnoreIfDefaultConvention != null)
-            {
-                pack.Add(new IgnoreIfDefaultConventionWrapper(profile.IgnoreIfDefaultConvention));
-            }
-            if (profile.IgnoreIfNullConvention != null)
-            {
-                pack.Add(new IgnoreIfNullConventionWrapper(profile.IgnoreIfNullConvention));
-            }
-            if (profile.SerializationOptionsConvention != null)
-            {
-                pack.Add(new SerializationOptionsConventionWrapper(profile.SerializationOptionsConvention));
-            }
-            if (profile.ElementNameConvention != null)
-            {
-                pack.Add(new ElementNameConventionWrapper(profile.ElementNameConvention));
-            }
-            return pack;
         }
     }
 }

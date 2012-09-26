@@ -22,16 +22,19 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents a BSON serialization options convention.
+    /// Represents an element name convention where the element name is the member name with the first character lower cased.
     /// </summary>
-    [Obsolete("Use the new convention api.")]
-    public interface ISerializationOptionsConvention
+    public class CamelCaseElementNameConvention : ConventionBase, IBsonMemberMapConvention
     {
         /// <summary>
-        /// Gets the BSON serialization options for a member.
+        /// Applies a modification to the member map.
         /// </summary>
-        /// <param name="memberInfo">The member.</param>
-        /// <returns>The BSON serialization options for the member; or null to use defaults.</returns>
-        IBsonSerializationOptions GetSerializationOptions(MemberInfo memberInfo);
+        /// <param name="memberMap">The member map.</param>
+        public void Apply(BsonMemberMap memberMap)
+        {
+            string name = memberMap.MemberName;
+            name = Char.ToLowerInvariant(name[0]) + name.Substring(1);
+            memberMap.SetElementName(name);
+        }
     }
 }

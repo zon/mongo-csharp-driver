@@ -9,46 +9,46 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Finds an extra elements member convention by name that is of type BsonDocument or an IDictionary&lt;string,object&gt;.
     /// </summary>
-    public class NamedExtraElementsConvention : IAfterMembersBsonClassMapConvention
+    public class NamedExtraElementsMemberConvention : ConventionBase, IAfterMembersBsonClassMapConvention
     {
         private readonly IEnumerable<string> _names;
         private readonly MemberTypes _memberTypes;
         private readonly BindingFlags _bindingFlags;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedExtraElementsConvention" /> class.
+        /// Initializes a new instance of the <see cref="NamedExtraElementsMemberConvention" /> class.
         /// </summary>
         /// <param name="names">The names.</param>
-        public NamedExtraElementsConvention(IEnumerable<string> names)
+        public NamedExtraElementsMemberConvention(IEnumerable<string> names)
             : this(names, BindingFlags.Instance | BindingFlags.Public)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedExtraElementsConvention" /> class.
+        /// Initializes a new instance of the <see cref="NamedExtraElementsMemberConvention" /> class.
         /// </summary>
         /// <param name="names">The names.</param>
         /// <param name="memberTypes">The member types.</param>
-        public NamedExtraElementsConvention(IEnumerable<string> names, MemberTypes memberTypes)
+        public NamedExtraElementsMemberConvention(IEnumerable<string> names, MemberTypes memberTypes)
             : this(names, memberTypes, BindingFlags.Instance | BindingFlags.Public)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedExtraElementsConvention" /> class.
+        /// Initializes a new instance of the <see cref="NamedExtraElementsMemberConvention" /> class.
         /// </summary>
         /// <param name="names">The names.</param>
         /// <param name="bindingFlags">The binding flags.</param>
-        public NamedExtraElementsConvention(IEnumerable<string> names, BindingFlags bindingFlags)
+        public NamedExtraElementsMemberConvention(IEnumerable<string> names, BindingFlags bindingFlags)
             : this(names, MemberTypes.Field | MemberTypes.Property, bindingFlags)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedExtraElementsConvention" /> class.
+        /// Initializes a new instance of the <see cref="NamedExtraElementsMemberConvention" /> class.
         /// </summary>
         /// <param name="names">The names.</param>
         /// <param name="memberTypes">The member types.</param>
         /// <param name="bindingFlags">The binding flags.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public NamedExtraElementsConvention(IEnumerable<string> names, MemberTypes memberTypes, BindingFlags bindingFlags)
+        public NamedExtraElementsMemberConvention(IEnumerable<string> names, MemberTypes memberTypes, BindingFlags bindingFlags)
         {
             if (names == null)
             {
@@ -58,14 +58,6 @@ namespace MongoDB.Bson.Serialization.Conventions
             _names = names;
             _memberTypes = memberTypes;
             _bindingFlags = bindingFlags | BindingFlags.DeclaredOnly;
-        }
-
-        /// <summary>
-        /// Gets the name of the convention.
-        /// </summary>
-        public string Name
-        {
-            get { return "NamedExtraElements"; }
         }
 
         /// <summary>

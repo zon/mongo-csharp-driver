@@ -15,28 +15,36 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using NUnit.Framework;
 
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization;
 
-namespace MongoDB.Bson.Serialization.Conventions
+namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
-    /// <summary>
-    /// Represents an Id generator convention where the Id generator is looked up based on the member type.
-    /// </summary>
-    [Obsolete("Use the new convention api.")]
-    public class LookupIdGeneratorConvention : IIdGeneratorConvention
+    [TestFixture]
+    public class DelegateAfterMembersBsonClassMapConventionTests
     {
-        /// <summary>
-        /// Gets the Id generator for an Id member.
-        /// </summary>
-        /// <param name="memberInfo">The member.</param>
-        /// <returns>An Id generator.</returns>
-        public IIdGenerator GetIdGenerator(MemberInfo memberInfo)
+        private class TestClass
         {
-            return BsonSerializer.LookupIdGenerator(BsonClassMap.GetMemberInfoType(memberInfo));
+            public string FirstName { get; set; }
+        }
+
+        [Test]
+        public void Test()
+        {
+            var convention = new DelegateAfterMembersBsonClassMapConvention("test", c => c.SetDiscriminator("blah"));
+           
+            Assert.AreEqual("test", convention.Name);
+
+            var classMap = new BsonClassMap<TestClass>();
+
+            convention.Apply(classMap);
+
+            Assert.AreEqual("blah", classMap.Discriminator);
         }
     }
 }

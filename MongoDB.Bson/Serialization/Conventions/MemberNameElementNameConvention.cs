@@ -22,16 +22,17 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention.
+    /// Represents an element name convention where the element name is the same as the member name.
     /// </summary>
-    [Obsolete("Use the new convention api.")]
-    public interface IElementNameConvention
+    public class MemberNameElementNameConvention : ConventionBase, IBsonMemberMapConvention
     {
         /// <summary>
-        /// Gets the element name for a member.
+        /// Applies a modification to the member map.
         /// </summary>
-        /// <param name="member">The member.</param>
-        /// <returns>The element name.</returns>
-        string GetElementName(MemberInfo member);
+        /// <param name="memberMap">The member map.</param>
+        public void Apply(BsonMemberMap memberMap)
+        {
+            memberMap.SetElementName(memberMap.MemberName);
+        }
     }
 }

@@ -20,33 +20,32 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization;
 
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
     [TestFixture]
-    public class IdGeneratorConventionsTests
+    public class DelegateBsonMemberMapConventionTests
     {
         private class TestClass
         {
-            public Guid GuidId { get; set; }
-            public ObjectId ObjectId { get; set; }
+            public string FirstName { get; set; }
         }
 
         [Test]
-        public void TestLookupIdGeneratorConvention()
+        public void Test()
         {
-#pragma warning disable 0618
-            var convention = new LookupIdGeneratorConvention();
-#pragma warning restore 0618
+            var convention = new DelegateBsonMemberMapConvention("test", m => m.SetElementName("blah"));
 
-            var guidProperty = typeof(TestClass).GetProperty("GuidId");
-            var objectIdProperty = typeof(TestClass).GetProperty("ObjectId");
+            Assert.AreEqual("test", convention.Name);
 
-            Assert.IsInstanceOf<GuidGenerator>(convention.GetIdGenerator(guidProperty));
-            Assert.IsInstanceOf<ObjectIdGenerator>(convention.GetIdGenerator(objectIdProperty));
+            var classMap = new BsonClassMap<TestClass>();
+            var member = classMap.MapMember(x => x.FirstName);
+
+            convention.Apply(member);
+
+            Assert.AreEqual("blah", member.ElementName);
         }
     }
 }

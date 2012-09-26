@@ -16,21 +16,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore extra elements convention.
+    /// Represents an ignore if null convention where nulls are always ignored.
     /// </summary>
-    [Obsolete("Use the new convention api.")]
-    public interface IIgnoreExtraElementsConvention
+    public class AlwaysIgnoreIfNullConvention : ConventionBase, IBsonMemberMapConvention
     {
         /// <summary>
-        /// Determines whether to ignore extra elements for a class.
+        /// Applies a modification to the member map.
         /// </summary>
-        /// <param name="type">The class.</param>
-        /// <returns>Whether to ignore extra elements.</returns>
-        bool IgnoreExtraElements(Type type);
+        /// <param name="memberMap">The member map.</param>
+        public void Apply(BsonMemberMap memberMap)
+        {
+            memberMap.SetIgnoreIfNull(true);
+        }
     }
 }
