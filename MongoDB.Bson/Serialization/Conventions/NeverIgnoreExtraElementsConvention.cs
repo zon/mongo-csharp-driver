@@ -23,7 +23,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Represents an ignore extra elements convention where extra elements are never ignored.
     /// </summary>
-    public class NeverIgnoreExtraElementsConvention : ConventionBase, IBeforeMembersBsonClassMapConvention
+    public class NeverIgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
     {
         /// <summary>
         /// Applies a modification to the class map.

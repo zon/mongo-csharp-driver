@@ -35,7 +35,7 @@ namespace MongoDB.BsonUnitTests.Jira
             public Guid G = Guid.Empty;
         }
 
-        private class EmptyGuidDefaultValueConvention : IBsonMemberMapConvention
+        private class EmptyGuidDefaultValueConvention : IMemberMapConvention
         {
             public string Name
             {
@@ -51,7 +51,7 @@ namespace MongoDB.BsonUnitTests.Jira
             }
         }
 
-        private class AlwaysIgnoreDefaultValueConvention : IBsonMemberMapConvention
+        private class AlwaysIgnoreDefaultValueConvention : IMemberMapConvention
         {
             public string Name
             {
@@ -69,7 +69,7 @@ namespace MongoDB.BsonUnitTests.Jira
             var conventions = new ConventionPack();
             conventions.Add(new EmptyGuidDefaultValueConvention());
             conventions.Add(new AlwaysIgnoreDefaultValueConvention());
-            BsonClassMap.RegisterConventions("CSharp310", conventions, type => type.FullName.StartsWith("MongoDB.BsonUnitTests.Jira.CSharp310Tests", StringComparison.Ordinal));
+            ConventionRegistry.Register("CSharp310", conventions, type => type.FullName.StartsWith("MongoDB.BsonUnitTests.Jira.CSharp310Tests", StringComparison.Ordinal));
         }
 
         [Test]

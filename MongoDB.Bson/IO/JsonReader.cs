@@ -305,6 +305,7 @@ namespace MongoDB.Bson.IO
         /// Reads BSON binary data from the reader.
         /// </summary>
         /// <returns>A byte array.</returns>
+#pragma warning disable 618
         public override byte[] ReadBytes()
         {
             if (Disposed) { ThrowObjectDisposedException(); }
@@ -321,6 +322,7 @@ namespace MongoDB.Bson.IO
 
             return binaryData.Bytes;
         }
+#pragma warning restore
 
         /// <summary>
         /// Reads a BSON DateTime from the reader.

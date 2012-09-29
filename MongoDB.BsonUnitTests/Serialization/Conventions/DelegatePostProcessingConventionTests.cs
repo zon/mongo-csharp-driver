@@ -26,7 +26,7 @@ using MongoDB.Bson.Serialization;
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
     [TestFixture]
-    public class DelegateBeforeMembersBsonClassMapConventionTests
+    public class DelegatePostProcessingConventionTests
     {
         private class TestClass
         {
@@ -36,7 +36,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void Test()
         {
-            var convention = new DelegateBeforeMembersBsonClassMapConvention("test", c => c.SetDiscriminator("blah"));
+            var convention = new DelegatePostProcessingConvention("test", c => c.SetDiscriminator("blah"));
 
             Assert.AreEqual("test", convention.Name);
 

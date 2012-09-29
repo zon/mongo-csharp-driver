@@ -356,8 +356,7 @@ namespace MongoDB.BsonUnitTests.Serialization
         [Test]
         public void TestConventionsMapTheCorrectId()
         {
-            var classMap = new BsonClassMap<TestClass>();
-            classMap.AutoMap();
+            var classMap = new BsonClassMap<TestClass>(cm => cm.AutoMap());
 
             Assert.AreEqual("MyId", classMap.IdMemberMap.MemberName);
         }

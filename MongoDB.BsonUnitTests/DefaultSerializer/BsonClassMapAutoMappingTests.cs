@@ -45,9 +45,9 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         {
             var pack = new ConventionPack();
             pack.Add(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
-            BsonClassMap.RegisterConventions("test", pack, t => t == typeof(A));
+            ConventionRegistry.Register("test", pack, t => t == typeof(A));
 
-            var classMap = BsonClassMap.LookupClassMap(typeof(A));
+            var classMap = new BsonClassMap<A>(cm => cm.AutoMap());
 
             var options = classMap.GetMemberMap("Match").SerializationOptions;
             Assert.IsInstanceOf<RepresentationSerializationOptions>(options);
@@ -59,9 +59,9 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         {
             var pack = new ConventionPack();
             pack.Add(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
-            BsonClassMap.RegisterConventions("test", pack, t => t == typeof(A));
+            ConventionRegistry.Register("test", pack, t => t == typeof(A));
 
-            var classMap = BsonClassMap.LookupClassMap(typeof(A));
+            var classMap = new BsonClassMap<A>(cm => cm.AutoMap());
 
             var options = classMap.GetMemberMap("NoMatch").SerializationOptions;
             Assert.IsNull(options);
@@ -72,9 +72,9 @@ namespace MongoDB.BsonUnitTests.DefaultSerializer
         {
             var pack = new ConventionPack();
             pack.Add(new TypeRepresentationSerializationOptionsConvention(typeof(ObjectId), BsonType.JavaScriptWithScope));
-            BsonClassMap.RegisterConventions("test", pack, t => t == typeof(A));
+            ConventionRegistry.Register("test", pack, t => t == typeof(A));
 
-            var classMap = BsonClassMap.LookupClassMap(typeof(B));
+            var classMap = new BsonClassMap<B>(cm => cm.AutoMap());
 
             var options = classMap.GetMemberMap("Match").SerializationOptions;
             Assert.IsInstanceOf<RepresentationSerializationOptions>(options);

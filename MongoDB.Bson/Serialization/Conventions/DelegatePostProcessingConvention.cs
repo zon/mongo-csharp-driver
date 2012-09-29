@@ -21,17 +21,37 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore extra elements convention where extra elements are always ignored.
+    /// A BsonClassMap convention that wraps a delegate.
     /// </summary>
-    public class AlwaysIgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
+    public class DelegatePostProcessingConvention : ConventionBase, IPostProcessingConvention
     {
+        // private fields
+        private readonly Action<BsonClassMap> _action;
+
+        // constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DelegatePostProcessingConvention" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="action">The action.</param>
+        public DelegatePostProcessingConvention(string name, Action<BsonClassMap> action)
+            : base(name)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            _action = action;
+        }
+
+        // public methods
         /// <summary>
         /// Applies a modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         public void Apply(BsonClassMap classMap)
         {
-            classMap.SetIgnoreExtraElements(true);
+            _action(classMap);
         }
     }
 }

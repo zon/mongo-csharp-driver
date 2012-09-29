@@ -24,7 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Sets serialization options for a member of a given type.
     /// </summary>
-    public class TypeRepresentationSerializationOptionsConvention : ConventionBase, IBsonMemberMapConvention
+    public class TypeRepresentationSerializationOptionsConvention : ConventionBase, IMemberMapConvention
     {
         private readonly Type _type;
         private readonly BsonType _representation;

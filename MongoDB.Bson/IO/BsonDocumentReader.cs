@@ -151,6 +151,7 @@ namespace MongoDB.Bson.IO
             return CurrentBsonType;
         }
 
+        /// <summary>
         /// Reads BSON binary data from the reader.
         /// </summary>
         /// <returns>A byte array.</returns>

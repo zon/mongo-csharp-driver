@@ -24,7 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Represents an ignore if default convention where default values are always ignored.
     /// </summary>
-    public class AlwaysIgnoreIfDefaultConvention : ConventionBase, IBsonMemberMapConvention
+    public class AlwaysIgnoreIfDefaultConvention : ConventionBase, IMemberMapConvention
     {
         /// <summary>
         /// Applies a modification to the member map.

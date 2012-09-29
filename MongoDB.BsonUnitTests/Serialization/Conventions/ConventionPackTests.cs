@@ -1,9 +1,26 @@
-﻿using MongoDB.Bson.Serialization.Conventions;
-using NUnit.Framework;
+﻿/* Copyright 2010-2012 10gen Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
+
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
@@ -28,27 +45,27 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         }
 
         [Test]
-        public void TestAddAfterMembersBsonClassMapConvention()
+        public void TestAddClassMapConvention()
         {
-            _pack.AddAfterMembersBsonClassMapConvention("test", a => { });
+            _pack.AddClassMapConvention("test", cm => { });
 
-            Assert.IsInstanceOf<DelegateAfterMembersBsonClassMapConvention>(_pack.Conventions.Single());
+            Assert.IsInstanceOf<DelegateClassMapConvention>(_pack.Conventions.Single());
         }
 
         [Test]
-        public void TestAddBeforeMembersBsonClassMapConvention()
+        public void TestAddPostProcessingConvention()
         {
-            _pack.AddBeforeMembersBsonClassMapConvention("test", a => { });
+            _pack.AddPostProcessingConvention("test", cm => { });
 
-            Assert.IsInstanceOf<DelegateBeforeMembersBsonClassMapConvention>(_pack.Conventions.Single());
+            Assert.IsInstanceOf<DelegatePostProcessingConvention>(_pack.Conventions.Single());
         }
 
         [Test]
-        public void TestAddBsonMemberMapConvention()
+        public void TestAddMemberMapConvention()
         {
-            _pack.AddBsonMemberMapConvention("test", a => { });
+            _pack.AddMemberMapConvention("test", mm => { });
 
-            Assert.IsInstanceOf<DelegateBsonMemberMapConvention>(_pack.Conventions.Single());
+            Assert.IsInstanceOf<DelegateMemberMapConvention>(_pack.Conventions.Single());
         }
 
         [Test]
@@ -135,6 +152,5 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         {
             public string Name { get; set; }
         }
-
     }
 }

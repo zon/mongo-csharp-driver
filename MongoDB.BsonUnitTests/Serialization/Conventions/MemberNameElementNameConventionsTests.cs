@@ -20,8 +20,8 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {

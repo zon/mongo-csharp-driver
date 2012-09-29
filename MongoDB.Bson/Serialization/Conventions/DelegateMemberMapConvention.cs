@@ -16,25 +16,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention where the element name is the member name with the first character lower cased.
+    /// A BsonMemberMap convention that wraps a delegate.
     /// </summary>
-    public class CamelCaseElementNameConvention : ConventionBase, IMemberMapConvention
+    public class DelegateMemberMapConvention : ConventionBase, IMemberMapConvention
     {
+        // private fields
+        private readonly Action<BsonMemberMap> _action;
+
+        // constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DelegateMemberMapConvention" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="action">The action.</param>
+        public DelegateMemberMapConvention(string name, Action<BsonMemberMap> action)
+            : base(name)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            _action = action;
+        }
+
+        // public methods
         /// <summary>
         /// Applies a modification to the member map.
         /// </summary>
         /// <param name="memberMap">The member map.</param>
         public void Apply(BsonMemberMap memberMap)
         {
-            string name = memberMap.MemberName;
-            name = Char.ToLowerInvariant(name[0]) + name.Substring(1);
-            memberMap.SetElementName(name);
+            _action(memberMap);
         }
     }
 }

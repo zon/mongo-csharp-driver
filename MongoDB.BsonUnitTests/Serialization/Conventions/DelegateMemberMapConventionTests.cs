@@ -20,13 +20,13 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
     [TestFixture]
-    public class DelegateAfterMembersBsonClassMapConventionTests
+    public class DelegateMemberMapConventionTests
     {
         private class TestClass
         {
@@ -36,15 +36,16 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void Test()
         {
-            var convention = new DelegateAfterMembersBsonClassMapConvention("test", c => c.SetDiscriminator("blah"));
-           
+            var convention = new DelegateMemberMapConvention("test", m => m.SetElementName("blah"));
+
             Assert.AreEqual("test", convention.Name);
 
             var classMap = new BsonClassMap<TestClass>();
+            var member = classMap.MapMember(x => x.FirstName);
 
-            convention.Apply(classMap);
+            convention.Apply(member);
 
-            Assert.AreEqual("blah", classMap.Discriminator);
+            Assert.AreEqual("blah", member.ElementName);
         }
     }
 }

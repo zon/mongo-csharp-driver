@@ -36,7 +36,6 @@ namespace MongoDB.Bson.Serialization
     public abstract class BsonClassMap
     {
         // private static fields
-        private readonly static List<ConventionPackContainer> __conventionPacks = new List<ConventionPackContainer>();
         private readonly static Dictionary<Type, BsonClassMap> __classMaps = new Dictionary<Type, BsonClassMap>();
         private readonly static Queue<Type> __knownTypesQueue = new Queue<Type>();
 
@@ -66,12 +65,6 @@ namespace MongoDB.Bson.Serialization
         private List<Type> _knownTypes = new List<Type>();
 
         // constructors
-        static BsonClassMap()
-        {
-            __conventionPacks.Add(new ConventionPackContainer { Filter = t => true, Name = "__default__", Pack = DefaultConventionPack.Instance });
-            __conventionPacks.Add(new ConventionPackContainer { Filter = t => true, Name = "__attributes__", Pack = AttributeConventionPack.Instance });
-        }
-
         /// <summary>
         /// Initializes a new instance of the BsonClassMap class.
         /// </summary>
@@ -79,7 +72,7 @@ namespace MongoDB.Bson.Serialization
         protected BsonClassMap(Type classType)
         {
             _classType = classType;
-            _conventions = LookupConventions(classType);
+            _conventions = ConventionRegistry.LookupConventions(classType);
             _discriminator = classType.Name;
             _isAnonymous = IsAnonymousType(classType);
             _allMemberMaps = new List<BsonMemberMap>();
@@ -326,31 +319,6 @@ namespace MongoDB.Bson.Serialization
         }
 
         /// <summary>
-        /// Looks up the conventions profile for a type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>The conventions profile for that type.</returns>
-        public static IConventionPack LookupConventions(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-
-            var pack = new ConventionPack();
-
-            for (int i = 0; i < __conventionPacks.Count; i++)
-            {
-                if (__conventionPacks[i].Filter(type))
-                {
-                    pack.Append(__conventionPacks[i].Pack);
-                }
-            }
-
-            return pack;
-        }
-
-        /// <summary>
         /// Creates and registers a class map.
         /// </summary>
         /// <typeparam name="TClass">The class.</typeparam>
@@ -395,64 +363,6 @@ namespace MongoDB.Bson.Serialization
             {
                 BsonSerializer.ConfigLock.ExitWriteLock();
             }
-        }
-
-        /// <summary>
-        /// Registers the conventions.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="conventions">The conventions.</param>
-        /// <param name="filter">The filter.</param>
-        public static void RegisterConventions(string name, IConventionPack conventions, Func<Type, bool> filter)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException("name");
-            }
-            if (conventions == null)
-            {
-                throw new ArgumentNullException("conventions");
-            }
-            if (filter == null)
-            {
-                throw new ArgumentNullException("filter");
-            }
-            var container = new ConventionPackContainer
-            {
-                Filter = filter,
-                Name = name,
-                Pack = conventions
-            };
-
-            // we are trapped in by 2 special packs : __default__ and __attributes__.  
-            // these may have been removed by the user, so we can't rely on them being here.
-            if(__conventionPacks.Count == 0)
-            {
-                __conventionPacks.Add(container);
-            }
-            else
-            {
-                if (__conventionPacks.Last().Name == "__attributes__")
-                {
-                    __conventionPacks.Insert(__conventionPacks.Count - 1, container);
-                }
-                else
-                {
-                    __conventionPacks.Add(container);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Removes the conventions specified by the given name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <remarks>Removing a convention allows the removal of the special __default__ conventions 
-        /// and the __attribute__ conventions for those who want to completely customize the 
-        /// experience.</remarks>
-        public static void RemoveConventions(string name)
-        {
-            __conventionPacks.RemoveAll(x => x.Name == name);
         }
 
         // public methods
@@ -1176,14 +1086,6 @@ namespace MongoDB.Bson.Serialization
         {
             var message = string.Format("Class map for {0} has been not been frozen yet.", _classType.FullName);
             throw new InvalidOperationException(message);
-        }
-
-        // private class
-        private class ConventionPackContainer
-        {
-            public Func<Type, bool> Filter;
-            public string Name;
-            public IConventionPack Pack;
         }
     }
 

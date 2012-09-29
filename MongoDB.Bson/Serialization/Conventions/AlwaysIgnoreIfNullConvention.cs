@@ -24,7 +24,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Represents an ignore if null convention where nulls are always ignored.
     /// </summary>
-    public class AlwaysIgnoreIfNullConvention : ConventionBase, IBsonMemberMapConvention
+    public class AlwaysIgnoreIfNullConvention : ConventionBase, IMemberMapConvention
     {
         /// <summary>
         /// Applies a modification to the member map.

@@ -64,7 +64,6 @@ namespace MongoDB.Bson.Serialization
         /// <param name="memberMap">The member map.</param>
         public void Apply(BsonMemberMap memberMap)
         {
-            memberMap.SetElementName("_id");
             memberMap.SetOrder(_order);
             if (_idGenerator != null)
             {

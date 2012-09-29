@@ -26,7 +26,7 @@ using MongoDB.Bson.Serialization;
 namespace MongoDB.BsonUnitTests.Serialization.Conventions
 {
     [TestFixture]
-    public class DelegateBsonMemberMapConventionTests
+    public class DelegateClassMapConventionTests
     {
         private class TestClass
         {
@@ -36,16 +36,15 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
         [Test]
         public void Test()
         {
-            var convention = new DelegateBsonMemberMapConvention("test", m => m.SetElementName("blah"));
+            var convention = new DelegateClassMapConvention("test", c => c.SetDiscriminator("blah"));
 
             Assert.AreEqual("test", convention.Name);
 
             var classMap = new BsonClassMap<TestClass>();
-            var member = classMap.MapMember(x => x.FirstName);
 
-            convention.Apply(member);
+            convention.Apply(classMap);
 
-            Assert.AreEqual("blah", member.ElementName);
+            Assert.AreEqual("blah", classMap.Discriminator);
         }
     }
 }
