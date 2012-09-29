@@ -21,12 +21,12 @@ using System.Text;
 namespace MongoDB.Bson.Serialization
 {
     /// <summary>
-    /// Modifies a member map.
+    /// Represents an attribute used to modify a member map.
     /// </summary>
-    public interface IBsonMemberMapModifier
+    public interface IBsonMemberMapAttribute
     {
         /// <summary>
-        /// Applies a modification to the member map.
+        /// Applies the attribute to the member map.
         /// </summary>
         /// <param name="memberMap">The member map.</param>
         void Apply(BsonMemberMap memberMap);

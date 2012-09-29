@@ -24,7 +24,7 @@ namespace MongoDB.Bson.Serialization
     /// Specifies the default value for a field or property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class BsonDefaultValueAttribute : Attribute, IBsonMemberMapModifier
+    public class BsonDefaultValueAttribute : Attribute, IBsonMemberMapAttribute
     {
         // private fields
         private object _defaultValue;

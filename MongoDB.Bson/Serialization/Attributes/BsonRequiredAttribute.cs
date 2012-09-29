@@ -24,7 +24,7 @@ namespace MongoDB.Bson.Serialization
     /// Indicates that a field or property is required.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class BsonRequiredAttribute : Attribute, IBsonMemberMapModifier
+    public class BsonRequiredAttribute : Attribute, IBsonMemberMapAttribute
     {
         // public methods
         /// <summary>

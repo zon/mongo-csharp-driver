@@ -25,7 +25,7 @@ namespace MongoDB.Bson.Serialization
     /// <summary>
     /// Abstract base class for serialization options attributes.
     /// </summary>
-    public abstract class BsonSerializationOptionsAttribute : Attribute, IBsonMemberMapModifier
+    public abstract class BsonSerializationOptionsAttribute : Attribute, IBsonMemberMapAttribute
     {
         // constructors
         /// <summary>

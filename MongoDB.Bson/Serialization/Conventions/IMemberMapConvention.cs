@@ -23,7 +23,12 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Convention that applies to a BsonMemberMap.
     /// </summary>
-    public interface IMemberMapConvention : IConvention, IBsonMemberMapModifier
+    public interface IMemberMapConvention : IConvention
     {
+        /// <summary>
+        /// Applies a modification to the member map.
+        /// </summary>
+        /// <param name="memberMap">The member map.</param>
+        void Apply(BsonMemberMap memberMap);
     }
 }

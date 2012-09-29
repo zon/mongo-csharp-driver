@@ -23,7 +23,7 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Runs the conventions against a BsonClassMap and its BsonMemberMaps.
     /// </summary>
-    public class ConventionRunner : IBsonClassMapModifier
+    public class ConventionRunner
     {
         // private fields
         private readonly IEnumerable<IConvention> _conventions;

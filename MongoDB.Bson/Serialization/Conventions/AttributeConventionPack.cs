@@ -65,7 +65,7 @@ namespace MongoDB.Bson.Serialization.Conventions
             // public methods
             public void Apply(BsonClassMap classMap)
             {
-                foreach (IBsonClassMapModifier attribute in classMap.ClassType.GetCustomAttributes(typeof(IBsonClassMapModifier), false))
+                foreach (IBsonClassMapAttribute attribute in classMap.ClassType.GetCustomAttributes(typeof(IBsonClassMapAttribute), false))
                 {
                     attribute.Apply(classMap);
                 }
@@ -77,7 +77,7 @@ namespace MongoDB.Bson.Serialization.Conventions
             // public methods
             public void Apply(BsonMemberMap memberMap)
             {
-                foreach (IBsonMemberMapModifier attribute in memberMap.MemberInfo.GetCustomAttributes(typeof(IBsonMemberMapModifier), false))
+                foreach (IBsonMemberMapAttribute attribute in memberMap.MemberInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false))
                 {
                     attribute.Apply(memberMap);
                 }
@@ -91,7 +91,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                 {
                     foreach (var attribute in fieldInfo.GetCustomAttributes(false))
                     {
-                        if (typeof(IBsonMemberMapModifier).IsAssignableFrom(attribute.GetType()))
+                        if (typeof(IBsonMemberMapAttribute).IsAssignableFrom(attribute.GetType()))
                         {
                             classMap.MapMember(fieldInfo);
                         }
@@ -103,7 +103,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                 {
                     foreach (var attribute in propertyInfo.GetCustomAttributes(false))
                     {
-                        if (typeof(IBsonMemberMapModifier).IsAssignableFrom(attribute.GetType()))
+                        if (typeof(IBsonMemberMapAttribute).IsAssignableFrom(attribute.GetType()))
                         {
                             classMap.MapMember(propertyInfo);
                         }

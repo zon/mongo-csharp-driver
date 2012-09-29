@@ -21,12 +21,12 @@ using System.Text;
 namespace MongoDB.Bson.Serialization
 {
     /// <summary>
-    /// Modifies a class map.
+    /// Represents an attribute used to modify a class map.
     /// </summary>
-    public interface IBsonClassMapModifier
+    public interface IBsonClassMapAttribute
     {
         /// <summary>
-        /// Applies a modification to the class map.
+        /// Applies the attribute to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         void Apply(BsonClassMap classMap);
