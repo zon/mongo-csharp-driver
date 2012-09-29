@@ -191,7 +191,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
 
             public string Name { get; set; }
 
-            public void Apply(BsonClassMap classMap)
+            public void PostProcess(BsonClassMap classMap)
             {
                 IsRun = true;
                 RunCount++;

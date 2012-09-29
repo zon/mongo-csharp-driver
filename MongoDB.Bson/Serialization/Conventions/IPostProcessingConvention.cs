@@ -23,7 +23,16 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// Convention that applies to a BsonClassMap.
     /// </summary>
-    public interface IPostProcessingConvention : IConvention, IBsonClassMapModifier
+    /// <remarks>
+    /// IPostProcessingConvention doesn't derive from IBsonClassMapModifier so classes
+    /// can implement both IClassMapConvention and IPostProcessingConvention.
+    /// </remarks>
+    public interface IPostProcessingConvention : IConvention
     {
+        /// <summary>
+        /// Applies a post processing modification to the class map.
+        /// </summary>
+        /// <param name="classMap">The class map.</param>
+        void PostProcess(BsonClassMap classMap);
     }
 }

@@ -93,11 +93,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                     {
                         if (typeof(IBsonMemberMapModifier).IsAssignableFrom(attribute.GetType()))
                         {
-                            var memberMap = classMap.GetMemberMap(fieldInfo.Name);
-                            if (memberMap == null)
-                            {
-                                classMap.MapMember(fieldInfo);
-                            }
+                            classMap.MapMember(fieldInfo);
                         }
                     }
                 }
@@ -109,11 +105,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                     {
                         if (typeof(IBsonMemberMapModifier).IsAssignableFrom(attribute.GetType()))
                         {
-                            var memberMap = classMap.GetMemberMap(propertyInfo.Name);
-                            if (memberMap == null)
-                            {
-                                classMap.MapMember(propertyInfo);
-                            }
+                            classMap.MapMember(propertyInfo);
                         }
                     }
                 }

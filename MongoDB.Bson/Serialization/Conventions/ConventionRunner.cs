@@ -65,7 +65,7 @@ namespace MongoDB.Bson.Serialization.Conventions
 
             foreach (var convention in _conventions.OfType<IPostProcessingConvention>())
             {
-                convention.Apply(classMap);
+                convention.PostProcess(classMap);
             }
         }
     }

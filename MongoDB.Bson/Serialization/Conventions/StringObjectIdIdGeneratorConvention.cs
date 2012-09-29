@@ -29,7 +29,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         /// Applies a modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
-        public void Apply(BsonClassMap classMap)
+        public void PostProcess(BsonClassMap classMap)
         {
             var idMemberMap = classMap.IdMemberMap;
             if (idMemberMap != null)
