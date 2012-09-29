@@ -42,7 +42,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
 
             var classMap = new BsonClassMap<TestClass>();
 
-            convention.Apply(classMap);
+            convention.PostProcess(classMap);
 
             Assert.AreEqual("blah", classMap.Discriminator);
         }

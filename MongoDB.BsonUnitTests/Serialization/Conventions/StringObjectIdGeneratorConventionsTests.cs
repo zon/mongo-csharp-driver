@@ -42,7 +42,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
             var classMap = new BsonClassMap<TestClass>(cm =>
             { });
 
-            Assert.DoesNotThrow(() => _subject.Apply(classMap));
+            Assert.DoesNotThrow(() => _subject.PostProcess(classMap));
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
                 cm.MapIdMember(x => x.OId);
             });
 
-            _subject.Apply(classMap);
+            _subject.PostProcess(classMap);
             Assert.IsNull(classMap.IdMemberMap.IdGenerator);
         }
 
@@ -65,7 +65,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
                 cm.MapIdMember(x => x.String);
             });
 
-            _subject.Apply(classMap);
+            _subject.PostProcess(classMap);
             Assert.IsNull(classMap.IdMemberMap.IdGenerator);
         }
 
@@ -77,7 +77,7 @@ namespace MongoDB.BsonUnitTests.Serialization.Conventions
                 cm.MapIdMember(x => x.String).SetRepresentation(BsonType.ObjectId);
             });
 
-            _subject.Apply(classMap);
+            _subject.PostProcess(classMap);
             Assert.IsNotNull(classMap.IdMemberMap.IdGenerator);
             Assert.IsInstanceOf<StringObjectIdGenerator>(classMap.IdMemberMap.IdGenerator);
         }
