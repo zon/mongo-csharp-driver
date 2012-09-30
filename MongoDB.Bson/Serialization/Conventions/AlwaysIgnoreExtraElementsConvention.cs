@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore extra elements convention where extra elements are always ignored.
+    /// A convention that always ignores extra elements during deserialization (so if any extra elements are encountered they are skipped).
     /// </summary>
     public class AlwaysIgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
     {

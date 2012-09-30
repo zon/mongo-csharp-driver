@@ -197,7 +197,7 @@ namespace MongoDB.Bson.Serialization.Serializers
 
         // private static methods
         /// <summary>
-        /// Builds the bson decoding trie.
+        /// Builds the BSON decoding trie.
         /// </summary>
         /// <returns>A BsonTrie.</returns>
         private static BsonTrie<bool> BuildBsonTrie()

@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Finds read and writeable members for mapping.
+    /// A convention that finds readable and writeable members and adds them to the class map.
     /// </summary>
     public class ReadWriteMemberFinderConvention : ConventionBase, IClassMapConvention
     {

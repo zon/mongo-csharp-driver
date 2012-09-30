@@ -89,10 +89,10 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Gets the size of the max bson object.
+        /// Gets the size of the max BSON object.
         /// </summary>
         /// <value>
-        /// The size of the max bson object.
+        /// The size of the max BSON object.
         /// </value>
         public int MaxBsonObjectSize
         {

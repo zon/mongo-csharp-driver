@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Convention that applies to a BsonClassMap.
+    /// Represents a post processing convention that applies to a BsonClassMap.
     /// </summary>
     public interface IPostProcessingConvention : IConvention
     {

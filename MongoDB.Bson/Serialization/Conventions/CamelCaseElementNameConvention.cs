@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention where the element name is the member name with the first character lower cased.
+    /// A convention that sets the element name the same as the member name with the first character lower cased.
     /// </summary>
     public class CamelCaseElementNameConvention : ConventionBase, IMemberMapConvention
     {

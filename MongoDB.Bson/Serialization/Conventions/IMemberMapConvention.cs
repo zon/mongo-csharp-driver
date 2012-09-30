@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Convention that applies to a BsonMemberMap.
+    /// Represents a convention that applies to a BsonMemberMap.
     /// </summary>
     public interface IMemberMapConvention : IConvention
     {

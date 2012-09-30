@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore if default convention where default values are never ignored.
+    /// A convention that never ignores default values during serialization (so default values are serialized).
     /// </summary>
     public class NeverIgnoreIfDefaultConvention : ConventionBase, IMemberMapConvention
     {

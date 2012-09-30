@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A BsonMemberMap convention that wraps a delegate.
+    /// A member map convention that wraps a delegate.
     /// </summary>
     public class DelegateMemberMapConvention : ConventionBase, IMemberMapConvention
     {
@@ -33,7 +33,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         /// Initializes a new instance of the <see cref="DelegateMemberMapConvention" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The delegate.</param>
         public DelegateMemberMapConvention(string name, Action<BsonMemberMap> action)
             : base(name)
         {

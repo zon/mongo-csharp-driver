@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A BsonClassMap convention that wraps a delegate.
+    /// A post processing convention that wraps a delegate.
     /// </summary>
     public class DelegatePostProcessingConvention : ConventionBase, IPostProcessingConvention
     {
@@ -33,7 +33,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         /// Initializes a new instance of the <see cref="DelegatePostProcessingConvention" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="action">The action.</param>
+        /// <param name="action">The delegate.</param>
         public DelegatePostProcessingConvention(string name, Action<BsonClassMap> action)
             : base(name)
         {
@@ -46,7 +46,7 @@ namespace MongoDB.Bson.Serialization.Conventions
 
         // public methods
         /// <summary>
-        /// Applies a modification to the class map.
+        /// Applies a post processing modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         public void PostProcess(BsonClassMap classMap)

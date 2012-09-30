@@ -74,7 +74,6 @@ namespace MongoDB.Bson.Serialization.Conventions
                 IgnoreMembersWithBsonIgnoreAttribute(classMap);
             }
 
-            // public methods
             public void Apply(BsonMemberMap memberMap)
             {
                 foreach (IBsonMemberMapAttribute attribute in memberMap.MemberInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false))
@@ -86,7 +85,7 @@ namespace MongoDB.Bson.Serialization.Conventions
             // private methods
             private void OptInMembersWithBsonMemberMapModifierAttribute(BsonClassMap classMap)
             {
-                // let other fields opt-in if they have any IBsonMemberMapModifier attributes
+                // let other fields opt-in if they have any IBsonMemberMapAttribute attributes
                 foreach (var fieldInfo in classMap.ClassType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                 {
                     foreach (var attribute in fieldInfo.GetCustomAttributes(false))
@@ -98,7 +97,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                     }
                 }
 
-                // let other properties opt-in if they have any IBsonMemberMapModifier attributes
+                // let other properties opt-in if they have any IBsonMemberMapAttribute attributes
                 foreach (var propertyInfo in classMap.ClassType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                 {
                     foreach (var attribute in propertyInfo.GetCustomAttributes(false))

@@ -21,7 +21,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A grouping of conventions.
+    /// Represents a grouping of conventions.
     /// </summary>
     public interface IConventionPack
     {

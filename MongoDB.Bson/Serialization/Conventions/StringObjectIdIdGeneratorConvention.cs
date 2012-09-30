@@ -21,12 +21,12 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Convention for setting an id generator for a string member with a bson representation of ObjectId.
+    /// A convention that sets the id generator for a string member with a BSON representation of ObjectId.
     /// </summary>
     public class StringObjectIdIdGeneratorConvention : ConventionBase, IPostProcessingConvention
     {
         /// <summary>
-        /// Applies a modification to the class map.
+        /// Applies a post processing modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         public void PostProcess(BsonClassMap classMap)

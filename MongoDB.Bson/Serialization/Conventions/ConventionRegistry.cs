@@ -38,7 +38,7 @@ namespace MongoDB.Bson.Serialization.Conventions
 
         // public static methods
         /// <summary>
-        /// Get the effective set of conventions that apply to a type.
+        /// Looks up the effective set of conventions that apply to a type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The conventions for that type.</returns>

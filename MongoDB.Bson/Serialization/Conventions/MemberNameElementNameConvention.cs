@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an element name convention where the element name is the same as the member name.
+    /// A convention that sets the element name the same as the member name.
     /// </summary>
     public class MemberNameElementNameConvention : ConventionBase, IMemberMapConvention
     {

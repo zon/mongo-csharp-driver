@@ -21,12 +21,12 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Convention to lookup an id generator in the global id generator registrations.
+    /// A convention that looks up an id generator for the id member.
     /// </summary>
     public class LookupIdGeneratorConvention : ConventionBase, IPostProcessingConvention
     {
         /// <summary>
-        /// Applies a modification to the class map.
+        /// Applies a post processing modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         public void PostProcess(BsonClassMap classMap)

@@ -64,7 +64,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
-        /// Adds a convention created using the specified action upon a class map.
+        /// Adds a class map convention created using the specified action upon a class map.
         /// </summary>
         /// <param name="name">The name of the convention.</param>
         /// <param name="action">The action the convention should take upon the class map.</param>
@@ -74,7 +74,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
-        /// Adds a convention created using the specified action upon a member map.
+        /// Adds a member map convention created using the specified action upon a member map.
         /// </summary>
         /// <param name="name">The name of the convention.</param>
         /// <param name="action">The action the convention should take upon the member map.</param>
@@ -84,7 +84,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
-        /// Adds a convention created using the specified action upon a class map.
+        /// Adds a post processing convention created using the specified action upon a class map.
         /// </summary>
         /// <param name="name">The name of the convention.</param>
         /// <param name="action">The action the convention should take upon the class map.</param>
@@ -109,9 +109,9 @@ namespace MongoDB.Bson.Serialization.Conventions
         }
 
         /// <summary>
-        /// Appends the conventions in other to the end of this pack.
+        /// Appends the conventions in another pack to the end of this pack.
         /// </summary>
-        /// <param name="other">The other.</param>
+        /// <param name="other">The other pack.</param>
         public void Append(IConventionPack other)
         {
             AddRange(other.Conventions);

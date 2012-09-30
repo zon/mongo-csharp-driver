@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Represents an ignore if null convention where nulls are always ignored.
+    /// A convention that always ignores nulls during serialization (so nulls are not serialized).
     /// </summary>
     public class AlwaysIgnoreIfNullConvention : ConventionBase, IMemberMapConvention
     {

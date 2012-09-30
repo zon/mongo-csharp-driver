@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Finds an id member convention by name.
+    /// A convention that finds the id member by name.
     /// </summary>
     public class NamedIdMemberConvention : ConventionBase, IClassMapConvention
     {

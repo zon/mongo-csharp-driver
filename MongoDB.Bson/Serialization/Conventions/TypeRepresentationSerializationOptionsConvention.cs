@@ -22,7 +22,7 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// Sets serialization options for a member of a given type.
+    /// A convention that sets serialization options for members of a given type.
     /// </summary>
     public class TypeRepresentationSerializationOptionsConvention : ConventionBase, IMemberMapConvention
     {
