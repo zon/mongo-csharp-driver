@@ -86,6 +86,7 @@
     <Compile Include="DefaultSerializer\BsonClassMapTests.cs" />
     <Compile Include="DefaultSerializer\BsonMemberMapTests.cs" />
     <Compile Include="DefaultSerializer\Conventions\MemberDefaultValueConventionTests.cs" />
+    <Compile Include="DefaultSerializer\Serializers\BsonDocumentSerializerTests.cs" />
     <Compile Include="Serialization\Conventions\DelegateClassMapConventionTests.cs" />
     <Compile Include="Serialization\Conventions\DelegateMemberMapConventionTests.cs" />
     <Compile Include="Serialization\Conventions\DelegatePostProcessingConventionTests.cs" />
