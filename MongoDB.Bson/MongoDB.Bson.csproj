@@ -113,6 +113,7 @@
     <Compile Include="Serialization\Conventions\DelegatePostProcessingConvention.cs" />
     <Compile Include="Serialization\Conventions\IPostProcessingConvention.cs" />
     <Compile Include="Serialization\Conventions\IConventionPack.cs" />
+    <Compile Include="Serialization\Conventions\MemberDefaultValueConvention.cs" />
     <Compile Include="Serialization\Conventions\StringObjectIdIdGeneratorConvention.cs" />
     <Compile Include="Serialization\Conventions\LookupIdGeneratorConvention.cs" />
     <Compile Include="Serialization\Conventions\NamedExtraElementsMemberConvention.cs" />
@@ -132,7 +133,7 @@
     <Compile Include="Serialization\Conventions\NeverIgnoreIfNullConvention.cs" />
     <Compile Include="Serialization\Conventions\ScalarDiscriminatorConvention.cs" />
     <Compile Include="Serialization\Conventions\StandardDiscriminatorConvention.cs" />
-    <Compile Include="Serialization\Conventions\TypeRepresentationSerializationOptionsConvention.cs" />
+    <Compile Include="Serialization\Conventions\MemberSerializationOptionsConvention.cs" />
     <Compile Include="Serialization\IdGenerators\BsonBinaryDataGuidGenerator.cs" />
     <Compile Include="Serialization\IdGenerators\BsonObjectIdGenerator.cs" />
     <Compile Include="Serialization\IdGenerators\CombGuidGenerator.cs" />

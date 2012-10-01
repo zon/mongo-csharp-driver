@@ -26,59 +26,59 @@ using MongoDB.Bson.Serialization.Conventions;
 namespace MongoDB.BsonUnitTests.DefaultSerializer
 {
     [TestFixture]
-    public class BsonClassMapAutoMappingTests
+    public class MemberDefaultValueConventionTests
     {
         private class A
         {
-            public ObjectId Match { get; set; }
-            public string NoMatch { get; set; }
+            public int Match { get; set; }
+            public long NoMatch { get; set; }
         }
 
         private class B
         {
-            [BsonRepresentation(BsonType.ObjectId)]
-            public ObjectId Match { get; set; }
+            [BsonDefaultValue(2)]
+            public int Match { get; set; }
         }
 
         [Test]
-        public void TestMappingUsesMemberSerializationOptionsConvention()
+        public void TestMappingUsesMemberDefaultValueConvention()
         {
             var pack = new ConventionPack();
-            pack.Add(new MemberSerializationOptionsConvention(typeof(ObjectId), new RepresentationSerializationOptions(BsonType.JavaScriptWithScope)));
+            pack.Add(new MemberDefaultValueConvention(typeof(int), 1));
             ConventionRegistry.Register("test", pack, t => t == typeof(A));
 
             var classMap = new BsonClassMap<A>(cm => cm.AutoMap());
 
-            var options = classMap.GetMemberMap("Match").SerializationOptions;
-            Assert.IsInstanceOf<RepresentationSerializationOptions>(options);
-            Assert.AreEqual(BsonType.JavaScriptWithScope, ((RepresentationSerializationOptions)options).Representation);
+            var defaultValue = classMap.GetMemberMap("Match").DefaultValue;
+            Assert.IsInstanceOf<int>(defaultValue);
+            Assert.AreEqual(1, defaultValue);
         }
 
         [Test]
-        public void TestMappingUsesMemberSerializationOptionsConventionDoesNotMatchWrongProperty()
+        public void TestMappingUsesMemberDefaultValueConventionDoesNotMatchWrongProperty()
         {
             var pack = new ConventionPack();
-            pack.Add(new MemberSerializationOptionsConvention(typeof(ObjectId), new RepresentationSerializationOptions(BsonType.JavaScriptWithScope)));
+            pack.Add(new MemberDefaultValueConvention(typeof(int), 1));
             ConventionRegistry.Register("test", pack, t => t == typeof(A));
 
             var classMap = new BsonClassMap<A>(cm => cm.AutoMap());
 
-            var options = classMap.GetMemberMap("NoMatch").SerializationOptions;
-            Assert.IsNull(options);
+            var defaultValue = classMap.GetMemberMap("NoMatch").DefaultValue;
+            Assert.AreEqual(0, defaultValue);
         }
 
         [Test]
-        public void TestMappingUsesMemberSerializationOptionsConventionDoesNotOverrideAttribute()
+        public void TestMappingUsesMemberDefaultValueConventionDoesNotOverrideAttribute()
         {
             var pack = new ConventionPack();
-            pack.Add(new MemberSerializationOptionsConvention(typeof(ObjectId), new RepresentationSerializationOptions(BsonType.JavaScriptWithScope)));
+            pack.Add(new MemberDefaultValueConvention(typeof(int), 1));
             ConventionRegistry.Register("test", pack, t => t == typeof(B));
 
             var classMap = new BsonClassMap<B>(cm => cm.AutoMap());
 
-            var options = classMap.GetMemberMap("Match").SerializationOptions;
-            Assert.IsInstanceOf<RepresentationSerializationOptions>(options);
-            Assert.AreEqual(BsonType.ObjectId, ((RepresentationSerializationOptions)options).Representation);
+            var defaultValue = classMap.GetMemberMap("Match").DefaultValue;
+            Assert.IsInstanceOf<int>(defaultValue);
+            Assert.AreEqual(2, defaultValue);
         }
     }
 }

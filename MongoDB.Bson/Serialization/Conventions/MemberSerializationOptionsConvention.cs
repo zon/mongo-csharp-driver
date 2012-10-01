@@ -24,20 +24,20 @@ namespace MongoDB.Bson.Serialization.Conventions
     /// <summary>
     /// A convention that sets serialization options for members of a given type.
     /// </summary>
-    public class TypeRepresentationSerializationOptionsConvention : ConventionBase, IMemberMapConvention
+    public class MemberSerializationOptionsConvention : ConventionBase, IMemberMapConvention
     {
         private readonly Type _type;
-        private readonly BsonType _representation;
+        private readonly IBsonSerializationOptions _serializationOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeRepresentationSerializationOptionsConvention"/> class.
+        /// Initializes a new instance of the <see cref="MemberSerializationOptionsConvention"/> class.
         /// </summary>
         /// <param name="type">The type of the member.</param>
-        /// <param name="representation">The BSON representation to use for this type.</param>
-        public TypeRepresentationSerializationOptionsConvention(Type type, BsonType representation)
+        /// <param name="serializationOptions">The serialization options to use for members of this type.</param>
+        public MemberSerializationOptionsConvention(Type type, IBsonSerializationOptions serializationOptions)
         {
             _type = type;
-            _representation = representation;
+            _serializationOptions = serializationOptions;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace MongoDB.Bson.Serialization.Conventions
         {
             if (memberMap.MemberType == _type)
             {
-                memberMap.SetSerializationOptions(new RepresentationSerializationOptions(_representation));
+                memberMap.SetSerializationOptions(_serializationOptions);
             }
         }
     }
