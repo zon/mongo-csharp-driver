@@ -59,7 +59,7 @@ namespace MongoDB.Bson.Serialization
         private readonly List<BsonMemberMap> _declaredMemberMaps; // only the members declared in this class
         private readonly BsonTrie<int> _elementTrie;
         private bool _ignoreExtraElements;
-        private bool _ignoreExtraElementsIsInherited = false;
+        private bool _ignoreExtraElementsIsInherited;
         private BsonMemberMap _extraElementsMemberMap;
         private int _extraElementsMemberIndex = -1;
         private List<Type> _knownTypes = new List<Type>();
@@ -73,13 +73,13 @@ namespace MongoDB.Bson.Serialization
         {
             _classType = classType;
             _conventions = ConventionRegistry.LookupConventions(classType);
-            _discriminator = classType.Name;
             _isAnonymous = IsAnonymousType(classType);
             _allMemberMaps = new List<BsonMemberMap>();
-            _declaredMemberMaps = new List<BsonMemberMap>();
             _allMemberMapsReadonly = _allMemberMaps.AsReadOnly();
+            _declaredMemberMaps = new List<BsonMemberMap>();
             _elementTrie = new BsonTrie<int>();
-            _ignoreExtraElements = true; // NOTE: this is weird that we set it to true and automap (via conventions) sets this to false.
+
+            Reset();
         }
 
         // public properties
@@ -733,6 +733,25 @@ namespace MongoDB.Bson.Serialization
                 throw new BsonSerializationException(message);
             }
             return MapMember(propertyInfo);
+        }
+
+        /// <summary>
+        /// Resets the class map back to its initial state.
+        /// </summary>
+        public void Reset()
+        {
+            if (_frozen) { ThrowFrozenException(); }
+
+            _creator = null;
+            _declaredMemberMaps.Clear();
+            _discriminator = _classType.Name;
+            _discriminatorIsRequired = false;
+            _extraElementsMemberMap = null;
+            _idMemberMap = null;
+            _ignoreExtraElements = true; // TODO: should this really be false?
+            _ignoreExtraElementsIsInherited = false;
+            _isRootClass = false;
+            _knownTypes.Clear();
         }
 
         /// <summary>

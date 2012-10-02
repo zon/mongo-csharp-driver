@@ -16,23 +16,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A convention that always ignores default values during serialization (so default values are not serialized).
+    /// A convention that sets whether to ignore default values during serialization.
     /// </summary>
-    public class AlwaysIgnoreIfDefaultConvention : ConventionBase, IMemberMapConvention
+    public class IgnoreIfDefaultConvention : ConventionBase, IMemberMapConvention
     {
+        // private fields
+        private bool _ignoreIfDefault;
+
+        // constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IgnoreIfDefaultConvention" /> class.
+        /// </summary>
+        /// <param name="ignoreIfDefault">Whether to ignore default values during serialization.</param>
+        public IgnoreIfDefaultConvention(bool ignoreIfDefault)
+        {
+            _ignoreIfDefault = ignoreIfDefault;
+        }
+
         /// <summary>
         /// Applies a modification to the member map.
         /// </summary>
         /// <param name="memberMap">The member map.</param>
         public void Apply(BsonMemberMap memberMap)
         {
-            memberMap.SetIgnoreIfDefault(true);
+            memberMap.SetIgnoreIfDefault(_ignoreIfDefault);
         }
     }
 }

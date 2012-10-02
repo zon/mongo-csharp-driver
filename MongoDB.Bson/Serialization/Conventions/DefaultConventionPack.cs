@@ -43,7 +43,7 @@ namespace MongoDB.Bson.Serialization.Conventions
                 new ReadWriteMemberFinderConvention(),
                 new NamedIdMemberConvention(new [] { "Id", "id", "_id" }),
                 new NamedExtraElementsMemberConvention(new [] { "ExtraElements" }),
-                new NeverIgnoreExtraElementsConvention(),
+                new IgnoreExtraElementsConvention(false),
                 new StringObjectIdIdGeneratorConvention(), // should be before LookupIdGeneratorConvention
                 new LookupIdGeneratorConvention()
             };

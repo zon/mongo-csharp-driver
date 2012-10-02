@@ -16,23 +16,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A convention that always ignores nulls during serialization (so nulls are not serialized).
+    /// A convention that sets whether to ignore nulls during serialization.
     /// </summary>
-    public class AlwaysIgnoreIfNullConvention : ConventionBase, IMemberMapConvention
+    public class IgnoreIfNullConvention : ConventionBase, IMemberMapConvention
     {
+        // private fields
+        private bool _ignoreIfNull;
+
+         // constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IgnoreIfNullConvention" /> class.
+        /// </summary>
+        /// <param name="ignoreIfNull">Whether to ignore nulls during serialization.</param>
+        public IgnoreIfNullConvention(bool ignoreIfNull)
+        {
+            _ignoreIfNull = ignoreIfNull;
+        }
+
         /// <summary>
         /// Applies a modification to the member map.
         /// </summary>
         /// <param name="memberMap">The member map.</param>
         public void Apply(BsonMemberMap memberMap)
         {
-            memberMap.SetIgnoreIfNull(true);
+            memberMap.SetIgnoreIfNull(_ignoreIfNull);
         }
     }
 }

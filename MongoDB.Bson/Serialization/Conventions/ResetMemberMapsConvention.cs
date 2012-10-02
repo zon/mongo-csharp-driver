@@ -16,22 +16,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A convention that always ignores extra elements during deserialization (so if any extra elements are encountered they are skipped).
+    /// A convention that resets class members (resetting any changes that earlier conventions may have applied).
     /// </summary>
-    public class AlwaysIgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
+    public class ResetMemberMapsConvention : ConventionBase, IMemberMapConvention
     {
         /// <summary>
-        /// Applies a modification to the class map.
+        /// Applies a modification to the member map.
         /// </summary>
-        /// <param name="classMap">The class map.</param>
-        public void Apply(BsonClassMap classMap)
+        /// <param name="memberMap">The member map.</param>
+        public void Apply(BsonMemberMap memberMap)
         {
-            classMap.SetIgnoreExtraElements(true);
+            memberMap.Reset();
         }
     }
 }

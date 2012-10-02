@@ -16,23 +16,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A convention that never ignores null values during serialization (so nulls are serialized).
+    /// A convention that resets a class map (resetting any changes that earlier conventions may have applied).
     /// </summary>
-    public class NeverIgnoreIfNullConvention : ConventionBase, IMemberMapConvention
+    public class ResetClassMapConvention : ConventionBase, IClassMapConvention
     {
         /// <summary>
-        /// Applies a modification to the member map.
+        /// Initializes a new instance of the <see cref="ResetClassMapConvention" /> class.
         /// </summary>
-        /// <param name="memberMap">The member map.</param>
-        public void Apply(BsonMemberMap memberMap)
+        public ResetClassMapConvention()
         {
-            memberMap.SetIgnoreIfNull(false);
+        }
+
+        /// <summary>
+        /// Applies a modification to the class map.
+        /// </summary>
+        /// <param name="classMap">The class map.</param>
+        public void Apply(BsonClassMap classMap)
+        {
+            classMap.Reset();
         }
     }
 }

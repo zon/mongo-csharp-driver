@@ -35,7 +35,7 @@ namespace MongoDB.Bson.Serialization
         // private fields
         private BsonClassMap _classMap;
         private string _elementName;
-        private int _order = int.MaxValue;
+        private int _order;
         private MemberInfo _memberInfo;
         private Type _memberType;
         private bool _memberTypeIsBsonValue;
@@ -62,12 +62,11 @@ namespace MongoDB.Bson.Serialization
         public BsonMemberMap(BsonClassMap classMap, MemberInfo memberInfo)
         {
             _classMap = classMap;
-            _elementName = memberInfo.Name;
             _memberInfo = memberInfo;
             _memberType = BsonClassMap.GetMemberInfoType(memberInfo);
             _memberTypeIsBsonValue = typeof(BsonValue).IsAssignableFrom(_memberType);
-            _defaultValue = GetDefaultValue(_memberType);
-            _defaultValueSpecified = false;
+
+            Reset();
         }
 
         // public properties
@@ -292,6 +291,27 @@ namespace MongoDB.Bson.Serialization
                     return BsonSerializer.LookupSerializer(actualType);
                 }
             }
+        }
+
+        /// <summary>
+        /// Resets the member map back to its initial state.
+        /// </summary>
+        /// <returns>The member map.</returns>
+        public BsonMemberMap Reset()
+        {
+            _defaultValue = GetDefaultValue(_memberType);
+            _defaultValueSpecified = false;
+            _elementName = _memberInfo.Name;
+            _idGenerator = null;
+            _ignoreIfDefault = false;
+            _ignoreIfNull = false;
+            _isRequired = false;
+            _order = int.MaxValue;
+            _serializationOptions = null;
+            _serializer = null;
+            _shouldSerializeMethod = null;
+
+            return this;
         }
 
         /// <summary>

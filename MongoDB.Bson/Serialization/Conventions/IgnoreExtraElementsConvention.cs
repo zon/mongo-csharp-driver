@@ -21,17 +21,30 @@ using System.Text;
 namespace MongoDB.Bson.Serialization.Conventions
 {
     /// <summary>
-    /// A convention that never ignores extra elements during deserialization (so if any extra elements are encountered an exception is thrown).
+    /// A convention that sets whether to ignore extra elements encountered during deserialization.
     /// </summary>
-    public class NeverIgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
+    public class IgnoreExtraElementsConvention : ConventionBase, IClassMapConvention
     {
+        // private fields
+        private bool _ignoreExtraElements;
+
+        // constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IgnoreExtraElementsConvention" /> class.
+        /// </summary>
+        /// <param name="ignoreExtraElements">Whether to ignore extra elements encountered during deserialization.</param>
+        public IgnoreExtraElementsConvention(bool ignoreExtraElements)
+        {
+            _ignoreExtraElements = ignoreExtraElements;
+        }
+
         /// <summary>
         /// Applies a modification to the class map.
         /// </summary>
         /// <param name="classMap">The class map.</param>
         public void Apply(BsonClassMap classMap)
         {
-            classMap.SetIgnoreExtraElements(false);
+            classMap.SetIgnoreExtraElements(_ignoreExtraElements);
         }
     }
 }
