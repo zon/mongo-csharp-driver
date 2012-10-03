@@ -496,21 +496,6 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Creates an instance of MongoDatabaseSettings for the named database with the rest of the settings inherited.
-        /// You can override some of these settings before calling GetDatabase.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <returns>An instance of MongoDatabase for <paramref name="databaseName"/>.</returns>
-        public virtual MongoDatabaseSettings CreateDatabaseSettings(string databaseName)
-        {
-            if (databaseName == null)
-            {
-                throw new ArgumentNullException("databaseName");
-            }
-            return new MongoDatabaseSettings(this, databaseName);
-        }
-
-        /// <summary>
         /// Tests whether a database exists.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
@@ -638,7 +623,7 @@ namespace MongoDB.Driver
             {
                 throw new ArgumentNullException("databaseName");
             }
-            var databaseSettings = new MongoDatabaseSettings(this, databaseName);
+            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings);
             return GetDatabase(databaseSettings);
         }
 
@@ -655,7 +640,7 @@ namespace MongoDB.Driver
             {
                 throw new ArgumentNullException("databaseName");
             }
-            var databaseSettings = new MongoDatabaseSettings(this, databaseName)
+            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
             {
                 Credentials = credentials
             };
@@ -679,7 +664,7 @@ namespace MongoDB.Driver
             {
                 throw new ArgumentNullException("databaseName");
             }
-            var databaseSettings = new MongoDatabaseSettings(this, databaseName)
+            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
             {
                 Credentials = credentials,
                 SafeMode = safeMode
@@ -700,7 +685,7 @@ namespace MongoDB.Driver
             {
                 throw new ArgumentNullException("databaseName");
             }
-            var databaseSettings = new MongoDatabaseSettings(this, databaseName)
+            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
             {
                 SafeMode = safeMode
             };

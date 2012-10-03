@@ -31,7 +31,7 @@ namespace MongoDB.DriverUnitTests
         public void TestAll()
         {
             var server = MongoServer.Create();
-            var settings = new MongoDatabaseSettings(server, "database")
+            var settings = new MongoDatabaseSettings("database", server.Settings)
             {
                 Credentials = MongoCredentials.Create("username", "password"),
                 SafeMode = SafeMode.Create(5, TimeSpan.FromSeconds(5)),
@@ -59,7 +59,7 @@ namespace MongoDB.DriverUnitTests
         public void TestFrozenCopy()
         {
             var server = MongoServer.Create();
-            var settings = new MongoDatabaseSettings(server, "database");
+            var settings = new MongoDatabaseSettings("database", server.Settings);
             var frozenCopy = settings.FrozenCopy();
             var secondFrozenCopy = frozenCopy.FrozenCopy();
             Assert.AreNotSame(settings, frozenCopy);

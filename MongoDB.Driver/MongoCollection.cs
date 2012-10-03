@@ -67,7 +67,7 @@ namespace MongoDB.Driver
 
             if (_name != "$cmd")
             {
-                var commandCollectionSettings = new MongoCollectionSettings<BsonDocument>(_database, "$cmd")
+                var commandCollectionSettings = new MongoCollectionSettings<BsonDocument>("$cmd", _database.Settings)
                 {
                     AssignIdOnInsert = false,
                     GuidRepresentation = _settings.GuidRepresentation,

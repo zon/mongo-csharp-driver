@@ -96,7 +96,7 @@ namespace MongoDB.DriverUnitTests.Jira.CSharp378
         [Test]
         public void TestSaveD()
         {
-            var collectionSettings = new MongoCollectionSettings<D>(_database, "test")
+            var collectionSettings = new MongoCollectionSettings<D>("test", _database.Settings)
             {
                 GuidRepresentation = GuidRepresentation.Standard
             };

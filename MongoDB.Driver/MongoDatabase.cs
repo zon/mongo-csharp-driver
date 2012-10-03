@@ -66,7 +66,7 @@ namespace MongoDB.Driver
             _settings = settings.FrozenCopy();
             _name = settings.DatabaseName;
 
-            var commandCollectionSettings = new MongoCollectionSettings<BsonDocument>(this, "$cmd")
+            var commandCollectionSettings = new MongoCollectionSettings<BsonDocument>("$cmd", _settings)
             {
                 AssignIdOnInsert = false
             };
@@ -300,36 +300,6 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Creates an instance of MongoCollectionSettings for the named collection with the rest of the settings inherited.
-        /// You can override some of these settings before calling GetCollection.
-        /// </summary>
-        /// <typeparam name="TDefaultDocument">The default document type for this collection.</typeparam>
-        /// <param name="collectionName">The name of this collection.</param>
-        /// <returns>A MongoCollectionSettings.</returns>
-        public virtual MongoCollectionSettings<TDefaultDocument> CreateCollectionSettings<TDefaultDocument>(
-            string collectionName)
-        {
-            return new MongoCollectionSettings<TDefaultDocument>(this, collectionName);
-        }
-
-        /// <summary>
-        /// Creates an instance of MongoCollectionSettings for the named collection with the rest of the settings inherited.
-        /// You can override some of these settings before calling GetCollection.
-        /// </summary>
-        /// <param name="defaultDocumentType">The default document type for this collection.</param>
-        /// <param name="collectionName">The name of this collection.</param>
-        /// <returns>A MongoCollectionSettings.</returns>
-        public virtual MongoCollectionSettings CreateCollectionSettings(
-            Type defaultDocumentType,
-            string collectionName)
-        {
-            var settingsDefinition = typeof(MongoCollectionSettings<>);
-            var settingsType = settingsDefinition.MakeGenericType(defaultDocumentType);
-            var constructorInfo = settingsType.GetConstructor(new Type[] { typeof(MongoDatabase), typeof(string) });
-            return (MongoCollectionSettings)constructorInfo.Invoke(new object[] { this, collectionName });
-        }
-
-        /// <summary>
         /// Drops a database.
         /// </summary>
         public virtual void Drop()
@@ -503,7 +473,7 @@ namespace MongoDB.Driver
         /// <returns>An instance of MongoCollection.</returns>
         public virtual MongoCollection<TDefaultDocument> GetCollection<TDefaultDocument>(string collectionName)
         {
-            var collectionSettings = new MongoCollectionSettings<TDefaultDocument>(this, collectionName);
+            var collectionSettings = new MongoCollectionSettings<TDefaultDocument>(collectionName, _settings);
             return GetCollection(collectionSettings);
         }
 
@@ -519,7 +489,7 @@ namespace MongoDB.Driver
             string collectionName,
             SafeMode safeMode)
         {
-            var collectionSettings = new MongoCollectionSettings<TDefaultDocument>(this, collectionName)
+            var collectionSettings = new MongoCollectionSettings<TDefaultDocument>(collectionName, _settings)
             {
                 SafeMode = safeMode
             };
@@ -557,7 +527,7 @@ namespace MongoDB.Driver
         /// <returns>An instance of MongoCollection.</returns>
         public virtual MongoCollection<BsonDocument> GetCollection(string collectionName)
         {
-            var collectionSettings = new MongoCollectionSettings<BsonDocument>(this, collectionName);
+            var collectionSettings = new MongoCollectionSettings<BsonDocument>(collectionName, _settings);
             return GetCollection(collectionSettings);
         }
 
@@ -570,7 +540,7 @@ namespace MongoDB.Driver
         /// <returns>An instance of MongoCollection.</returns>
         public virtual MongoCollection<BsonDocument> GetCollection(string collectionName, SafeMode safeMode)
         {
-            var collectionSettings = new MongoCollectionSettings<BsonDocument>(this, collectionName)
+            var collectionSettings = new MongoCollectionSettings<BsonDocument>(collectionName, _settings)
             {
                 SafeMode = safeMode
             };
@@ -586,7 +556,7 @@ namespace MongoDB.Driver
         /// <returns>An instance of MongoCollection.</returns>
         public virtual MongoCollection GetCollection(Type defaultDocumentType, string collectionName)
         {
-            var collectionSettings = CreateCollectionSettings(defaultDocumentType, collectionName);
+            var collectionSettings = MongoCollectionSettings.Create(defaultDocumentType, collectionName, _settings);
             return GetCollection(collectionSettings);
         }
 
@@ -603,7 +573,7 @@ namespace MongoDB.Driver
             string collectionName,
             SafeMode safeMode)
         {
-            var collectionSettings = CreateCollectionSettings(defaultDocumentType, collectionName);
+            var collectionSettings = MongoCollectionSettings.Create(defaultDocumentType, collectionName, _settings);
             collectionSettings.SafeMode = safeMode;
             return GetCollection(collectionSettings);
         }
@@ -672,7 +642,7 @@ namespace MongoDB.Driver
         /// <returns>A cursor.</returns>
         public MongoCursor<SystemProfileInfo> GetProfilingInfo(IMongoQuery query)
         {
-            var collectionSettings = new MongoCollectionSettings<SystemProfileInfo>(this, "system.profile") { ReadPreference = ReadPreference.Primary };
+            var collectionSettings = new MongoCollectionSettings<SystemProfileInfo>("system.profile", _settings) { ReadPreference = ReadPreference.Primary };
             var collection = GetCollection<SystemProfileInfo>(collectionSettings);
             return collection.Find(query);
         }

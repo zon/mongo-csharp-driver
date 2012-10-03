@@ -54,7 +54,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestConstructorArgumentChecking()
         {
-            var settings = new MongoDatabaseSettings(_server, "");
+            var settings = new MongoDatabaseSettings("", _server.Settings);
             Assert.Throws<ArgumentNullException>(() => { new MongoDatabase(null, settings); });
             Assert.Throws<ArgumentNullException>(() => { new MongoDatabase(_server, null); });
             Assert.Throws<ArgumentOutOfRangeException>(() => { new MongoDatabase(_server, settings); });

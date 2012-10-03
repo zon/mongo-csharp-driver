@@ -86,88 +86,6 @@ namespace MongoDB.Driver
             _waitQueueTimeout = MongoDefaults.WaitQueueTimeout;
         }
 
-        /// <summary>
-        /// Creates a new instance of MongoServerSettings. Usually you would use a connection string instead.
-        /// </summary>
-        /// <param name="connectionMode">The connection mode (Direct or ReplicaSet).</param>
-        /// <param name="connectTimeout">The connect timeout.</param>
-        /// <param name="credentialsStore">The credentials store.</param>
-        /// <param name="defaultCredentials">The default credentials.</param>
-        /// <param name="guidRepresentation">The representation for Guids.</param>
-        /// <param name="ipv6">Whether to use IPv6.</param>
-        /// <param name="maxConnectionIdleTime">The max connection idle time.</param>
-        /// <param name="maxConnectionLifeTime">The max connection life time.</param>
-        /// <param name="maxConnectionPoolSize">The max connection pool size.</param>
-        /// <param name="minConnectionPoolSize">The min connection pool size.</param>
-        /// <param name="readPreference">The default read preference.</param>
-        /// <param name="replicaSetName">The name of the replica set.</param>
-        /// <param name="safeMode">The safe mode.</param>
-        /// <param name="secondaryAcceptableLatency">The secondary acceptable latency.</param>
-        /// <param name="servers">The server addresses (normally one unless it is the seed list for connecting to a replica set).</param>
-        /// <param name="socketTimeout">The socket timeout.</param>
-        /// <param name="useSsl">Whether to use SSL.</param>
-        /// <param name="verifySslCertificate">Whether to verify an SSL certificate.</param>
-        /// <param name="waitQueueSize">The wait queue size.</param>
-        /// <param name="waitQueueTimeout">The wait queue timeout.</param>
-        /// <exception cref="System.ArgumentNullException"></exception>
-        public MongoServerSettings(
-            ConnectionMode connectionMode,
-            TimeSpan connectTimeout,
-            MongoCredentialsStore credentialsStore,
-            MongoCredentials defaultCredentials,
-            GuidRepresentation guidRepresentation,
-            bool ipv6,
-            TimeSpan maxConnectionIdleTime,
-            TimeSpan maxConnectionLifeTime,
-            int maxConnectionPoolSize,
-            int minConnectionPoolSize,
-            ReadPreference readPreference,
-            string replicaSetName,
-            SafeMode safeMode,
-            TimeSpan secondaryAcceptableLatency,
-            IEnumerable<MongoServerAddress> servers,
-            TimeSpan socketTimeout,
-            bool useSsl,
-            bool verifySslCertificate,
-            int waitQueueSize,
-            TimeSpan waitQueueTimeout)
-        {
-            if (servers == null)
-            {
-                throw new ArgumentNullException("servers");
-            }
-            if (readPreference == null)
-            {
-                throw new ArgumentNullException("readPreference");
-            }
-            if (safeMode == null)
-            {
-                throw new ArgumentNullException("safeMode");
-            }
-
-            _connectionMode = connectionMode;
-            _connectTimeout = connectTimeout;
-            _credentialsStore = credentialsStore ?? new MongoCredentialsStore();
-            _defaultCredentials = defaultCredentials;
-            _guidRepresentation = guidRepresentation;
-            _ipv6 = ipv6;
-            _maxConnectionIdleTime = maxConnectionIdleTime;
-            _maxConnectionLifeTime = maxConnectionLifeTime;
-            _maxConnectionPoolSize = maxConnectionPoolSize;
-            _minConnectionPoolSize = minConnectionPoolSize;
-            _readPreference = readPreference;
-            _replicaSetName = replicaSetName;
-            _safeMode = safeMode;
-            _secondaryAcceptableLatency = secondaryAcceptableLatency;
-            _servers = new List<MongoServerAddress>(servers);
-            _serversReadOnly = new ReadOnlyCollection<MongoServerAddress>(_servers);
-            _socketTimeout = socketTimeout;
-            _useSsl = useSsl;
-            _verifySslCertificate = verifySslCertificate;
-            _waitQueueSize = waitQueueSize;
-            _waitQueueTimeout = waitQueueTimeout;
-        }
-
         // public properties
         /// <summary>
         /// Gets the AddressFamily for the IPEndPoint (derived from the IPv6 setting).
@@ -488,10 +406,29 @@ namespace MongoDB.Driver
         /// <returns>A clone of the settings.</returns>
         public MongoServerSettings Clone()
         {
-            return new MongoServerSettings(_connectionMode, _connectTimeout, _credentialsStore.Clone(), _defaultCredentials,
-                _guidRepresentation, _ipv6, _maxConnectionIdleTime, _maxConnectionLifeTime, _maxConnectionPoolSize,
-                _minConnectionPoolSize, _readPreference, _replicaSetName, _safeMode, _secondaryAcceptableLatency, _servers, 
-                _socketTimeout, _useSsl, _verifySslCertificate, _waitQueueSize, _waitQueueTimeout);
+            return new MongoServerSettings
+            {
+                ConnectionMode = _connectionMode,
+                ConnectTimeout = _connectTimeout,
+                CredentialsStore = _credentialsStore.Clone(),
+                DefaultCredentials = _defaultCredentials,
+                GuidRepresentation = _guidRepresentation,
+                IPv6 = _ipv6,
+                MaxConnectionIdleTime = _maxConnectionIdleTime,
+                MaxConnectionLifeTime = _maxConnectionLifeTime,
+                MaxConnectionPoolSize = _maxConnectionPoolSize,
+                MinConnectionPoolSize = _minConnectionPoolSize,
+                ReadPreference = _readPreference,
+                ReplicaSetName = _replicaSetName,
+                SafeMode = _safeMode,
+                SecondaryAcceptableLatency = _secondaryAcceptableLatency,
+                Servers = new List<MongoServerAddress>(_servers),
+                SocketTimeout = _socketTimeout,
+                UseSsl = _useSsl,
+                VerifySslCertificate = _verifySslCertificate,
+                WaitQueueSize = _waitQueueSize,
+                WaitQueueTimeout = _waitQueueTimeout
+            };
         }
 
         /// <summary>

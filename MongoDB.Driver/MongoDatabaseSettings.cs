@@ -28,7 +28,8 @@ namespace MongoDB.Driver
     public class MongoDatabaseSettings
     {
         // private fields
-        private string _databaseName;
+        private readonly string _databaseName;
+
         private MongoCredentials _credentials;
         private GuidRepresentation _guidRepresentation;
         private ReadPreference _readPreference;
@@ -40,67 +41,37 @@ namespace MongoDB.Driver
         private string _frozenStringRepresentation;
 
         // constructors
-        /// <summary>
-        /// Creates a new instance of MongoDatabaseSettings.
-        /// </summary>
-        /// <param name="server">The server to inherit settings from.</param>
-        /// <param name="databaseName">The name of the database.</param>
-        public MongoDatabaseSettings(MongoServer server, string databaseName)
+        private MongoDatabaseSettings(string databaseName)
         {
-            if (server == null)
-            {
-                throw new ArgumentNullException("server");
-            }
             if (databaseName == null)
             {
                 throw new ArgumentNullException("databaseName");
             }
 
-            var serverSettings = server.Settings;
             _databaseName = databaseName;
-            _credentials = serverSettings.GetCredentials(databaseName);
-            _guidRepresentation = serverSettings.GuidRepresentation;
-            _readPreference = serverSettings.ReadPreference;
-            _safeMode = serverSettings.SafeMode;
+
+            _guidRepresentation = MongoDefaults.GuidRepresentation;
+            _readPreference = ReadPreference.Primary;
+            _safeMode = MongoDefaults.SafeMode;
         }
 
         /// <summary>
         /// Creates a new instance of MongoDatabaseSettings.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to access the database.</param>
-        /// <param name="guidRepresentation">The representation for Guids.</param>
-        /// <param name="readPreference">The read preference.</param>
-        /// <param name="safeMode">The safe mode to use.</param>
-        public MongoDatabaseSettings(
-            string databaseName,
-            MongoCredentials credentials,
-            GuidRepresentation guidRepresentation,
-            ReadPreference readPreference,
-            SafeMode safeMode)
+        /// <param name="serverSettings">The server settings to inherit from.</param>
+        public MongoDatabaseSettings(string databaseName, MongoServerSettings serverSettings)
+            : this(databaseName)
         {
-            if (databaseName == null)
+            if (serverSettings == null)
             {
-                throw new ArgumentNullException("databaseName");
-            }
-            if (databaseName == "admin" && credentials != null && !credentials.Admin)
-            {
-                throw new ArgumentOutOfRangeException("Credentials for the admin database must have the admin flag set to true.");
-            }
-            if (readPreference == null)
-            {
-                throw new ArgumentNullException("readPreference");
-            }
-            if (safeMode == null)
-            {
-                throw new ArgumentNullException("safeMode");
+                throw new ArgumentNullException("serverSettings");
             }
 
-            _databaseName = databaseName;
-            _credentials = credentials;
-            _guidRepresentation = guidRepresentation;
-            _readPreference = readPreference;
-            _safeMode = safeMode;
+            _credentials = serverSettings.GetCredentials(databaseName);
+            _guidRepresentation = serverSettings.GuidRepresentation;
+            _readPreference = serverSettings.ReadPreference;
+            _safeMode = serverSettings.SafeMode;
         }
 
         // public properties
@@ -187,7 +158,13 @@ namespace MongoDB.Driver
         /// <returns>A clone of the settings.</returns>
         public MongoDatabaseSettings Clone()
         {
-            return new MongoDatabaseSettings(_databaseName, _credentials, _guidRepresentation, _readPreference, _safeMode);
+            return new MongoDatabaseSettings(_databaseName)
+            {
+                Credentials = _credentials,
+                GuidRepresentation = _guidRepresentation,
+                ReadPreference = _readPreference,
+                SafeMode = _safeMode
+            };
         }
 
         /// <summary>

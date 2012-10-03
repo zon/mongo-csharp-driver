@@ -32,7 +32,7 @@ namespace MongoDB.DriverUnitTests
         {
             var server = MongoServer.Create();
             var database = server["test"];
-            var settings = new MongoCollectionSettings<BsonDocument>(database, "collection")
+            var settings = new MongoCollectionSettings<BsonDocument>("collection", database.Settings)
             {
                 AssignIdOnInsert = true,
                 SafeMode = SafeMode.Create(5, TimeSpan.FromSeconds(5)),
@@ -62,7 +62,7 @@ namespace MongoDB.DriverUnitTests
         {
             var server = MongoServer.Create();
             var database = server["test"];
-            var settings = new MongoCollectionSettings<BsonDocument>(database, "collection");
+            var settings = new MongoCollectionSettings<BsonDocument>("collection", database.Settings);
             var frozenCopy = settings.FrozenCopy();
             var secondFrozenCopy = frozenCopy.FrozenCopy();
             Assert.AreNotSame(settings, frozenCopy);
