@@ -150,9 +150,9 @@
     <Compile Include="Serialization\Serializers\BsonBooleanSerializer.cs" />
     <Compile Include="Serialization\Serializers\BsonDateTimeSerializer.cs" />
     <Compile Include="Serialization\Serializers\BsonDocumentBackedClassSerializer.cs" />
-    <Compile Include="Serialization\IBsonClassMapAttribute.cs" />
+    <Compile Include="Serialization\Attributes\IBsonClassMapAttribute.cs" />
     <Compile Include="Serialization\IBsonArraySerializer.cs" />
-    <Compile Include="Serialization\IBsonMemberMapAttribute.cs" />
+    <Compile Include="Serialization\Attributes\IBsonMemberMapAttribute.cs" />
     <Compile Include="Serialization\IBsonIdProvider.cs" />
     <Compile Include="Serialization\IBsonDocumentSerializer.cs" />
     <Compile Include="Serialization\Options\ArraySerializationOptions.cs" />
