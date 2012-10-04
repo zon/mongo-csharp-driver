@@ -68,7 +68,7 @@ namespace MongoDB.Driver
             _sequentialId = Interlocked.Increment(ref __nextSequentialId);
             // Console.WriteLine("MongoServer[{0}]: {1}", sequentialId, settings);
 
-            _serverProxy = new MongoServerProxyFactory().Create(this);
+            _serverProxy = new MongoServerProxyFactory().Create(_settings);
         }
 
         // factory methods

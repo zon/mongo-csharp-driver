@@ -373,10 +373,10 @@ namespace MongoDB.Driver
             tcpClient.Connect(ipEndPoint);
 
             var stream = (Stream)tcpClient.GetStream();
-            if (_serverInstance.Server.Settings.UseSsl)
+            if (_serverInstance.Settings.UseSsl)
             {
                 SslStream sslStream;
-                if (_serverInstance.Server.Settings.VerifySslCertificate)
+                if (_serverInstance.Settings.VerifySslCertificate)
                 {
                     sslStream = new SslStream(stream, false); // don't leave inner stream open
                 }
@@ -458,7 +458,7 @@ namespace MongoDB.Driver
                     using (var buffer = new BsonBuffer())
                     {
                         var networkStream = GetNetworkStream();
-                        var readTimeout = (int)_serverInstance.Server.Settings.SocketTimeout.TotalMilliseconds;
+                        var readTimeout = (int)_serverInstance.Settings.SocketTimeout.TotalMilliseconds;
                         if (readTimeout != 0)
                         {
                             networkStream.ReadTimeout = readTimeout;
@@ -507,7 +507,7 @@ namespace MongoDB.Driver
                 try
                 {
                     var networkStream = GetNetworkStream();
-                    var writeTimeout = (int)_serverInstance.Server.Settings.SocketTimeout.TotalMilliseconds;
+                    var writeTimeout = (int)_serverInstance.Settings.SocketTimeout.TotalMilliseconds;
                     if (writeTimeout != 0)
                     {
                         networkStream.WriteTimeout = writeTimeout;

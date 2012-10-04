@@ -30,36 +30,38 @@ namespace MongoDB.Driver
         private readonly object _lock = new object();
         private readonly ConnectedInstanceCollection _connectedInstances;
         private readonly List<MongoServerInstance> _instances;
-        private readonly MongoServer _server;
+        private readonly MongoServerSettings _settings;
         private int _connectionAttempt;
         private int _outstandingInstanceConnections;
         private MongoServerState _state;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShardedMongoServerProxy"/> class.
+        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy" /> class.
         /// </summary>
-        /// <param name="server">The server.</param>
-        protected MultipleInstanceMongoServerProxy(MongoServer server)
+        /// <param name="settings">The settings.</param>
+        protected MultipleInstanceMongoServerProxy(MongoServerSettings settings)
         {
-            _server = server;
+            _settings = settings;
             _connectedInstances = new ConnectedInstanceCollection();
             _instances = new List<MongoServerInstance>();
 
-            MakeInstancesMatchAddresses(server.Settings.Servers);
+            MakeInstancesMatchAddresses(settings.Servers);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShardedMongoServerProxy"/> class.
+        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy" /> class.
         /// </summary>
-        /// <param name="server">The server.</param>
+        /// <param name="settings">The settings.</param>
         /// <param name="instances">The instances.</param>
         /// <param name="connectionQueue">The state change queue.</param>
         /// <param name="connectionAttempt">The connection attempt.</param>
-        /// <remarks>This constructor is used when the instances have already been instructed to connect.</remarks>
-        protected MultipleInstanceMongoServerProxy(MongoServer server, IEnumerable<MongoServerInstance> instances, BlockingQueue<MongoServerInstance> connectionQueue, int connectionAttempt)
+        /// <remarks>
+        /// This constructor is used when the instances have already been instructed to connect.
+        /// </remarks>
+        protected MultipleInstanceMongoServerProxy(MongoServerSettings settings, IEnumerable<MongoServerInstance> instances, BlockingQueue<MongoServerInstance> connectionQueue, int connectionAttempt)
         {
             _state = MongoServerState.Connecting;
-            _server = server;
+            _settings = settings;
             _connectedInstances = new ConnectedInstanceCollection();
             _connectionAttempt = connectionAttempt;
 
@@ -141,11 +143,11 @@ namespace MongoDB.Driver
 
         // protected properties
         /// <summary>
-        /// Gets the server.
+        /// Gets the server settings.
         /// </summary>
-        protected MongoServer Server
+        protected MongoServerSettings Settings
         {
-            get { return _server; }
+            get { return _settings; }
         }
 
         // public methods
@@ -165,7 +167,7 @@ namespace MongoDB.Driver
                 }
                 if (attempt == 1)
                 {
-                    Connect(_server.Settings.ConnectTimeout, readPreference);
+                    Connect(_settings.ConnectTimeout, readPreference);
                 }
             }
 
@@ -341,7 +343,7 @@ namespace MongoDB.Driver
             {
                 if (!_instances.Any(x => x.Address == address))
                 {
-                    var instance = new MongoServerInstance(_server, address);
+                    var instance = new MongoServerInstance(_settings, address);
                     AddInstance(instance);
                     if (_state != MongoServerState.Disconnecting && _state != MongoServerState.Disconnected)
                     {

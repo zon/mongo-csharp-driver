@@ -64,7 +64,7 @@ namespace MongoDB.Driver
 
         // private fields
         private readonly object _serverInstanceLock = new object();
-        private readonly MongoServer _server;
+        private readonly MongoServerSettings _settings;
         private readonly MongoConnectionPool _connectionPool;
         private readonly PingTimeAggregator _pingTimeAggregator;
         private MongoServerAddress _address;
@@ -79,13 +79,13 @@ namespace MongoDB.Driver
 
         // constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoServerInstance"/> class.
+        /// Initializes a new instance of the <see cref="MongoServerInstance" /> class.
         /// </summary>
-        /// <param name="server">The server.</param>
+        /// <param name="settings">The settings.</param>
         /// <param name="address">The address.</param>
-        internal MongoServerInstance(MongoServer server, MongoServerAddress address)
+        internal MongoServerInstance(MongoServerSettings settings, MongoServerAddress address)
         {
-            _server = server;
+            _settings = settings;
             _address = address;
             _sequentialId = Interlocked.Increment(ref __nextSequentialId);
             _state = MongoServerState.Disconnected;
@@ -305,9 +305,9 @@ namespace MongoDB.Driver
         /// <summary>
         /// Gets the server for this server instance.
         /// </summary>
-        public MongoServer Server
+        public MongoServerSettings Settings
         {
-            get { return _server; }
+            get { return _settings; }
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace MongoDB.Driver
             var ipEndPoint = Interlocked.CompareExchange(ref _ipEndPoint, null, null);
             if (ipEndPoint == null)
             {
-                var addressFamily = _server.Settings.IPv6 ? AddressFamily.InterNetworkV6 : AddressFamily.InterNetwork;
+                var addressFamily = _settings.IPv6 ? AddressFamily.InterNetworkV6 : AddressFamily.InterNetwork;
                 ipEndPoint = _address.ToIPEndPoint(addressFamily);
                 Interlocked.CompareExchange(ref _ipEndPoint, _ipEndPoint, null);
             }
