@@ -32,17 +32,16 @@ namespace MongoDB.DriverUnitTests
         {
             var server = MongoServer.Create();
             var database = server["test"];
-            var settings = new MongoCollectionSettings<BsonDocument>("collection", database.Settings)
+            var settings = new MongoCollectionSettings
             {
                 AssignIdOnInsert = true,
+                GuidRepresentation = GuidRepresentation.CSharpLegacy,
                 SafeMode = SafeMode.Create(5, TimeSpan.FromSeconds(5)),
                 ReadPreference = ReadPreference.Primary
             };
 
-            Assert.AreEqual("collection", settings.CollectionName);
             Assert.AreEqual(true, settings.AssignIdOnInsert);
-            Assert.AreEqual(typeof(BsonDocument), settings.DefaultDocumentType);
-            Assert.AreEqual(GuidRepresentation.CSharpLegacy, settings.GuidRepresentation);
+            Assert.AreEqual(GuidRepresentation.CSharpLegacy, settings.GuidRepresentation.Value);
             Assert.AreEqual(SafeMode.Create(5, TimeSpan.FromSeconds(5)), settings.SafeMode);
             Assert.AreEqual(ReadPreference.Primary, settings.ReadPreference);
 
@@ -62,7 +61,7 @@ namespace MongoDB.DriverUnitTests
         {
             var server = MongoServer.Create();
             var database = server["test"];
-            var settings = new MongoCollectionSettings<BsonDocument>("collection", database.Settings);
+            var settings = new MongoCollectionSettings();
             var frozenCopy = settings.FrozenCopy();
             var secondFrozenCopy = frozenCopy.FrozenCopy();
             Assert.AreNotSame(settings, frozenCopy);

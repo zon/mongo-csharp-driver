@@ -28,10 +28,8 @@ namespace MongoDB.Driver
     public class MongoDatabaseSettings
     {
         // private fields
-        private readonly string _databaseName;
-
         private MongoCredentials _credentials;
-        private GuidRepresentation _guidRepresentation;
+        private GuidRepresentation? _guidRepresentation;
         private ReadPreference _readPreference;
         private SafeMode _safeMode;
 
@@ -41,37 +39,11 @@ namespace MongoDB.Driver
         private string _frozenStringRepresentation;
 
         // constructors
-        private MongoDatabaseSettings(string databaseName)
-        {
-            if (databaseName == null)
-            {
-                throw new ArgumentNullException("databaseName");
-            }
-
-            _databaseName = databaseName;
-
-            _guidRepresentation = MongoDefaults.GuidRepresentation;
-            _readPreference = ReadPreference.Primary;
-            _safeMode = MongoDefaults.SafeMode;
-        }
-
         /// <summary>
         /// Creates a new instance of MongoDatabaseSettings.
         /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <param name="serverSettings">The server settings to inherit from.</param>
-        public MongoDatabaseSettings(string databaseName, MongoServerSettings serverSettings)
-            : this(databaseName)
+        public MongoDatabaseSettings()
         {
-            if (serverSettings == null)
-            {
-                throw new ArgumentNullException("serverSettings");
-            }
-
-            _credentials = serverSettings.GetCredentials(databaseName);
-            _guidRepresentation = serverSettings.GuidRepresentation;
-            _readPreference = serverSettings.ReadPreference;
-            _safeMode = serverSettings.SafeMode;
         }
 
         // public properties
@@ -89,17 +61,9 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Gets the name of the database.
-        /// </summary>
-        public string DatabaseName
-        {
-            get { return _databaseName; }
-        }
-
-        /// <summary>
         /// Gets or sets the representation to use for Guids.
         /// </summary>
-        public GuidRepresentation GuidRepresentation
+        public GuidRepresentation? GuidRepresentation
         {
             get { return _guidRepresentation; }
             set
@@ -133,7 +97,7 @@ namespace MongoDB.Driver
                 _readPreference = value;
             }
         }
-  
+
         /// <summary>
         /// Gets or sets the SafeMode to use.
         /// </summary>
@@ -158,13 +122,12 @@ namespace MongoDB.Driver
         /// <returns>A clone of the settings.</returns>
         public MongoDatabaseSettings Clone()
         {
-            return new MongoDatabaseSettings(_databaseName)
-            {
-                Credentials = _credentials,
-                GuidRepresentation = _guidRepresentation,
-                ReadPreference = _readPreference,
-                SafeMode = _safeMode
-            };
+            var clone =  new MongoDatabaseSettings();
+            clone._credentials = _credentials;
+            clone._guidRepresentation = _guidRepresentation;
+            clone._readPreference = _readPreference;
+            clone._safeMode = _safeMode;
+            return clone;
         }
 
         /// <summary>
@@ -188,7 +151,6 @@ namespace MongoDB.Driver
                 else
                 {
                     return
-                        _databaseName == rhs._databaseName &&
                         _credentials == rhs._credentials &&
                         _guidRepresentation == rhs._guidRepresentation &&
                         _readPreference == rhs._readPreference &&
@@ -205,8 +167,8 @@ namespace MongoDB.Driver
         {
             if (!_isFrozen)
             {
-                _readPreference = _readPreference.FrozenCopy();
-                _safeMode = _safeMode.FrozenCopy();
+                _readPreference = (_readPreference == null) ? null : _readPreference.FrozenCopy();
+                _safeMode = (_safeMode == null) ? null : _safeMode.FrozenCopy();
                 _frozenHashCode = GetHashCode();
                 _frozenStringRepresentation = ToString();
                 _isFrozen = true;
@@ -243,11 +205,10 @@ namespace MongoDB.Driver
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + _databaseName.GetHashCode();
-            hash = 37 * hash + ((_credentials != null) ? _credentials.GetHashCode() : 0);
-            hash = 37 * hash + _guidRepresentation.GetHashCode();
-            hash = 37 * hash + _readPreference.GetHashCode();
-            hash = 37 * hash + _safeMode.GetHashCode();
+            hash = 37 * hash + ((_credentials == null) ? 0 : _credentials.GetHashCode());
+            hash = 37 * hash + ((_guidRepresentation == null) ? 0 : _guidRepresentation.GetHashCode());
+            hash = 37 * hash + ((_readPreference == null) ? 0 : _readPreference.GetHashCode());
+            hash = 37 * hash + ((_safeMode == null) ? 0 : _safeMode.GetHashCode());
             return hash;
         }
 
@@ -263,8 +224,34 @@ namespace MongoDB.Driver
             }
 
             return string.Format(
-                "DatabaseName={0};Credentials={1};GuidRepresentation={2};ReadPreference={3};SafeMode={4}",
-                _databaseName, _credentials, _guidRepresentation, _readPreference, _safeMode);
+                "Credentials={0};GuidRepresentation={1};ReadPreference={2};SafeMode={3}",
+                _credentials, _guidRepresentation, _readPreference, _safeMode);
+        }
+
+        // internal methods
+        internal MongoDatabaseSettings ApplyInheritedSettings(MongoServerSettings serverSettings)
+        {
+            var clone = Clone();
+
+            if (_credentials == null)
+            {
+                clone._credentials = serverSettings.DefaultCredentials;
+            }
+            if (_guidRepresentation == null)
+            {
+                clone._guidRepresentation = serverSettings.GuidRepresentation;
+            }
+            if (_readPreference == null)
+            {
+                clone._readPreference = serverSettings.ReadPreference;
+            }
+            if (_safeMode == null)
+            {
+                clone._safeMode = serverSettings.SafeMode;
+            }
+
+            clone.Freeze();
+            return clone;
         }
     }
 }

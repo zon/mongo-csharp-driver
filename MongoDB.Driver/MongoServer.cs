@@ -42,7 +42,6 @@ namespace MongoDB.Driver
         private readonly object _serverLock = new object();
         private readonly IMongoServerProxy _serverProxy;
         private readonly MongoServerSettings _settings;
-        private readonly Dictionary<MongoDatabaseSettings, MongoDatabase> _databases = new Dictionary<MongoDatabaseSettings, MongoDatabase>();
         private readonly Dictionary<int, Request> _requests = new Dictionary<int, Request>(); // tracks threads that have called RequestStart
         private readonly IndexCache _indexCache = new IndexCache();
         private int _sequentialId;
@@ -379,7 +378,7 @@ namespace MongoDB.Driver
         /// is created for each combination of database settings.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database.</param>
+        /// <param name="credentials">The credentials to use with this database (null if none).</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase this[string databaseName, MongoCredentials credentials]
         {
@@ -390,11 +389,12 @@ namespace MongoDB.Driver
         /// Gets a MongoDatabase instance representing a database on this server. Only one instance
         /// is created for each combination of database settings.
         /// </summary>
+        /// <param name="databaseName">The name of the database.</param>
         /// <param name="databaseSettings">The settings to use with this database.</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[MongoDatabaseSettings databaseSettings]
+        public virtual MongoDatabase this[string databaseName, MongoDatabaseSettings databaseSettings]
         {
-            get { return GetDatabase(databaseSettings); }
+            get { return GetDatabase(databaseName, databaseSettings); }
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace MongoDB.Driver
         /// is created for each combination of database settings.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database.</param>
+        /// <param name="credentials">The credentials to use with this database (null if none).</param>
         /// <param name="safeMode">The safe mode to use with this database.</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase this[string databaseName, MongoCredentials credentials, SafeMode safeMode]
@@ -542,7 +542,7 @@ namespace MongoDB.Driver
         /// Drops a database.
         /// </summary>
         /// <param name="databaseName">The name of the database to be dropped.</param>
-        /// <param name="credentials">Credentials for the database to be dropped (or admin credentials).</param>
+        /// <param name="credentials">Credentials for the database to be dropped or admin credentials (null if none).</param>
         /// <returns>A <see cref="CommandResult"/>.</returns>
         public virtual CommandResult DropDatabase(string databaseName, MongoCredentials credentials)
         {
@@ -595,20 +595,20 @@ namespace MongoDB.Driver
         /// Gets a MongoDatabase instance representing a database on this server. Only one instance
         /// is created for each combination of database settings.
         /// </summary>
+        /// <param name="databaseName">The name of the database.</param>
         /// <param name="databaseSettings">The settings to use with this database.</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase GetDatabase(MongoDatabaseSettings databaseSettings)
+        public virtual MongoDatabase GetDatabase(string databaseName, MongoDatabaseSettings databaseSettings)
         {
-            lock (_serverLock)
+            if (databaseName == null)
             {
-                MongoDatabase database;
-                if (!_databases.TryGetValue(databaseSettings, out database))
-                {
-                    database = new MongoDatabase(this, databaseSettings);
-                    _databases.Add(databaseSettings, database);
-                }
-                return database;
+                throw new ArgumentNullException("databaseName");
             }
+            if (databaseSettings == null)
+            {
+                throw new ArgumentNullException("databaseSettings");
+            }
+            return new MongoDatabase(this, databaseName, databaseSettings);
         }
 
         /// <summary>
@@ -619,12 +619,8 @@ namespace MongoDB.Driver
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase GetDatabase(string databaseName)
         {
-            if (databaseName == null)
-            {
-                throw new ArgumentNullException("databaseName");
-            }
-            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings);
-            return GetDatabase(databaseSettings);
+            var databaseSettings = new MongoDatabaseSettings();
+            return GetDatabase(databaseName, databaseSettings);
         }
 
         /// <summary>
@@ -632,19 +628,12 @@ namespace MongoDB.Driver
         /// is created for each combination of database settings.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database.</param>
+        /// <param name="credentials">The credentials to use with this database (null if none).</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase GetDatabase(string databaseName, MongoCredentials credentials)
         {
-            if (databaseName == null)
-            {
-                throw new ArgumentNullException("databaseName");
-            }
-            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
-            {
-                Credentials = credentials
-            };
-            return GetDatabase(databaseSettings);
+            var databaseSettings = new MongoDatabaseSettings { Credentials = credentials };
+            return GetDatabase(databaseName, databaseSettings);
         }
 
         /// <summary>
@@ -652,7 +641,7 @@ namespace MongoDB.Driver
         /// is created for each combination of database settings.
         /// </summary>
         /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database.</param>
+        /// <param name="credentials">The credentials to use with this database (null if none).</param>
         /// <param name="safeMode">The safe mode to use with this database.</param>
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase GetDatabase(
@@ -660,16 +649,16 @@ namespace MongoDB.Driver
             MongoCredentials credentials,
             SafeMode safeMode)
         {
-            if (databaseName == null)
+            if (safeMode == null)
             {
-                throw new ArgumentNullException("databaseName");
+                throw new ArgumentNullException("safeMode");
             }
-            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
+            var databaseSettings = new MongoDatabaseSettings
             {
                 Credentials = credentials,
                 SafeMode = safeMode
             };
-            return GetDatabase(databaseSettings);
+            return GetDatabase(databaseName, databaseSettings);
         }
 
         /// <summary>
@@ -681,15 +670,12 @@ namespace MongoDB.Driver
         /// <returns>A new or existing instance of MongoDatabase.</returns>
         public virtual MongoDatabase GetDatabase(string databaseName, SafeMode safeMode)
         {
-            if (databaseName == null)
+            if (safeMode == null)
             {
-                throw new ArgumentNullException("databaseName");
+                throw new ArgumentNullException("safeMode");
             }
-            var databaseSettings = new MongoDatabaseSettings(databaseName, _settings)
-            {
-                SafeMode = safeMode
-            };
-            return GetDatabase(databaseSettings);
+            var databaseSettings = new MongoDatabaseSettings { SafeMode = safeMode };
+            return GetDatabase(databaseName, databaseSettings);
         }
 
         /// <summary>

@@ -43,38 +43,43 @@ namespace MongoDB.Driver
         /// Protected constructor for abstract base class.
         /// </summary>
         /// <param name="database">The database that contains this collection.</param>
+        /// <param name="name">The name of the collection.</param>
         /// <param name="settings">The settings to use to access this collection.</param>
-        protected MongoCollection(MongoDatabase database, MongoCollectionSettings settings)
+        protected MongoCollection(MongoDatabase database, string name, MongoCollectionSettings settings)
         {
             if (database == null)
             {
                 throw new ArgumentNullException("database");
+            }
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
             }
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
             }
             string message;
-            if (!database.IsCollectionNameValid(settings.CollectionName, out message))
+            if (!database.IsCollectionNameValid(name, out message))
             {
-                throw new ArgumentOutOfRangeException("settings", message);
+                throw new ArgumentOutOfRangeException("name", message);
             }
 
             _server = database.Server;
             _database = database;
-            _settings = settings.FrozenCopy();
-            _name = settings.CollectionName;
+            _settings = settings.ApplyInheritedSettings(database.Settings); // returned already frozen
+            _name = name;
 
             if (_name != "$cmd")
             {
-                var commandCollectionSettings = new MongoCollectionSettings<BsonDocument>("$cmd", _database.Settings)
+                var commandCollectionSettings = new MongoCollectionSettings
                 {
                     AssignIdOnInsert = false,
                     GuidRepresentation = _settings.GuidRepresentation,
                     ReadPreference = _settings.ReadPreference,
                     SafeMode = _settings.SafeMode
                 };
-                _commandCollection = _database.GetCollection(commandCollectionSettings);
+                _commandCollection = _database.GetCollection("$cmd", commandCollectionSettings);
             }
         }
 
@@ -1145,7 +1150,7 @@ namespace MongoDB.Driver
                             throw new ArgumentException("Batch contains one or more null documents.");
                         }
 
-                        if (_settings.AssignIdOnInsert)
+                        if (_settings.AssignIdOnInsert.Value)
                         {
                             var serializer = BsonSerializer.LookupSerializer(document.GetType());
                             var idProvider = serializer as IBsonIdProvider;
@@ -1455,7 +1460,7 @@ namespace MongoDB.Driver
                         var bsonDocument = new BsonDocument();
                         var bsonDocumentWriterSettings = new BsonDocumentWriterSettings
                         {
-                            GuidRepresentation = _settings.GuidRepresentation
+                            GuidRepresentation = _settings.GuidRepresentation.Value
                         };
                         var bsonWriter = BsonWriter.Create(bsonDocument, bsonDocumentWriterSettings);
                         bsonWriter.WriteStartDocument();
@@ -1624,7 +1629,7 @@ namespace MongoDB.Driver
         {
             return new BsonBinaryReaderSettings
             {
-                GuidRepresentation = _settings.GuidRepresentation,
+                GuidRepresentation = _settings.GuidRepresentation.Value,
                 MaxDocumentSize = connection.ServerInstance.MaxDocumentSize
             };
         }
@@ -1633,7 +1638,7 @@ namespace MongoDB.Driver
         {
             return new BsonBinaryWriterSettings
             {
-                GuidRepresentation = _settings.GuidRepresentation,
+                GuidRepresentation = _settings.GuidRepresentation.Value,
                 MaxDocumentSize = connection.ServerInstance.MaxDocumentSize
             };
         }
@@ -1746,9 +1751,10 @@ namespace MongoDB.Driver
         /// of MongoDatabase instead.
         /// </summary>
         /// <param name="database">The database that contains this collection.</param>
+        /// <param name="name">The name of the collection.</param>
         /// <param name="settings">The settings to use to access this collection.</param>
-        public MongoCollection(MongoDatabase database, MongoCollectionSettings<TDefaultDocument> settings)
-            : base(database, settings)
+        public MongoCollection(MongoDatabase database, string name, MongoCollectionSettings settings)
+            : base(database, name, settings)
         {
         }
 

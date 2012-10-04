@@ -96,11 +96,8 @@ namespace MongoDB.DriverUnitTests.Jira.CSharp378
         [Test]
         public void TestSaveD()
         {
-            var collectionSettings = new MongoCollectionSettings<D>("test", _database.Settings)
-            {
-                GuidRepresentation = GuidRepresentation.Standard
-            };
-            var collection = _database.GetCollection(collectionSettings);
+            var collectionSettings = new MongoCollectionSettings { GuidRepresentation = GuidRepresentation.Standard };
+            var collection = _database.GetCollection<D>("test", collectionSettings);
             collection.Drop();
 
             var id = new Guid("00112233-4455-6677-8899-aabbccddeeff");

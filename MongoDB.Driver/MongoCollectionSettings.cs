@@ -23,16 +23,13 @@ using MongoDB.Bson;
 namespace MongoDB.Driver
 {
     /// <summary>
-    /// The settings used to access a collection (an abstract class, see MongoCollectionSettings{TDefaultDocument}).
+    /// The settings used to access a collection.
     /// </summary>
-    public abstract class MongoCollectionSettings
+    public class MongoCollectionSettings
     {
         // private fields
-        private readonly Type _defaultDocumentType;
-        private readonly string _collectionName;
-
-        private bool _assignIdOnInsert;
-        private GuidRepresentation _guidRepresentation;
+        private bool? _assignIdOnInsert;
+        private GuidRepresentation? _guidRepresentation;
         private ReadPreference _readPreference;
         private SafeMode _safeMode;
 
@@ -45,52 +42,15 @@ namespace MongoDB.Driver
         /// <summary>
         /// Initializes a new instance of the MongoCollectionSettings class.
         /// </summary>
-        /// <param name="defaultDocumentType">The default document type for the collection.</param>
-        /// <param name="collectionName">The name of the collection.</param>
-        protected MongoCollectionSettings(Type defaultDocumentType, string collectionName)
+        public MongoCollectionSettings()
         {
-            if (defaultDocumentType == null)
-            {
-                throw new ArgumentNullException("defaultDocumentType");
-            }
-            if (collectionName == null)
-            {
-                throw new ArgumentNullException("collectionName");
-            }
-
-            _defaultDocumentType = defaultDocumentType;
-            _collectionName = collectionName;
-
-            _assignIdOnInsert = MongoDefaults.AssignIdOnInsert;
-            _guidRepresentation = MongoDefaults.GuidRepresentation;
-            _readPreference = ReadPreference.Primary;
-            _safeMode = MongoDefaults.SafeMode;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the MongoCollectionSettings class.
-        /// </summary>
-        /// <param name="defaultDocumentType">The default document type for the collection.</param>
-        /// <param name="collectionName">The name of the collection.</param>
-        /// <param name="databaseSettings">The database settings to inherit some settings from.</param>
-        protected MongoCollectionSettings(Type defaultDocumentType, string collectionName, MongoDatabaseSettings databaseSettings)
-            : this(defaultDocumentType, collectionName)
-        {
-            if (databaseSettings == null)
-            {
-                throw new ArgumentNullException("databaseSettings");
-            }
-
-            _guidRepresentation = databaseSettings.GuidRepresentation;
-            _readPreference = databaseSettings.ReadPreference;
-            _safeMode = databaseSettings.SafeMode;
         }
 
         // public properties
         /// <summary>
         /// Gets or sets whether the driver should assign Id values when missing.
         /// </summary>
-        public bool AssignIdOnInsert
+        public bool? AssignIdOnInsert
         {
             get { return _assignIdOnInsert; }
             set
@@ -101,25 +61,9 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Gets the name of the collection.
-        /// </summary>
-        public string CollectionName
-        {
-            get { return _collectionName; }
-        }
-
-        /// <summary>
-        /// Gets the default document type of the collection.
-        /// </summary>
-        public Type DefaultDocumentType
-        {
-            get { return _defaultDocumentType; }
-        }
-
-        /// <summary>
         /// Gets or sets the representation used for Guids.
         /// </summary>
-        public GuidRepresentation GuidRepresentation
+        public GuidRepresentation? GuidRepresentation
         {
             get { return _guidRepresentation; }
             set
@@ -171,31 +115,20 @@ namespace MongoDB.Driver
             }
         }
 
-        // public static methods
-        /// <summary>
-        /// Creates an instance of MongoCollectionSettings for the named collection with the rest of the settings inherited.
-        /// You can override some of these settings before calling GetCollection.
-        /// </summary>
-        /// <param name="defaultDocumentType">The default document type for this collection.</param>
-        /// <param name="collectionName">The name of this collection.</param>
-        /// <returns>A MongoCollectionSettings.</returns>
-        public static MongoCollectionSettings Create(
-            Type defaultDocumentType,
-            string collectionName,
-            MongoDatabaseSettings databaseSettings)
-        {
-            var settingsDefinition = typeof(MongoCollectionSettings<>);
-            var settingsType = settingsDefinition.MakeGenericType(defaultDocumentType);
-            var constructorInfo = settingsType.GetConstructor(new Type[] { typeof(string), typeof(MongoDatabaseSettings) });
-            return (MongoCollectionSettings)constructorInfo.Invoke(new object[] { collectionName, databaseSettings });
-        }
-
         // public methods
         /// <summary>
         /// Creates a clone of the settings.
         /// </summary>
         /// <returns>A clone of the settings.</returns>
-        public abstract MongoCollectionSettings Clone();
+        public MongoCollectionSettings Clone()
+        {
+            var clone = new MongoCollectionSettings();
+            clone._assignIdOnInsert = _assignIdOnInsert;
+            clone._guidRepresentation = _guidRepresentation;
+            clone._readPreference = _readPreference;
+            clone._safeMode = _safeMode;
+            return clone;
+        }
 
         /// <summary>
         /// Compares two MongoCollectionSettings instances.
@@ -218,9 +151,7 @@ namespace MongoDB.Driver
                 else
                 {
                     return
-                        _collectionName == rhs._collectionName &&
                         _assignIdOnInsert == rhs._assignIdOnInsert &&
-                        _defaultDocumentType == rhs._defaultDocumentType &&
                         _guidRepresentation == rhs._guidRepresentation &&
                         _readPreference == rhs._readPreference &&
                         _safeMode == rhs._safeMode;
@@ -236,8 +167,8 @@ namespace MongoDB.Driver
         {
             if (!_isFrozen)
             {
-                _readPreference = _readPreference.FrozenCopy();
-                _safeMode = _safeMode.FrozenCopy();
+                _readPreference = (_readPreference == null) ? null : _readPreference.FrozenCopy();
+                _safeMode = (_safeMode == null) ? null : _safeMode.FrozenCopy();
                 _frozenHashCode = GetHashCode();
                 _frozenStringRepresentation = ToString();
                 _isFrozen = true;
@@ -274,12 +205,10 @@ namespace MongoDB.Driver
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + _collectionName.GetHashCode();
-            hash = 37 * hash + _assignIdOnInsert.GetHashCode();
-            hash = 37 * hash + _defaultDocumentType.GetHashCode();
-            hash = 37 * hash + _guidRepresentation.GetHashCode();
-            hash = 37 * hash + _readPreference.GetHashCode();
-            hash = 37 * hash + _safeMode.GetHashCode();
+            hash = 37 * hash + ((_assignIdOnInsert == null) ? 0 : _assignIdOnInsert.GetHashCode());
+            hash = 37 * hash + ((_guidRepresentation == null) ? 0 : _guidRepresentation.GetHashCode());
+            hash = 37 * hash + ((_readPreference == null) ? 0 : _readPreference.GetHashCode());
+            hash = 37 * hash + ((_safeMode == null) ? 0 :_safeMode.GetHashCode());
             return hash;
         }
 
@@ -295,47 +224,34 @@ namespace MongoDB.Driver
             }
 
             return string.Format(
-                "CollectionName={0};AssignIdOnInsert={1};DefaultDocumentType={2};GuidRepresentation={3};ReadPreference={4};SafeMode={5}",
-                _collectionName, _assignIdOnInsert, _defaultDocumentType, _guidRepresentation, _readPreference, _safeMode);
-        }
-    }
-
-    /// <summary>
-    /// Settings used to access a collection.
-    /// </summary>
-    /// <typeparam name="TDefaultDocument">The default document type of the collection.</typeparam>
-    public class MongoCollectionSettings<TDefaultDocument> : MongoCollectionSettings
-    {
-        // constructors
-        private MongoCollectionSettings(string collectionName)
-            : base(typeof(TDefaultDocument), collectionName)
-        {
+                "AssignIdOnInsert={0};GuidRepresentation={1};ReadPreference={2};SafeMode={3}",
+                _assignIdOnInsert, _guidRepresentation, _readPreference, _safeMode);
         }
 
-        /// <summary>
-        /// Creates a new instance of MongoCollectionSettings.
-        /// </summary>
-        /// <param name="collectionName">The name of the collection.</param>
-        /// <param name="databaseSettings">The database settings to inherit some settings from.</param>
-        public MongoCollectionSettings(string collectionName, MongoDatabaseSettings databaseSettings)
-            : base(typeof(TDefaultDocument), collectionName, databaseSettings)
+        // internal methods
+        internal MongoCollectionSettings ApplyInheritedSettings(MongoDatabaseSettings databaseSettings)
         {
-        }
+            var clone = Clone();
 
-        // public methods
-        /// <summary>
-        /// Creates a clone of the settings.
-        /// </summary>
-        /// <returns>A clone of the settings.</returns>
-        public override MongoCollectionSettings Clone()
-        {
-            return new MongoCollectionSettings<TDefaultDocument>(CollectionName)
+            if (_assignIdOnInsert == null)
             {
-                AssignIdOnInsert = AssignIdOnInsert,
-                GuidRepresentation = GuidRepresentation,
-                ReadPreference = ReadPreference,
-                SafeMode = SafeMode
-            };
+                clone._assignIdOnInsert = MongoDefaults.AssignIdOnInsert;
+            }
+            if (_guidRepresentation == null)
+            {
+                clone._guidRepresentation = databaseSettings.GuidRepresentation;
+            }
+            if (_readPreference == null)
+            {
+                clone._readPreference = databaseSettings.ReadPreference;
+            }
+            if (_safeMode == null)
+            {
+                clone._safeMode = databaseSettings.SafeMode;
+            }
+
+            clone.Freeze(); // return already frozen
+            return clone;
         }
     }
 }
