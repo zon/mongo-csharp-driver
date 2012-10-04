@@ -64,8 +64,12 @@ namespace MongoDB.Driver
                 throw new ArgumentOutOfRangeException("name", message);
             }
 
+            settings = settings.Clone();
+            settings.ApplyInheritedSettings(server.Settings);
+            settings.Freeze();
+
             _server = server;
-            _settings = settings.ApplyInheritedSettings(server.Settings); // returned already frozen
+            _settings = settings;
             _name = name;
 
             var commandCollectionSettings = new MongoCollectionSettings { AssignIdOnInsert = false };

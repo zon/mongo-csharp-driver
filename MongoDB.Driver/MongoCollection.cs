@@ -65,9 +65,13 @@ namespace MongoDB.Driver
                 throw new ArgumentOutOfRangeException("name", message);
             }
 
+            settings = settings.Clone();
+            settings.ApplyInheritedSettings(database.Settings);
+            settings.Freeze();
+
             _server = database.Server;
             _database = database;
-            _settings = settings.ApplyInheritedSettings(database.Settings); // returned already frozen
+            _settings = settings;
             _name = name;
 
             if (_name != "$cmd")

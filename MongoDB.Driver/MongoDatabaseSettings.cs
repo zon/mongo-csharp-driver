@@ -229,29 +229,24 @@ namespace MongoDB.Driver
         }
 
         // internal methods
-        internal MongoDatabaseSettings ApplyInheritedSettings(MongoServerSettings serverSettings)
+        internal void ApplyInheritedSettings(MongoServerSettings serverSettings)
         {
-            var clone = Clone();
-
             if (_credentials == null)
             {
-                clone._credentials = serverSettings.DefaultCredentials;
+                _credentials = serverSettings.DefaultCredentials;
             }
             if (_guidRepresentation == null)
             {
-                clone._guidRepresentation = serverSettings.GuidRepresentation;
+                _guidRepresentation = serverSettings.GuidRepresentation;
             }
             if (_readPreference == null)
             {
-                clone._readPreference = serverSettings.ReadPreference;
+                _readPreference = serverSettings.ReadPreference;
             }
             if (_safeMode == null)
             {
-                clone._safeMode = serverSettings.SafeMode;
+                _safeMode = serverSettings.SafeMode;
             }
-
-            clone.Freeze();
-            return clone;
         }
     }
 }
