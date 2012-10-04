@@ -30,9 +30,7 @@ namespace MongoDB.Driver
         /// Creates an IMongoServerProxy of some type that depends on the server settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        /// <returns>
-        /// An IMongoServerProxy.
-        /// </returns>
+        /// <returns>An IMongoServerProxy.</returns>
         public IMongoServerProxy Create(MongoServerSettings settings)
         {
             var connectionMode = settings.ConnectionMode;

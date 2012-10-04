@@ -55,9 +55,7 @@ namespace MongoDB.Driver
         /// <param name="instances">The instances.</param>
         /// <param name="connectionQueue">The state change queue.</param>
         /// <param name="connectionAttempt">The connection attempt.</param>
-        /// <remarks>
-        /// This constructor is used when the instances have already been instructed to connect.
-        /// </remarks>
+        /// <remarks>This constructor is used when the instances have already been instructed to connect.</remarks>
         protected MultipleInstanceMongoServerProxy(MongoServerSettings settings, IEnumerable<MongoServerInstance> instances, BlockingQueue<MongoServerInstance> connectionQueue, int connectionAttempt)
         {
             _state = MongoServerState.Connecting;
