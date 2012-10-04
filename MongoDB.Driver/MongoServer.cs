@@ -862,7 +862,7 @@ namespace MongoDB.Driver
             }
 
             var serverInstance = _serverProxy.ChooseServerInstance(readPreference);
-            var connection = serverInstance.AcquireConnection(initialDatabase);
+            var connection = serverInstance.AcquireConnection(initialDatabase.Name, initialDatabase.Credentials);
 
             lock (_serverLock)
             {
@@ -898,7 +898,7 @@ namespace MongoDB.Driver
                 }
             }
 
-            var connection = serverInstance.AcquireConnection(initialDatabase);
+            var connection = serverInstance.AcquireConnection(initialDatabase.Name, initialDatabase.Credentials);
 
             lock (_serverLock)
             {
@@ -977,12 +977,12 @@ namespace MongoDB.Driver
             // check authentication outside of lock
             if (requestConnection != null)
             {
-                requestConnection.CheckAuthentication(database); // will throw exception if authentication fails
+                requestConnection.CheckAuthentication(database.Name, database.Credentials); // will throw exception if authentication fails
                 return requestConnection;
             }
 
             var serverInstance = _serverProxy.ChooseServerInstance(readPreference);
-            return serverInstance.AcquireConnection(database);
+            return serverInstance.AcquireConnection(database.Name, database.Credentials);
         }
 
         internal MongoConnection AcquireConnection(MongoDatabase database, MongoServerInstance serverInstance)
@@ -1009,11 +1009,11 @@ namespace MongoDB.Driver
             // check authentication outside of lock
             if (requestConnection != null)
             {
-                requestConnection.CheckAuthentication(database); // will throw exception if authentication fails
+                requestConnection.CheckAuthentication(database.Name, database.Credentials); // will throw exception if authentication fails
                 return requestConnection;
             }
 
-            return serverInstance.AcquireConnection(database);
+            return serverInstance.AcquireConnection(database.Name, database.Credentials);
         }
 
         internal void ReleaseConnection(MongoConnection connection)

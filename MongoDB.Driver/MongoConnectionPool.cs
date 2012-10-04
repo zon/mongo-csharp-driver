@@ -81,7 +81,7 @@ namespace MongoDB.Driver
         }
 
         // internal methods
-        internal MongoConnection AcquireConnection(MongoDatabase database)
+        internal MongoConnection AcquireConnection(string databaseName, MongoCredentials credentials)
         {
             lock (_connectionPoolLock)
             {
@@ -101,7 +101,7 @@ namespace MongoDB.Driver
                             // first try to find the most recently used connection that is already authenticated for this database
                             for (int i = _availableConnections.Count - 1; i >= 0; i--)
                             {
-                                if (_availableConnections[i].IsAuthenticated(database))
+                                if (_availableConnections[i].IsAuthenticated(databaseName, credentials))
                                 {
                                     var connection = _availableConnections[i];
                                     _availableConnections.RemoveAt(i);
@@ -112,7 +112,7 @@ namespace MongoDB.Driver
                             // otherwise find the most recently used connection that can be authenticated for this database
                             for (int i = _availableConnections.Count - 1; i >= 0; i--)
                             {
-                                if (_availableConnections[i].CanAuthenticate(database))
+                                if (_availableConnections[i].CanAuthenticate(databaseName, credentials))
                                 {
                                     var connection = _availableConnections[i];
                                     _availableConnections.RemoveAt(i);

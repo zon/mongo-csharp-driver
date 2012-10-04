@@ -392,7 +392,7 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="database">The database.</param>
         /// <returns>A MongoConnection.</returns>
-        internal MongoConnection AcquireConnection(MongoDatabase database)
+        internal MongoConnection AcquireConnection(string databaseName, MongoCredentials credentials)
         {
             MongoConnection connection;
             lock (_serverInstanceLock)
@@ -404,11 +404,11 @@ namespace MongoDB.Driver
                 }
             }
 
-            connection = _connectionPool.AcquireConnection(database);
+            connection = _connectionPool.AcquireConnection(databaseName, credentials);
 
             try
             {
-                connection.CheckAuthentication(database); // will authenticate if necessary
+                connection.CheckAuthentication(databaseName, credentials); // will authenticate if necessary
             }
             catch (MongoAuthenticationException)
             {
@@ -445,7 +445,7 @@ namespace MongoDB.Driver
 
             try
             {
-                var connection = _connectionPool.AcquireConnection(null);
+                var connection = _connectionPool.AcquireConnection(null, null);
                 try
                 {
                     Ping(connection);
