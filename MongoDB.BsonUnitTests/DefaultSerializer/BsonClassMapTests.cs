@@ -361,4 +361,53 @@ namespace MongoDB.BsonUnitTests.Serialization
             Assert.AreEqual("MyId", classMap.IdMemberMap.MemberName);
         }
     }
+
+    [TestFixture]
+    public class BsonClassMapResetTests
+    {
+        [Test]
+        public void TestAllValuesGoBackToTheirDefaults()
+        {
+            var classMap = new BsonClassMap<TestClass>(cm =>
+            {
+                cm.SetCreator(() => { throw new Exception("will get reset."); });
+                cm.MapMember(x => x.String);
+                cm.SetDiscriminator("blah");
+                cm.SetDiscriminatorIsRequired(true);
+                cm.MapExtraElementsMember(x => x.ExtraElements);
+                cm.MapIdMember(x => x.OId);
+                cm.SetIgnoreExtraElements(false);
+                cm.SetIgnoreExtraElementsIsInherited(true);
+                cm.SetIsRootClass(true);
+                cm.AddKnownType(typeof(InheritedTestClass));
+            });
+
+            classMap.Reset();
+
+            classMap.Freeze();
+
+            Assert.DoesNotThrow(() => classMap.CreateInstance());
+            Assert.AreEqual(0, classMap.DeclaredMemberMaps.Count());
+            Assert.AreEqual("TestClass", classMap.Discriminator);
+            Assert.IsFalse(classMap.DiscriminatorIsRequired);
+            Assert.IsNull(classMap.ExtraElementsMemberMap);
+            Assert.IsNull(classMap.IdMemberMap);
+            Assert.IsTrue(classMap.IgnoreExtraElements);
+            Assert.IsFalse(classMap.IgnoreExtraElementsIsInherited);
+            Assert.IsFalse(classMap.IsRootClass);
+            Assert.AreEqual(0, classMap.KnownTypes.Count());
+        }
+
+        private class TestClass
+        {
+            public ObjectId OId { get; set; }
+
+            public string String { get; set; }
+
+            public Dictionary<string, object> ExtraElements { get; set; }
+        }
+
+        private class InheritedTestClass : TestClass
+        { }
+    }
 }
