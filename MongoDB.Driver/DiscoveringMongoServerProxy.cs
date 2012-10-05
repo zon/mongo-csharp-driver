@@ -39,7 +39,7 @@ namespace MongoDB.Driver
 
         // constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="DiscoveringMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="DiscoveringMongoServerProxy"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         public DiscoveringMongoServerProxy(MongoServerSettings settings)

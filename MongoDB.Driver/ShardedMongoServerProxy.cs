@@ -40,7 +40,7 @@ namespace MongoDB.Driver
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShardedMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="ShardedMongoServerProxy"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="instances">The instances.</param>

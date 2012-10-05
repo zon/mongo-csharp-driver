@@ -43,7 +43,7 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReplicaSetMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="ReplicaSetMongoServerProxy"/> class.
         /// </summary>
         /// <param name="serverSettings">The server settings.</param>
         /// <param name="instances">The instances.</param>

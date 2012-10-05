@@ -79,7 +79,7 @@ namespace MongoDB.Driver
 
         // constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoServerInstance" /> class.
+        /// Initializes a new instance of the <see cref="MongoServerInstance"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="address">The address.</param>
@@ -390,8 +390,10 @@ namespace MongoDB.Driver
         /// <summary>
         /// Acquires the connection.
         /// </summary>
-        /// <param name="database">The database.</param>
+        /// <param name="databaseName">Name of the database.</param>
+        /// <param name="credentials">The credentials.</param>
         /// <returns>A MongoConnection.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         internal MongoConnection AcquireConnection(string databaseName, MongoCredentials credentials)
         {
             MongoConnection connection;

@@ -33,7 +33,7 @@ namespace MongoDB.Driver
 
         // constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="DirectMongoServerProxy"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         public DirectMongoServerProxy(MongoServerSettings settings)
@@ -43,7 +43,7 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="DirectMongoServerProxy"/> class.
         /// </summary>
         /// <param name="serverSettings">The server settings.</param>
         /// <param name="instance">The instance.</param>

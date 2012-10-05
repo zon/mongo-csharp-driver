@@ -36,7 +36,7 @@ namespace MongoDB.Driver
         private MongoServerState _state;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         protected MultipleInstanceMongoServerProxy(MongoServerSettings settings)
@@ -49,7 +49,7 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy" /> class.
+        /// Initializes a new instance of the <see cref="MultipleInstanceMongoServerProxy"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="instances">The instances.</param>
