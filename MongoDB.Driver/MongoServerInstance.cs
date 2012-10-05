@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace MongoDB.Driver
@@ -335,7 +336,8 @@ namespace MongoDB.Driver
             var ipEndPoint = Interlocked.CompareExchange(ref _ipEndPoint, null, null);
             if (ipEndPoint == null)
             {
-                ipEndPoint = _address.ToIPEndPoint(_server.Settings.AddressFamily);
+                var addressFamily = _server.Settings.IPv6 ? AddressFamily.InterNetworkV6 : AddressFamily.InterNetwork;
+                ipEndPoint = _address.ToIPEndPoint(addressFamily);
                 Interlocked.CompareExchange(ref _ipEndPoint, _ipEndPoint, null);
             }
             return ipEndPoint;

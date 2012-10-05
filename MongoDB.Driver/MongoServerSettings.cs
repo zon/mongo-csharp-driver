@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 
 using MongoDB.Bson;
@@ -87,14 +86,6 @@ namespace MongoDB.Driver
         }
 
         // public properties
-        /// <summary>
-        /// Gets the AddressFamily for the IPEndPoint (derived from the IPv6 setting).
-        /// </summary>
-        public AddressFamily AddressFamily
-        {
-            get { return _ipv6 ? AddressFamily.InterNetworkV6 : AddressFamily.InterNetwork; }
-        }
-
         /// <summary>
         /// Gets or sets the connection mode.
         /// </summary>
