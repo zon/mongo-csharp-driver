@@ -90,6 +90,7 @@
     <Compile Include="Serialization\Conventions\IgnoreIfNullConventionsTests.cs" />
     <Compile Include="Serialization\Conventions\IgnoreIfDefaultConventionsTests.cs" />
     <Compile Include="Serialization\Conventions\IgnoreExtraElementsConventionsTests.cs" />
+    <Compile Include="Serialization\Conventions\AttributeConventionPackTests.cs" />
     <Compile Include="Serialization\Conventions\DelegateClassMapConventionTests.cs" />
     <Compile Include="Serialization\Conventions\DelegateMemberMapConventionTests.cs" />
     <Compile Include="Serialization\Conventions\DelegatePostProcessingConventionTests.cs" />

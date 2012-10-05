@@ -24,6 +24,7 @@ namespace MongoDB.Bson.Serialization
     /// Specifies that this is the Id field or property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    [BsonMemberMapAttributeUsage(AllowMultipleMembers = false)]
     public class BsonIdAttribute : Attribute, IBsonMemberMapAttribute
     {
         // private fields

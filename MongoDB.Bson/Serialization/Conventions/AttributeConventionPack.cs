@@ -72,6 +72,7 @@ namespace MongoDB.Bson.Serialization.Conventions
 
                 OptInMembersWithBsonMemberMapModifierAttribute(classMap);
                 IgnoreMembersWithBsonIgnoreAttribute(classMap);
+                ThrowForDuplicateMemberMapAttributes(classMap);
             }
 
             public void Apply(BsonMemberMap memberMap)
@@ -88,24 +89,20 @@ namespace MongoDB.Bson.Serialization.Conventions
                 // let other fields opt-in if they have any IBsonMemberMapAttribute attributes
                 foreach (var fieldInfo in classMap.ClassType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                 {
-                    foreach (var attribute in fieldInfo.GetCustomAttributes(false))
+                    var hasAttribute = fieldInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false).Any();
+                    if (hasAttribute)
                     {
-                        if (typeof(IBsonMemberMapAttribute).IsAssignableFrom(attribute.GetType()))
-                        {
-                            classMap.MapMember(fieldInfo);
-                        }
+                        classMap.MapMember(fieldInfo);
                     }
                 }
 
                 // let other properties opt-in if they have any IBsonMemberMapAttribute attributes
                 foreach (var propertyInfo in classMap.ClassType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                 {
-                    foreach (var attribute in propertyInfo.GetCustomAttributes(false))
+                    var hasAttribute = propertyInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false).Any();
+                    if (hasAttribute)
                     {
-                        if (typeof(IBsonMemberMapAttribute).IsAssignableFrom(attribute.GetType()))
-                        {
-                            classMap.MapMember(propertyInfo);
-                        }
+                        classMap.MapMember(propertyInfo);
                     }
                 }
             }
@@ -120,6 +117,38 @@ namespace MongoDB.Bson.Serialization.Conventions
                         classMap.UnmapMember(memberMap.MemberInfo);
                     }
                 }
+            }
+
+            private void ThrowForDuplicateMemberMapAttributes(BsonClassMap classMap)
+            {
+                var noDuplicates = new List<Type>();
+                foreach (var memberMap in classMap.DeclaredMemberMaps)
+                {
+                    var attributes = (IBsonMemberMapAttribute[])memberMap.MemberInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false);
+                    foreach (var attribute in attributes)
+                    {
+                        var type = attribute.GetType();
+                        if (noDuplicates.Contains(type))
+                        {
+                            var message = string.Format("Attribute of type {0} can only be applied to a single member.", type);
+                            throw new DuplicateBsonMemberMapAttributeException(message);
+                        }
+
+                        if (!AllowsDuplicate(type))
+                        {
+                            noDuplicates.Add(type);
+                        }
+                    }
+                }
+            }
+
+            private static bool AllowsDuplicate(Type type)
+            {
+                var usageAttribute = type.GetCustomAttributes(typeof(BsonMemberMapAttributeUsageAttribute), true)
+                    .OfType<BsonMemberMapAttributeUsageAttribute>()
+                    .SingleOrDefault();
+
+                return usageAttribute == null || usageAttribute.AllowMultipleMembers;
             }
         }
     }
