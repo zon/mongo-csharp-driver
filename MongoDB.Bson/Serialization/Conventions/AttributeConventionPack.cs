@@ -84,6 +84,15 @@ namespace MongoDB.Bson.Serialization.Conventions
             }
 
             // private methods
+            private bool AllowsDuplicate(Type type)
+            {
+                var usageAttribute = type.GetCustomAttributes(typeof(BsonMemberMapAttributeUsageAttribute), true)
+                    .OfType<BsonMemberMapAttributeUsageAttribute>()
+                    .SingleOrDefault();
+
+                return usageAttribute == null || usageAttribute.AllowMultipleMembers;
+            }
+
             private void OptInMembersWithBsonMemberMapModifierAttribute(BsonClassMap classMap)
             {
                 // let other fields opt-in if they have any IBsonMemberMapAttribute attributes
@@ -121,14 +130,14 @@ namespace MongoDB.Bson.Serialization.Conventions
 
             private void ThrowForDuplicateMemberMapAttributes(BsonClassMap classMap)
             {
-                var noDuplicates = new List<Type>();
+                var nonDuplicatesAlreadySeen = new List<Type>();
                 foreach (var memberMap in classMap.DeclaredMemberMaps)
                 {
                     var attributes = (IBsonMemberMapAttribute[])memberMap.MemberInfo.GetCustomAttributes(typeof(IBsonMemberMapAttribute), false);
                     foreach (var attribute in attributes)
                     {
                         var type = attribute.GetType();
-                        if (noDuplicates.Contains(type))
+                        if (nonDuplicatesAlreadySeen.Contains(type))
                         {
                             var message = string.Format("Attribute of type {0} can only be applied to a single member.", type);
                             throw new DuplicateBsonMemberMapAttributeException(message);
@@ -136,19 +145,10 @@ namespace MongoDB.Bson.Serialization.Conventions
 
                         if (!AllowsDuplicate(type))
                         {
-                            noDuplicates.Add(type);
+                            nonDuplicatesAlreadySeen.Add(type);
                         }
                     }
                 }
-            }
-
-            private static bool AllowsDuplicate(Type type)
-            {
-                var usageAttribute = type.GetCustomAttributes(typeof(BsonMemberMapAttributeUsageAttribute), true)
-                    .OfType<BsonMemberMapAttributeUsageAttribute>()
-                    .SingleOrDefault();
-
-                return usageAttribute == null || usageAttribute.AllowMultipleMembers;
             }
         }
     }
