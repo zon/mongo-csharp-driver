@@ -23,10 +23,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
-namespace MongoDB.DriverUnitTests.CommandResults
+namespace MongoDB.DriverUnitTests
 {
     [TestFixture]
-    public class GetLastErrorResultTests
+    public class DatabaseStatsResultTests
     {
         private MongoServer _server;
         private MongoDatabase _database;
@@ -41,38 +41,28 @@ namespace MongoDB.DriverUnitTests.CommandResults
         }
 
         [Test]
-        public void TestInsert()
+        public void Test()
         {
             using (_database.RequestStart())
             {
-                _collection.Insert(new BsonDocument());
-                var result = _server.GetLastError();
-                Assert.IsFalse(result.HasLastErrorMessage);
-                Assert.IsFalse(result.UpdatedExisting);
-                Assert.AreEqual(0, result.DocumentsAffected); // note: DocumentsAffected is only set after an Update?
-            }
-        }
-
-        [Test]
-        public void TestUpdate()
-        {
-            using (_database.RequestStart())
-            {
-                var id = ObjectId.GenerateNewId();
-                var document = new BsonDocument
+                var instance = _server.RequestConnection.ServerInstance;
+                if (instance.InstanceType != MongoServerInstanceType.ShardRouter)
                 {
-                    { "_id", id },
-                    { "x", 1 }
-                };
-                _collection.Insert(document);
+                    // make sure collection and database exist
+                    _collection.Insert(new BsonDocument());
 
-                var query = Query.EQ("_id", id);
-                var update = Update.Inc("x", 1);
-                _collection.Update(query, update);
-                var result = _server.GetLastError();
-                Assert.IsFalse(result.HasLastErrorMessage);
-                Assert.IsTrue(result.UpdatedExisting);
-                Assert.AreEqual(1, result.DocumentsAffected);
+                    var result = _database.GetStats();
+                    Assert.IsTrue(result.Ok);
+                    Assert.IsTrue(result.AverageObjectSize > 0);
+                    Assert.IsTrue(result.CollectionCount > 0);
+                    Assert.IsTrue(result.DataSize > 0);
+                    Assert.IsTrue(result.ExtentCount > 0);
+                    Assert.IsTrue(result.FileSize > 0);
+                    Assert.IsTrue(result.IndexCount > 0);
+                    Assert.IsTrue(result.IndexSize > 0);
+                    Assert.IsTrue(result.ObjectCount > 0);
+                    Assert.IsTrue(result.StorageSize > 0);
+                }
             }
         }
     }

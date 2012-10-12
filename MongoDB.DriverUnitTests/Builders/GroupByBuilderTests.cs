@@ -23,7 +23,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
-namespace MongoDB.DriverUnitTests.Builders
+namespace MongoDB.DriverUnitTests
 {
     [TestFixture]
     public class GroupByBuilderTests

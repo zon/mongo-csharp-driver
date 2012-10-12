@@ -23,10 +23,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
-namespace MongoDB.DriverUnitTests.CommandResults
+namespace MongoDB.DriverUnitTests
 {
     [TestFixture]
-    public class DatabaseStatsResultTests
+    public class GetLastErrorResultTests
     {
         private MongoServer _server;
         private MongoDatabase _database;
@@ -41,28 +41,38 @@ namespace MongoDB.DriverUnitTests.CommandResults
         }
 
         [Test]
-        public void Test()
+        public void TestInsert()
         {
             using (_database.RequestStart())
             {
-                var instance = _server.RequestConnection.ServerInstance;
-                if (instance.InstanceType != MongoServerInstanceType.ShardRouter)
-                {
-                    // make sure collection and database exist
-                    _collection.Insert(new BsonDocument());
+                _collection.Insert(new BsonDocument());
+                var result = _server.GetLastError();
+                Assert.IsFalse(result.HasLastErrorMessage);
+                Assert.IsFalse(result.UpdatedExisting);
+                Assert.AreEqual(0, result.DocumentsAffected); // note: DocumentsAffected is only set after an Update?
+            }
+        }
 
-                    var result = _database.GetStats();
-                    Assert.IsTrue(result.Ok);
-                    Assert.IsTrue(result.AverageObjectSize > 0);
-                    Assert.IsTrue(result.CollectionCount > 0);
-                    Assert.IsTrue(result.DataSize > 0);
-                    Assert.IsTrue(result.ExtentCount > 0);
-                    Assert.IsTrue(result.FileSize > 0);
-                    Assert.IsTrue(result.IndexCount > 0);
-                    Assert.IsTrue(result.IndexSize > 0);
-                    Assert.IsTrue(result.ObjectCount > 0);
-                    Assert.IsTrue(result.StorageSize > 0);
-                }
+        [Test]
+        public void TestUpdate()
+        {
+            using (_database.RequestStart())
+            {
+                var id = ObjectId.GenerateNewId();
+                var document = new BsonDocument
+                {
+                    { "_id", id },
+                    { "x", 1 }
+                };
+                _collection.Insert(document);
+
+                var query = Query.EQ("_id", id);
+                var update = Update.Inc("x", 1);
+                _collection.Update(query, update);
+                var result = _server.GetLastError();
+                Assert.IsFalse(result.HasLastErrorMessage);
+                Assert.IsTrue(result.UpdatedExisting);
+                Assert.AreEqual(1, result.DocumentsAffected);
             }
         }
     }

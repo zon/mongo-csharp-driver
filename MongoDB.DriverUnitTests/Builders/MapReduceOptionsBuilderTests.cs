@@ -22,7 +22,7 @@ using NUnit.Framework;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace MongoDB.DriverUnitTests.Builders
+namespace MongoDB.DriverUnitTests
 {
     [TestFixture]
     public class MapReduceOptionsBuilderTests
