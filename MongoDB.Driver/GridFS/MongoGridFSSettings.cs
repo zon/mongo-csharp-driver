@@ -30,15 +30,27 @@ namespace MongoDB.Driver.GridFS
         private static MongoGridFSSettings __defaults = new MongoGridFSSettings();
 
         // private fields
-        private string _chunksCollectionName = "fs.chunks";
-        private int _chunkSize = 256 * 1024; // 256KiB
-        private string _filesCollectionName = "fs.files";
-        private string _root = "fs";
-        private SafeMode _safeMode = SafeMode.False;
-        private bool _updateMD5 = true;
-        private bool _verifyMD5 = true;
+        private int? _chunkSize;
+        private string _root;
+        private SafeMode _safeMode;
+        private bool? _updateMD5;
+        private bool? _verifyMD5;
+
         private bool _isFrozen;
         private int _frozenHashCode;
+
+        // static constructor
+        static MongoGridFSSettings()
+        {
+            __defaults = new MongoGridFSSettings
+            {
+                ChunkSize = 256 * 1024, // 256KiB
+                Root = "fs",
+                UpdateMD5 = true,
+                VerifyMD5 = true
+            };
+            __defaults.Freeze();
+        }
 
         // constructors
         /// <summary>
@@ -46,50 +58,6 @@ namespace MongoDB.Driver.GridFS
         /// </summary>
         public MongoGridFSSettings()
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the MongoGridFSSettings class.
-        /// </summary>
-        /// <param name="database">The database from which to inherit some of the settings.</param>
-        public MongoGridFSSettings(MongoDatabase database)
-        {
-            if (database == null)
-            {
-                throw new ArgumentNullException("database");
-            }
-
-            _chunksCollectionName = __defaults._chunksCollectionName;
-            _chunkSize = MongoGridFSSettings.Defaults.ChunkSize;
-            _filesCollectionName = __defaults._filesCollectionName;
-            _root = MongoGridFSSettings.Defaults.Root;
-            _safeMode = database.Settings.SafeMode;
-            _updateMD5 = __defaults.UpdateMD5;
-            _verifyMD5 = __defaults.VerifyMD5;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the MongoGridFSSettings class.
-        /// </summary>
-        /// <param name="chunkSize">The chunk size.</param>
-        /// <param name="root">The root collection name.</param>
-        /// <param name="safeMode">The safe mode.</param>
-        public MongoGridFSSettings(int chunkSize, string root, SafeMode safeMode)
-        {
-            if (root == null)
-            {
-                throw new ArgumentNullException("root");
-            }
-            if (safeMode == null)
-            {
-                throw new ArgumentNullException("safeMode");
-            }
-
-            _chunkSize = chunkSize;
-            this.Root = root; // use property not field
-            _safeMode = safeMode;
-            _updateMD5 = __defaults.UpdateMD5;
-            _verifyMD5 = __defaults.VerifyMD5;
         }
 
         // public static properties
@@ -104,17 +72,9 @@ namespace MongoDB.Driver.GridFS
 
         // public properties
         /// <summary>
-        /// Gets the chunks collection name.
-        /// </summary>
-        public string ChunksCollectionName
-        {
-            get { return _chunksCollectionName; }
-        }
-
-        /// <summary>
         /// Gets or sets the chunk size.
         /// </summary>
-        public int ChunkSize
+        public int? ChunkSize
         {
             get { return _chunkSize; }
             set
@@ -122,14 +82,6 @@ namespace MongoDB.Driver.GridFS
                 if (_isFrozen) { ThrowFrozen(); }
                 _chunkSize = value;
             }
-        }
-
-        /// <summary>
-        /// Gets the files collection name.
-        /// </summary>
-        public string FilesCollectionName
-        {
-            get { return _filesCollectionName; }
         }
 
         /// <summary>
@@ -149,13 +101,7 @@ namespace MongoDB.Driver.GridFS
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
                 _root = value;
-                _filesCollectionName = value + ".files";
-                _chunksCollectionName = value + ".chunks";
             }
         }
 
@@ -168,10 +114,6 @@ namespace MongoDB.Driver.GridFS
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
                 _safeMode = value;
             }
         }
@@ -179,7 +121,7 @@ namespace MongoDB.Driver.GridFS
         /// <summary>
         /// Gets or sets whether to udpate the MD5 hash on the server when a file is uploaded or modified.
         /// </summary>
-        public bool UpdateMD5
+        public bool? UpdateMD5
         {
             get { return _updateMD5; }
             set {
@@ -191,7 +133,7 @@ namespace MongoDB.Driver.GridFS
         /// <summary>
         /// Gets or sets whether to verify the MD5 hash when a file is uploaded or downloaded.
         /// </summary>
-        public bool VerifyMD5
+        public bool? VerifyMD5
         {
             get { return _verifyMD5; }
             set {
@@ -231,11 +173,9 @@ namespace MongoDB.Driver.GridFS
         public MongoGridFSSettings Clone()
         {
             var clone = new MongoGridFSSettings();
-            clone._chunksCollectionName = _chunksCollectionName;
             clone._chunkSize = _chunkSize;
-            clone._filesCollectionName = _filesCollectionName;
             clone._root = _root;
-            clone._safeMode = _safeMode.Clone();
+            clone._safeMode = (_safeMode == null) ? null : _safeMode.Clone();
             clone._updateMD5 = _updateMD5;
             clone._verifyMD5 = _verifyMD5;
             return clone;
@@ -275,7 +215,7 @@ namespace MongoDB.Driver.GridFS
         {
             if (!_isFrozen)
             {
-                _safeMode = _safeMode.FrozenCopy();
+                if (_safeMode != null) { _safeMode = _safeMode.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _isFrozen = true;
             }
@@ -311,12 +251,37 @@ namespace MongoDB.Driver.GridFS
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + _chunkSize.GetHashCode();
-            hash = 37 * hash + _root.GetHashCode();
-            hash = 37 * hash + _safeMode.GetHashCode();
-            hash = 37 * hash + _updateMD5.GetHashCode();
-            hash = 37 * hash + _verifyMD5.GetHashCode();
+            hash = 37 * hash + ((_chunkSize == null) ? 0 : _chunkSize.GetHashCode());
+            hash = 37 * hash + ((_root == null) ? 0 : _root.GetHashCode());
+            hash = 37 * hash + ((_safeMode == null) ? 0 : _safeMode.GetHashCode());
+            hash = 37 * hash + ((_updateMD5 == null) ? 0 : _updateMD5.GetHashCode());
+            hash = 37 * hash + ((_verifyMD5 == null) ? 0 : _verifyMD5.GetHashCode());
             return hash;
+        }
+
+        // internal methods
+        internal void ApplyInheritedSettings(MongoDatabaseSettings databaseSettings)
+        {
+            if (_chunkSize == null)
+            {
+                _chunkSize = __defaults.ChunkSize;
+            }
+            if (_root == null)
+            {
+                _root = __defaults.Root;
+            }
+            if (_safeMode == null)
+            {
+                _safeMode = databaseSettings.SafeMode;
+            }
+            if (_updateMD5 == null)
+            {
+                _updateMD5 = __defaults.UpdateMD5;
+            }
+            if (_verifyMD5 == null)
+            {
+                _verifyMD5 = __defaults.VerifyMD5;
+            }
         }
 
         // private methods

@@ -48,7 +48,7 @@ namespace MongoDB.DriverUnitTests.GridFS
         [Test]
         public void TestConstructorFeezesSettings()
         {
-            var settings = new MongoGridFSSettings(_database);
+            var settings = new MongoGridFSSettings();
             Assert.IsFalse(settings.IsFrozen);
             var gridFS = new MongoGridFS(_database, settings);
             Assert.IsTrue(gridFS.Settings.IsFrozen);
@@ -67,7 +67,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var createOptions = new MongoGridFSCreateOptions
             {
                 Aliases = new[] { "HelloWorld", "HelloUniverse" },
-                ChunkSize = _gridFS.Settings.ChunkSize,
+                ChunkSize = _gridFS.Settings.ChunkSize.Value,
                 ContentType = "text/plain",
                 Id = ObjectId.GenerateNewId(),
                 Metadata = new BsonDocument { { "a", 1 }, { "b", 2 } },
@@ -173,7 +173,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             _gridFS.Delete(Query.Null);
             var fileInfo = UploadHelloWorld(false);
 
-            var settings = new MongoGridFSSettings(_database) { VerifyMD5 = false };
+            var settings = new MongoGridFSSettings() { VerifyMD5 = false };
             var gridFS = _database.GetGridFS(settings);
             var downloadStream = new MemoryStream();
             gridFS.Download(downloadStream, fileInfo);
@@ -368,7 +368,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var createOptions = new MongoGridFSCreateOptions
             {
                 Aliases = new[] { "HelloWorld", "HelloUniverse" },
-                ChunkSize = _gridFS.Settings.ChunkSize,
+                ChunkSize = _gridFS.Settings.ChunkSize.Value,
                 ContentType = "text/plain",
                 Id = ObjectId.GenerateNewId(),
                 Metadata = new BsonDocument { { "a", 1 }, { "b", 2 } },
@@ -395,7 +395,7 @@ namespace MongoDB.DriverUnitTests.GridFS
 
         private MongoGridFSFileInfo UploadHelloWorld(bool verifyMD5)
         {
-            var settings = new MongoGridFSSettings(_database) { VerifyMD5 = verifyMD5 };
+            var settings = new MongoGridFSSettings() { VerifyMD5 = verifyMD5 };
             var gridFS = _database.GetGridFS(settings);
             var bytes = Encoding.UTF8.GetBytes("Hello World");
             var stream = new MemoryStream(bytes);

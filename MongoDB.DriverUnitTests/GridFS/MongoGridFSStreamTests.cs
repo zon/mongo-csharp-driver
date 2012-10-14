@@ -39,7 +39,7 @@ namespace MongoDB.DriverUnitTests.GridFS
         {
             _server = Configuration.TestServer;
             _database = Configuration.TestDatabase;
-            var settings = new MongoGridFSSettings(_database)
+            var settings = new MongoGridFSSettings()
             {
                 ChunkSize = 16,
                 SafeMode = SafeMode.True
@@ -277,7 +277,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var fileInfo = _gridFS.FindOne("test");
             Assert.IsNull(fileInfo);
 
-            var settings = new MongoGridFSSettings(_database)
+            var settings = new MongoGridFSSettings()
             {
                 ChunkSize = 16,
                 SafeMode = SafeMode.True,
@@ -296,7 +296,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             Assert.AreEqual(4, fileInfo.Length);
             Assert.IsNull(fileInfo.MD5);
 
-            settings = new MongoGridFSSettings(_database)
+            settings = new MongoGridFSSettings()
             {
                 ChunkSize = 16,
                 SafeMode = SafeMode.True,

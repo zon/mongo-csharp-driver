@@ -67,7 +67,7 @@ namespace MongoDB.Driver.GridFS
         /// <param name="gridFS">The GridFS file system that contains the GridFS file.</param>
         /// <param name="remoteFileName">The remote file name.</param>
         public MongoGridFSFileInfo(MongoGridFS gridFS, string remoteFileName)
-            : this(gridFS, remoteFileName, gridFS.Settings.ChunkSize)
+            : this(gridFS, remoteFileName, gridFS.Settings.ChunkSize.Value)
         {
         }
 
@@ -94,7 +94,7 @@ namespace MongoDB.Driver.GridFS
         {
             _gridFS = gridFS;
             _aliases = createOptions.Aliases;
-            _chunkSize = createOptions.ChunkSize == 0 ? gridFS.Settings.ChunkSize : createOptions.ChunkSize;
+            _chunkSize = (createOptions.ChunkSize == 0) ? gridFS.Settings.ChunkSize.Value : createOptions.ChunkSize;
             _contentType = createOptions.ContentType;
             _id = createOptions.Id;
             _metadata = createOptions.Metadata;
