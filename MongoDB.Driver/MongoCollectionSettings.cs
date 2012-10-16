@@ -28,10 +28,10 @@ namespace MongoDB.Driver
     public class MongoCollectionSettings
     {
         // private fields
-        private bool? _assignIdOnInsert;
-        private GuidRepresentation? _guidRepresentation;
-        private ReadPreference _readPreference;
-        private SafeMode _safeMode;
+        private Setting<bool> _assignIdOnInsert;
+        private Setting<GuidRepresentation> _guidRepresentation;
+        private Setting<ReadPreference> _readPreference;
+        private Setting<SafeMode> _safeMode;
 
         // the following fields are set when Freeze is called
         private bool _isFrozen;
@@ -50,26 +50,26 @@ namespace MongoDB.Driver
         /// <summary>
         /// Gets or sets whether the driver should assign Id values when missing.
         /// </summary>
-        public bool? AssignIdOnInsert
+        public bool AssignIdOnInsert
         {
-            get { return _assignIdOnInsert; }
+            get { return _assignIdOnInsert.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
-                _assignIdOnInsert = value;
+                _assignIdOnInsert.Value = value;
             }
         }
 
         /// <summary>
         /// Gets or sets the representation used for Guids.
         /// </summary>
-        public GuidRepresentation? GuidRepresentation
+        public GuidRepresentation GuidRepresentation
         {
-            get { return _guidRepresentation; }
+            get { return _guidRepresentation.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
-                _guidRepresentation = value;
+                _guidRepresentation.Value = value;
             }
         }
 
@@ -86,7 +86,7 @@ namespace MongoDB.Driver
         /// </summary>
         public ReadPreference ReadPreference
         {
-            get { return _readPreference; }
+            get { return _readPreference.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
@@ -94,7 +94,7 @@ namespace MongoDB.Driver
                 {
                     throw new ArgumentNullException("value");
                 }
-                _readPreference = value;
+                _readPreference.Value = value;
             }
         }
 
@@ -103,7 +103,7 @@ namespace MongoDB.Driver
         /// </summary>
         public SafeMode SafeMode
         {
-            get { return _safeMode; }
+            get { return _safeMode.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
@@ -111,7 +111,7 @@ namespace MongoDB.Driver
                 {
                     throw new ArgumentNullException("value");
                 }
-                _safeMode = value;
+                _safeMode.Value = value;
             }
         }
 
@@ -123,10 +123,10 @@ namespace MongoDB.Driver
         public MongoCollectionSettings Clone()
         {
             var clone = new MongoCollectionSettings();
-            clone._assignIdOnInsert = _assignIdOnInsert;
-            clone._guidRepresentation = _guidRepresentation;
-            clone._readPreference = _readPreference;
-            clone._safeMode = _safeMode;
+            clone._assignIdOnInsert = _assignIdOnInsert.Clone();
+            clone._guidRepresentation = _guidRepresentation.Clone();
+            clone._readPreference = _readPreference.Clone();
+            clone._safeMode = _safeMode.Clone();
             return clone;
         }
 
@@ -151,10 +151,10 @@ namespace MongoDB.Driver
                 else
                 {
                     return
-                        _assignIdOnInsert == rhs._assignIdOnInsert &&
-                        _guidRepresentation == rhs._guidRepresentation &&
-                        _readPreference == rhs._readPreference &&
-                        _safeMode == rhs._safeMode;
+                        _assignIdOnInsert.Value == rhs._assignIdOnInsert.Value &&
+                        _guidRepresentation.Value == rhs._guidRepresentation.Value &&
+                        _readPreference.Value == rhs._readPreference.Value &&
+                        _safeMode.Value == rhs._safeMode.Value;
                 }
             }
         }
@@ -167,8 +167,8 @@ namespace MongoDB.Driver
         {
             if (!_isFrozen)
             {
-                _readPreference = (_readPreference == null) ? null : _readPreference.FrozenCopy();
-                _safeMode = (_safeMode == null) ? null : _safeMode.FrozenCopy();
+                if (_readPreference.Value != null) { _readPreference.Value = _readPreference.Value.FrozenCopy(); }
+                if (_safeMode.Value != null) { _safeMode.Value = _safeMode.Value.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _frozenStringRepresentation = ToString();
                 _isFrozen = true;
@@ -205,10 +205,10 @@ namespace MongoDB.Driver
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + ((_assignIdOnInsert == null) ? 0 : _assignIdOnInsert.GetHashCode());
-            hash = 37 * hash + ((_guidRepresentation == null) ? 0 : _guidRepresentation.GetHashCode());
-            hash = 37 * hash + ((_readPreference == null) ? 0 : _readPreference.GetHashCode());
-            hash = 37 * hash + ((_safeMode == null) ? 0 :_safeMode.GetHashCode());
+            hash = 37 * hash + _assignIdOnInsert.Value.GetHashCode();
+            hash = 37 * hash + _guidRepresentation.Value.GetHashCode();
+            hash = 37 * hash + ((_readPreference.Value == null) ? 0 : _readPreference.Value.GetHashCode());
+            hash = 37 * hash + ((_safeMode.Value == null) ? 0 :_safeMode.Value.GetHashCode());
             return hash;
         }
 
@@ -229,23 +229,23 @@ namespace MongoDB.Driver
         }
 
         // internal methods
-        internal void ApplyInheritedSettings(MongoDatabaseSettings databaseSettings)
+        internal void ApplyDefaultValues(MongoDatabaseSettings databaseSettings)
         {
-            if (_assignIdOnInsert == null)
+            if (!_assignIdOnInsert.HasBeenSet)
             {
-                _assignIdOnInsert = MongoDefaults.AssignIdOnInsert;
+                AssignIdOnInsert = MongoDefaults.AssignIdOnInsert;
             }
-            if (_guidRepresentation == null)
+            if (!_guidRepresentation.HasBeenSet)
             {
-                _guidRepresentation = databaseSettings.GuidRepresentation;
+                GuidRepresentation = databaseSettings.GuidRepresentation;
             }
-            if (_readPreference == null)
+            if (!_readPreference.HasBeenSet)
             {
-                _readPreference = databaseSettings.ReadPreference;
+                ReadPreference = databaseSettings.ReadPreference;
             }
-            if (_safeMode == null)
+            if (!_safeMode.HasBeenSet)
             {
-                _safeMode = databaseSettings.SafeMode;
+                SafeMode = databaseSettings.SafeMode;
             }
         }
     }

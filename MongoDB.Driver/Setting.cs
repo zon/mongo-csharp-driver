@@ -31,7 +31,7 @@ namespace MongoDB.Driver
 
         // public properties
         /// <summary>
-        /// Gets the value of the settings.
+        /// Gets the value of the setting.
         /// </summary>
         public T Value
         {
@@ -66,7 +66,7 @@ namespace MongoDB.Driver
         /// <returns>A canonical string representation for this setting.</returns>
         public override string ToString()
         {
-            return _hasBeenSet ? _value.ToString() : "default";
+            return _hasBeenSet ? ((_value == null) ? "null" : _value.ToString()) : "default";
         }
 
         // internal methods

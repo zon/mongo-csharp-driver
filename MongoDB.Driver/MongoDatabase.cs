@@ -65,7 +65,7 @@ namespace MongoDB.Driver
             }
 
             settings = settings.Clone();
-            settings.ApplyInheritedSettings(server.Settings);
+            settings.ApplyDefaultValues(server.Settings);
             settings.Freeze();
 
             _server = server;

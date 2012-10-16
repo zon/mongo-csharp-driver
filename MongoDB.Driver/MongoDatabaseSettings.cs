@@ -28,10 +28,10 @@ namespace MongoDB.Driver
     public class MongoDatabaseSettings
     {
         // private fields
-        private MongoCredentials _credentials;
-        private GuidRepresentation? _guidRepresentation;
-        private ReadPreference _readPreference;
-        private SafeMode _safeMode;
+        private Setting<MongoCredentials> _credentials;
+        private Setting<GuidRepresentation> _guidRepresentation;
+        private Setting<ReadPreference> _readPreference;
+        private Setting<SafeMode> _safeMode;
 
         // the following fields are set when Freeze is called
         private bool _isFrozen;
@@ -52,24 +52,24 @@ namespace MongoDB.Driver
         /// </summary>
         public MongoCredentials Credentials
         {
-            get { return _credentials; }
+            get { return _credentials.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoDatabaseSettings is frozen."); }
-                _credentials = value;
+                _credentials.Value = value;
             }
         }
 
         /// <summary>
         /// Gets or sets the representation to use for Guids.
         /// </summary>
-        public GuidRepresentation? GuidRepresentation
+        public GuidRepresentation GuidRepresentation
         {
-            get { return _guidRepresentation; }
+            get { return _guidRepresentation.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoDatabaseSettings is frozen."); }
-                _guidRepresentation = value;
+                _guidRepresentation.Value = value;
             }
         }
 
@@ -86,7 +86,7 @@ namespace MongoDB.Driver
         /// </summary>
         public ReadPreference ReadPreference
         {
-            get { return _readPreference; }
+            get { return _readPreference.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoDatabaseSettings is frozen."); }
@@ -94,7 +94,7 @@ namespace MongoDB.Driver
                 {
                     throw new ArgumentNullException("value");
                 }
-                _readPreference = value;
+                _readPreference.Value = value;
             }
         }
 
@@ -103,7 +103,7 @@ namespace MongoDB.Driver
         /// </summary>
         public SafeMode SafeMode
         {
-            get { return _safeMode; }
+            get { return _safeMode.Value; }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoDatabaseSettings is frozen."); }
@@ -111,7 +111,7 @@ namespace MongoDB.Driver
                 {
                     throw new ArgumentNullException("value");
                 }
-                _safeMode = value;
+                _safeMode.Value = value;
             }
         }
 
@@ -123,10 +123,10 @@ namespace MongoDB.Driver
         public MongoDatabaseSettings Clone()
         {
             var clone =  new MongoDatabaseSettings();
-            clone._credentials = _credentials;
-            clone._guidRepresentation = _guidRepresentation;
-            clone._readPreference = _readPreference;
-            clone._safeMode = _safeMode;
+            clone._credentials = _credentials.Clone();
+            clone._guidRepresentation = _guidRepresentation.Clone();
+            clone._readPreference = _readPreference.Clone();
+            clone._safeMode = _safeMode.Clone();
             return clone;
         }
 
@@ -151,10 +151,10 @@ namespace MongoDB.Driver
                 else
                 {
                     return
-                        _credentials == rhs._credentials &&
-                        _guidRepresentation == rhs._guidRepresentation &&
-                        _readPreference == rhs._readPreference &&
-                        _safeMode == rhs._safeMode;
+                        _credentials.Value == rhs._credentials.Value &&
+                        _guidRepresentation.Value == rhs._guidRepresentation.Value &&
+                        _readPreference.Value == rhs._readPreference.Value &&
+                        _safeMode.Value == rhs._safeMode.Value;
                 }
             }
         }
@@ -167,8 +167,8 @@ namespace MongoDB.Driver
         {
             if (!_isFrozen)
             {
-                _readPreference = (_readPreference == null) ? null : _readPreference.FrozenCopy();
-                _safeMode = (_safeMode == null) ? null : _safeMode.FrozenCopy();
+                if (_readPreference.Value != null) { _readPreference.Value = _readPreference.Value.FrozenCopy(); }
+                if (_safeMode.Value != null) { _safeMode.Value = _safeMode.Value.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _frozenStringRepresentation = ToString();
                 _isFrozen = true;
@@ -205,10 +205,10 @@ namespace MongoDB.Driver
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + ((_credentials == null) ? 0 : _credentials.GetHashCode());
-            hash = 37 * hash + ((_guidRepresentation == null) ? 0 : _guidRepresentation.GetHashCode());
-            hash = 37 * hash + ((_readPreference == null) ? 0 : _readPreference.GetHashCode());
-            hash = 37 * hash + ((_safeMode == null) ? 0 : _safeMode.GetHashCode());
+            hash = 37 * hash + ((_credentials.Value == null) ? 0 : _credentials.Value.GetHashCode());
+            hash = 37 * hash + _guidRepresentation.Value.GetHashCode();
+            hash = 37 * hash + ((_readPreference.Value == null) ? 0 : _readPreference.Value.GetHashCode());
+            hash = 37 * hash + ((_safeMode.Value == null) ? 0 : _safeMode.Value.GetHashCode());
             return hash;
         }
 
@@ -229,23 +229,23 @@ namespace MongoDB.Driver
         }
 
         // internal methods
-        internal void ApplyInheritedSettings(MongoServerSettings serverSettings)
+        internal void ApplyDefaultValues(MongoServerSettings serverSettings)
         {
-            if (_credentials == null)
+            if (!_credentials.HasBeenSet)
             {
-                _credentials = serverSettings.DefaultCredentials;
+                Credentials = serverSettings.DefaultCredentials;
             }
-            if (_guidRepresentation == null)
+            if (!_guidRepresentation.HasBeenSet)
             {
-                _guidRepresentation = serverSettings.GuidRepresentation;
+                GuidRepresentation = serverSettings.GuidRepresentation;
             }
-            if (_readPreference == null)
+            if (!_readPreference.HasBeenSet)
             {
-                _readPreference = serverSettings.ReadPreference;
+                ReadPreference = serverSettings.ReadPreference;
             }
-            if (_safeMode == null)
+            if (!_safeMode.HasBeenSet)
             {
-                _safeMode = serverSettings.SafeMode;
+                SafeMode = serverSettings.SafeMode;
             }
         }
     }

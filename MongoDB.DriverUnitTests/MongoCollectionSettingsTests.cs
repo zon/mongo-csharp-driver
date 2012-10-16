@@ -41,7 +41,7 @@ namespace MongoDB.DriverUnitTests
             };
 
             Assert.AreEqual(true, settings.AssignIdOnInsert);
-            Assert.AreEqual(GuidRepresentation.CSharpLegacy, settings.GuidRepresentation.Value);
+            Assert.AreEqual(GuidRepresentation.CSharpLegacy, settings.GuidRepresentation);
             Assert.AreEqual(SafeMode.Create(5, TimeSpan.FromSeconds(5)), settings.SafeMode);
             Assert.AreEqual(ReadPreference.Primary, settings.ReadPreference);
 

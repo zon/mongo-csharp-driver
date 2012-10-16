@@ -66,7 +66,7 @@ namespace MongoDB.Driver
             }
 
             settings = settings.Clone();
-            settings.ApplyInheritedSettings(database.Settings);
+            settings.ApplyDefaultValues(database.Settings);
             settings.Freeze();
 
             _server = database.Server;
@@ -1154,7 +1154,7 @@ namespace MongoDB.Driver
                             throw new ArgumentException("Batch contains one or more null documents.");
                         }
 
-                        if (_settings.AssignIdOnInsert.Value)
+                        if (_settings.AssignIdOnInsert)
                         {
                             var serializer = BsonSerializer.LookupSerializer(document.GetType());
                             var idProvider = serializer as IBsonIdProvider;
@@ -1464,7 +1464,7 @@ namespace MongoDB.Driver
                         var bsonDocument = new BsonDocument();
                         var bsonDocumentWriterSettings = new BsonDocumentWriterSettings
                         {
-                            GuidRepresentation = _settings.GuidRepresentation.Value
+                            GuidRepresentation = _settings.GuidRepresentation
                         };
                         var bsonWriter = BsonWriter.Create(bsonDocument, bsonDocumentWriterSettings);
                         bsonWriter.WriteStartDocument();
@@ -1633,7 +1633,7 @@ namespace MongoDB.Driver
         {
             return new BsonBinaryReaderSettings
             {
-                GuidRepresentation = _settings.GuidRepresentation.Value,
+                GuidRepresentation = _settings.GuidRepresentation,
                 MaxDocumentSize = connection.ServerInstance.MaxDocumentSize
             };
         }
@@ -1642,7 +1642,7 @@ namespace MongoDB.Driver
         {
             return new BsonBinaryWriterSettings
             {
-                GuidRepresentation = _settings.GuidRepresentation.Value,
+                GuidRepresentation = _settings.GuidRepresentation,
                 MaxDocumentSize = connection.ServerInstance.MaxDocumentSize
             };
         }
