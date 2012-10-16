@@ -30,11 +30,11 @@ namespace MongoDB.Driver.GridFS
         private static MongoGridFSSettings __defaults = new MongoGridFSSettings();
 
         // private fields
-        private int? _chunkSize;
-        private string _root;
-        private SafeMode _safeMode;
-        private bool? _updateMD5;
-        private bool? _verifyMD5;
+        private Setting<int> _chunkSize;
+        private Setting<string> _root;
+        private Setting<SafeMode> _safeMode;
+        private Setting<bool> _updateMD5;
+        private Setting<bool> _verifyMD5;
 
         private bool _isFrozen;
         private int _frozenHashCode;
@@ -74,13 +74,13 @@ namespace MongoDB.Driver.GridFS
         /// <summary>
         /// Gets or sets the chunk size.
         /// </summary>
-        public int? ChunkSize
+        public int ChunkSize
         {
-            get { return _chunkSize; }
+            get { return _chunkSize.Value; }
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
-                _chunkSize = value;
+                _chunkSize.Value = value;
             }
         }
 
@@ -97,11 +97,15 @@ namespace MongoDB.Driver.GridFS
         /// </summary>
         public string Root
         {
-            get { return _root; }
+            get { return _root.Value; }
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
-                _root = value;
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                _root.Value = value;
             }
         }
 
@@ -110,35 +114,39 @@ namespace MongoDB.Driver.GridFS
         /// </summary>
         public SafeMode SafeMode
         {
-            get { return _safeMode; }
+            get { return _safeMode.Value; }
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
-                _safeMode = value;
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                _safeMode.Value = value;
             }
         }
 
         /// <summary>
         /// Gets or sets whether to udpate the MD5 hash on the server when a file is uploaded or modified.
         /// </summary>
-        public bool? UpdateMD5
+        public bool UpdateMD5
         {
-            get { return _updateMD5; }
+            get { return _updateMD5.Value; }
             set {
                 if (_isFrozen) { ThrowFrozen(); }
-                _updateMD5 = value;
+                _updateMD5.Value = value;
             }
         }
 
         /// <summary>
         /// Gets or sets whether to verify the MD5 hash when a file is uploaded or downloaded.
         /// </summary>
-        public bool? VerifyMD5
+        public bool VerifyMD5
         {
-            get { return _verifyMD5; }
+            get { return _verifyMD5.Value; }
             set {
                 if (_isFrozen) { ThrowFrozen(); }
-                _verifyMD5 = value;
+                _verifyMD5.Value = value;
             }
         }
 
@@ -173,11 +181,11 @@ namespace MongoDB.Driver.GridFS
         public MongoGridFSSettings Clone()
         {
             var clone = new MongoGridFSSettings();
-            clone._chunkSize = _chunkSize;
-            clone._root = _root;
-            clone._safeMode = (_safeMode == null) ? null : _safeMode.Clone();
-            clone._updateMD5 = _updateMD5;
-            clone._verifyMD5 = _verifyMD5;
+            clone._chunkSize = _chunkSize.Clone();
+            clone._root = _root.Clone();
+            clone._safeMode = _safeMode.Clone();
+            clone._updateMD5 = _updateMD5.Clone();
+            clone._verifyMD5 = _verifyMD5.Clone();
             return clone;
         }
 
@@ -190,11 +198,11 @@ namespace MongoDB.Driver.GridFS
         {
             if (object.ReferenceEquals(rhs, null) || GetType() != rhs.GetType()) { return false; }
             return
-                _chunkSize == rhs._chunkSize &&
-                _root == rhs._root &&
-                _safeMode == rhs._safeMode &&
-                _updateMD5 == rhs._updateMD5 &&
-                _verifyMD5 == rhs._verifyMD5;
+                _chunkSize.Value == rhs._chunkSize.Value &&
+                _root.Value == rhs._root.Value &&
+                _safeMode.Value == rhs._safeMode.Value &&
+                _updateMD5.Value == rhs._updateMD5.Value &&
+                _verifyMD5.Value == rhs._verifyMD5.Value;
         }
 
         /// <summary>
@@ -215,7 +223,7 @@ namespace MongoDB.Driver.GridFS
         {
             if (!_isFrozen)
             {
-                if (_safeMode != null) { _safeMode = _safeMode.FrozenCopy(); }
+                if (_safeMode.Value != null) { _safeMode.Value = _safeMode.Value.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _isFrozen = true;
             }
@@ -251,36 +259,36 @@ namespace MongoDB.Driver.GridFS
 
             // see Effective Java by Joshua Bloch
             int hash = 17;
-            hash = 37 * hash + ((_chunkSize == null) ? 0 : _chunkSize.GetHashCode());
-            hash = 37 * hash + ((_root == null) ? 0 : _root.GetHashCode());
-            hash = 37 * hash + ((_safeMode == null) ? 0 : _safeMode.GetHashCode());
-            hash = 37 * hash + ((_updateMD5 == null) ? 0 : _updateMD5.GetHashCode());
-            hash = 37 * hash + ((_verifyMD5 == null) ? 0 : _verifyMD5.GetHashCode());
+            hash = 37 * hash + _chunkSize.Value.GetHashCode();
+            hash = 37 * hash + ((_root.Value == null) ? 0 : _root.Value.GetHashCode());
+            hash = 37 * hash + ((_safeMode.Value == null) ? 0 : _safeMode.Value.GetHashCode());
+            hash = 37 * hash + _updateMD5.Value.GetHashCode();
+            hash = 37 * hash + _verifyMD5.Value.GetHashCode();
             return hash;
         }
 
         // internal methods
-        internal void ApplyInheritedSettings(MongoDatabaseSettings databaseSettings)
+        internal void ApplyDefaultValues(MongoDatabaseSettings databaseSettings)
         {
-            if (_chunkSize == null)
+            if (!_chunkSize.HasBeenSet)
             {
-                _chunkSize = __defaults.ChunkSize;
+                ChunkSize = __defaults.ChunkSize;
             }
-            if (_root == null)
+            if (!_root.HasBeenSet)
             {
-                _root = __defaults.Root;
+                Root = __defaults.Root;
             }
-            if (_safeMode == null)
+            if (!_safeMode.HasBeenSet)
             {
-                _safeMode = databaseSettings.SafeMode;
+                SafeMode = databaseSettings.SafeMode;
             }
-            if (_updateMD5 == null)
+            if (!_updateMD5.HasBeenSet)
             {
-                _updateMD5 = __defaults.UpdateMD5;
+                UpdateMD5 = __defaults.UpdateMD5;
             }
-            if (_verifyMD5 == null)
+            if (!_verifyMD5.HasBeenSet)
             {
-                _verifyMD5 = __defaults.VerifyMD5;
+                VerifyMD5 = __defaults.VerifyMD5;
             }
         }
 

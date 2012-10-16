@@ -67,7 +67,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var createOptions = new MongoGridFSCreateOptions
             {
                 Aliases = new[] { "HelloWorld", "HelloUniverse" },
-                ChunkSize = _gridFS.Settings.ChunkSize.Value,
+                ChunkSize = _gridFS.Settings.ChunkSize,
                 ContentType = "text/plain",
                 Id = ObjectId.GenerateNewId(),
                 Metadata = new BsonDocument { { "a", 1 }, { "b", 2 } },
@@ -368,7 +368,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var createOptions = new MongoGridFSCreateOptions
             {
                 Aliases = new[] { "HelloWorld", "HelloUniverse" },
-                ChunkSize = _gridFS.Settings.ChunkSize.Value,
+                ChunkSize = _gridFS.Settings.ChunkSize,
                 ContentType = "text/plain",
                 Id = ObjectId.GenerateNewId(),
                 Metadata = new BsonDocument { { "a", 1 }, { "b", 2 } },

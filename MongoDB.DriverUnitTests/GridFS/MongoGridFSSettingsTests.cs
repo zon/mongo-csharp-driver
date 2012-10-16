@@ -32,11 +32,11 @@ namespace MongoDB.DriverUnitTests.GridFS
         public void TestDefaults()
         {
             var settings = MongoGridFSSettings.Defaults;
-            Assert.AreEqual(256 * 1024, settings.ChunkSize.Value);
+            Assert.AreEqual(256 * 1024, settings.ChunkSize);
             Assert.AreEqual("fs", settings.Root);
             Assert.AreEqual(null, settings.SafeMode);
-            Assert.AreEqual(true, settings.UpdateMD5.Value);
-            Assert.AreEqual(true, settings.VerifyMD5.Value);
+            Assert.AreEqual(true, settings.UpdateMD5);
+            Assert.AreEqual(true, settings.VerifyMD5);
             Assert.AreEqual(true, settings.IsFrozen);
         }
 
@@ -48,14 +48,14 @@ namespace MongoDB.DriverUnitTests.GridFS
                 ChunkSize = 64 * 1024,
                 Root = "root",
                 SafeMode = SafeMode.True,
-                UpdateMD5 = false,
-                VerifyMD5 = false
+                UpdateMD5 = true,
+                VerifyMD5 = true
             };
-            Assert.AreEqual(64 * 1024, settings.ChunkSize.Value);
+            Assert.AreEqual(64 * 1024, settings.ChunkSize);
             Assert.AreEqual("root", settings.Root);
             Assert.AreEqual(SafeMode.True, settings.SafeMode);
-            Assert.AreEqual(false, settings.UpdateMD5.Value);
-            Assert.AreEqual(false, settings.VerifyMD5.Value);
+            Assert.AreEqual(true, settings.UpdateMD5);
+            Assert.AreEqual(true, settings.VerifyMD5);
             Assert.AreEqual(false, settings.IsFrozen);
         }
 
@@ -63,11 +63,11 @@ namespace MongoDB.DriverUnitTests.GridFS
         public void TestCreationEmpty()
         {
             var settings = new MongoGridFSSettings();
-            Assert.AreEqual(null, settings.ChunkSize);
+            Assert.AreEqual(0, settings.ChunkSize);
             Assert.AreEqual(null, settings.Root);
             Assert.AreEqual(null, settings.SafeMode);
-            Assert.AreEqual(null, settings.UpdateMD5);
-            Assert.AreEqual(null, settings.VerifyMD5);
+            Assert.AreEqual(false, settings.UpdateMD5);
+            Assert.AreEqual(false, settings.VerifyMD5);
             Assert.AreEqual(false, settings.IsFrozen);
         }
 
