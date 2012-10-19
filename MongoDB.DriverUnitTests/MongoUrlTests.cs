@@ -46,6 +46,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(MongoDefaults.MaxConnectionPoolSize, url.MaxConnectionPoolSize);
             Assert.AreEqual(null, url.ReplicaSetName);
             Assert.AreEqual(SafeMode.False, url.SafeMode);
+            Assert.AreEqual(MongoDefaults.SecondaryAcceptableLatency, url.SecondaryAcceptableLatency);
             Assert.AreEqual(MongoDefaults.SocketTimeout, url.SocketTimeout);
             Assert.AreEqual(false, url.UseSsl);
             Assert.AreEqual(MongoDefaults.WaitQueueMultiple, url.WaitQueueMultiple);
@@ -378,6 +379,15 @@ namespace MongoDB.DriverUnitTests
         }
 
         [Test]
+        public void TestSecondaryAcceptableLatency()
+        {
+            string connectionString = "mongodb://localhost/?secondaryAcceptableLatency=12s";
+            MongoUrl url = new MongoUrl(connectionString);
+            Assert.AreEqual(TimeSpan.FromSeconds(12), url.SecondaryAcceptableLatency);
+            Assert.AreEqual(connectionString, url.ToString());
+        }
+
+        [Test]
         public void TestSocketTimeout()
         {
             string connectionString = "mongodb://localhost/?socketTimeout=123ms";
@@ -438,7 +448,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestAll()
         {
-            string connectionString = "mongodb://localhost/?connect=replicaSet;replicaSet=name;readPreference=secondaryPreferred;safe=true;fsync=true;w=2;wtimeout=2s;uuidRepresentation=PythonLegacy";
+            string connectionString = "mongodb://localhost/?connect=replicaSet;replicaSet=name;readPreference=secondaryPreferred;safe=true;fsync=true;w=2;wtimeout=2s;secondaryAcceptableLatency=12s;uuidRepresentation=PythonLegacy";
             MongoUrl url = new MongoUrl(connectionString);
             Assert.IsNull(url.DefaultCredentials);
             Assert.AreEqual(1, url.Servers.Count());
@@ -450,6 +460,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(GuidRepresentation.PythonLegacy, url.GuidRepresentation);
             Assert.AreEqual(SafeMode.Create(true, true, 2, TimeSpan.FromSeconds(2)), url.SafeMode);
             Assert.AreEqual(ReadPreferenceMode.SecondaryPreferred, url.ReadPreference.ReadPreferenceMode);
+            Assert.AreEqual(TimeSpan.FromSeconds(12), url.SecondaryAcceptableLatency);
             Assert.AreEqual(connectionString, url.ToString());
         }
 
