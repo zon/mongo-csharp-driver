@@ -36,23 +36,28 @@ namespace MongoDB.Driver
         private TimeSpan _connectTimeout;
         private string _databaseName;
         private MongoCredentials _defaultCredentials;
+        private bool? _fireAndForget;
+        private bool? _fsync;
         private GuidRepresentation _guidRepresentation;
         private bool _ipv6;
+        private bool? _journal;
         private TimeSpan _maxConnectionIdleTime;
         private TimeSpan _maxConnectionLifeTime;
         private int _maxConnectionPoolSize;
         private int _minConnectionPoolSize;
         private ReadPreference _readPreference;
         private string _replicaSetName;
-        private SafeMode _safeMode;
+        private bool? _safe;
         private TimeSpan _secondaryAcceptableLatency;
         private IEnumerable<MongoServerAddress> _servers;
         private TimeSpan _socketTimeout;
         private bool _useSsl;
         private bool _verifySslCertificate;
+        private WriteConcern.WValue _w;
         private double _waitQueueMultiple;
         private int _waitQueueSize;
         private TimeSpan _waitQueueTimeout;
+        private TimeSpan? _wTimeout;
 
         // constructors
         /// <summary>
@@ -72,7 +77,6 @@ namespace MongoDB.Driver
             _minConnectionPoolSize = MongoDefaults.MinConnectionPoolSize;
             _readPreference = null;
             _replicaSetName = null;
-            _safeMode = null;
             _secondaryAcceptableLatency = MongoDefaults.SecondaryAcceptableLatency;
             _servers = null;
             _socketTimeout = MongoDefaults.SocketTimeout;
@@ -127,7 +131,14 @@ namespace MongoDB.Driver
         public TimeSpan ConnectTimeout
         {
             get { return _connectTimeout; }
-            set { _connectTimeout = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "ConnectTimeout must be larger than or equal to zero.");
+                }
+                _connectTimeout = value;
+            }
         }
 
         /// <summary>
@@ -149,6 +160,39 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
+        /// Gets or sets the fireAndForget value.
+        /// </summary>
+        public bool? FireAndForget
+        {
+            get { return _fireAndForget; }
+            set
+            {
+                if (_safe != null)
+                {
+                    throw new InvalidOperationException("FireAndForget and Safe are mutually exclusive.");
+                }
+                if ((value != null && value.Value) && AnyWriteConcernSettingsAreSet())
+                {
+                    throw new InvalidOperationException("FireAndForget cannot be set to true if any other write concern values have been set.");
+                }
+                _fireAndForget = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the FSync component of the write concern.
+        /// </summary>
+        public bool? FSync
+        {
+            get { return _fsync; }
+            set
+            {
+                if (value != null) { EnsureFireAndForgetIsNotTrue("FSync"); }
+                _fsync = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the representation to use for Guids.
         /// </summary>
         public GuidRepresentation GuidRepresentation
@@ -167,12 +211,32 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
+        /// Gets or sets the Journal component of the write concern.
+        /// </summary>
+        public bool? Journal
+        {
+            get { return _journal; }
+            set
+            {
+                if (value != null) { EnsureFireAndForgetIsNotTrue("Journal"); }
+                _journal = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the max connection idle time.
         /// </summary>
         public TimeSpan MaxConnectionIdleTime
         {
             get { return _maxConnectionIdleTime; }
-            set { _maxConnectionIdleTime = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionIdleTime must be larger than or equal to zero.");
+                }
+                _maxConnectionIdleTime = value;
+            }
         }
 
         /// <summary>
@@ -181,7 +245,14 @@ namespace MongoDB.Driver
         public TimeSpan MaxConnectionLifeTime
         {
             get { return _maxConnectionLifeTime; }
-            set { _maxConnectionLifeTime = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionLifeTime must be larger than or equal to zero.");
+                }
+                _maxConnectionLifeTime = value;
+            }
         }
 
         /// <summary>
@@ -190,7 +261,14 @@ namespace MongoDB.Driver
         public int MaxConnectionPoolSize
         {
             get { return _maxConnectionPoolSize; }
-            set { _maxConnectionPoolSize = value; }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionPoolSize must be larger than zero.");
+                }
+                _maxConnectionPoolSize = value;
+            }
         }
 
         /// <summary>
@@ -199,7 +277,14 @@ namespace MongoDB.Driver
         public int MinConnectionPoolSize
         {
             get { return _minConnectionPoolSize; }
-            set { _minConnectionPoolSize = value; }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "MinConnectionPoolSize must be larger than zero.");
+                }
+                _minConnectionPoolSize = value;
+            }
         }
 
         /// <summary>
@@ -221,12 +306,67 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
+        /// Gets or sets the safe value.
+        /// </summary>
+        [Obsolete("Use FireAndForget instead.")]
+        public bool? Safe
+        {
+            get { return _safe; }
+            set
+            {
+                if (_fireAndForget != null)
+                {
+                    throw new InvalidOperationException("FireAndForget and Safe are mutually exclusive.");
+                }
+                if ((value != null && !value.Value) && AnyWriteConcernSettingsAreSet())
+                {
+                    throw new InvalidOperationException("Safe cannot be set to false if any other write concern values have been set.");
+                }
+                _safe = value; 
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the SafeMode to use.
         /// </summary>
+        [Obsolete("Use FireAndForget, FSync, Journal, W and WTimeout instead.")]
         public SafeMode SafeMode
         {
-            get { return _safeMode; }
-            set { _safeMode = value; }
+            get
+            {
+                if (_fireAndForget != null || _safe != null || AnyWriteConcernSettingsAreSet())
+                {
+#pragma warning disable 618
+                    return new SafeMode(GetWriteConcern(false));
+#pragma warning restore
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                FireAndForget = null;
+                Safe = null;
+                FSync = null;
+                Journal = null;
+                W = null;
+                WTimeout = null;
+
+                if (value != null)
+                {
+                    Safe = value.Enabled;
+                    if (value.Enabled)
+                    {
+                        var writeConcern = value.WriteConcern;
+                        if (writeConcern.FSync != null) { FSync = writeConcern.FSync.Value; }
+                        if (writeConcern.Journal != null) { Journal = writeConcern.Journal.Value; }
+                        if (writeConcern.W != null) { W = writeConcern.W; }
+                        if (writeConcern.WTimeout != null) { WTimeout = writeConcern.WTimeout.Value; }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -236,7 +376,14 @@ namespace MongoDB.Driver
         public TimeSpan SecondaryAcceptableLatency
         {
             get { return _secondaryAcceptableLatency; }
-            set { _secondaryAcceptableLatency = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "SecondaryAcceptableLatency must be larger than zero.");
+                }
+                _secondaryAcceptableLatency = value;
+            }
         }
 
         /// <summary>
@@ -263,7 +410,14 @@ namespace MongoDB.Driver
         public TimeSpan SocketTimeout
         {
             get { return _socketTimeout; }
-            set { _socketTimeout = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "SocketTimeout must be larger than or equal to zero.");
+                }
+                _socketTimeout = value;
+            }
         }
 
         /// <summary>
@@ -285,6 +439,19 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
+        /// Gets or sets the W component of the write concern.
+        /// </summary>
+        public WriteConcern.WValue W
+        {
+            get { return _w; }
+            set
+            {
+                if (value != null) { EnsureFireAndForgetIsNotTrue("W"); }
+                _w = value; 
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the wait queue multiple (the actual wait queue size will be WaitQueueMultiple x MaxConnectionPoolSize).
         /// </summary>
         public double WaitQueueMultiple
@@ -292,6 +459,10 @@ namespace MongoDB.Driver
             get { return _waitQueueMultiple; }
             set
             {
+                if (value <= 0.0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueMultiple must be larger than zero.");
+                }
                 _waitQueueMultiple = value;
                 _waitQueueSize = 0;
             }
@@ -305,8 +476,12 @@ namespace MongoDB.Driver
             get { return _waitQueueSize; }
             set
             {
-                _waitQueueMultiple = 0;
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueSize must be larger than 0.");
+                }
                 _waitQueueSize = value;
+                _waitQueueMultiple = 0.0;
             }
         }
 
@@ -316,7 +491,31 @@ namespace MongoDB.Driver
         public TimeSpan WaitQueueTimeout
         {
             get { return _waitQueueTimeout; }
-            set { _waitQueueTimeout = value; }
+            set
+            {
+                if (value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueTimeout must be larger than or equal to zero.");
+                }
+                _waitQueueTimeout = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the WTimeout component of the write concern.
+        /// </summary>
+        public TimeSpan? WTimeout
+        {
+            get { return _wTimeout; }
+            set
+            {
+                if (value != null) { EnsureFireAndForgetIsNotTrue("WTimeout"); }
+                if (value != null && value.Value < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException("value", "WTimeout must be larger than or equal to zero.");
+                }
+                _wTimeout = value;
+            }
         }
 
         // internal static methods
@@ -500,6 +699,26 @@ namespace MongoDB.Driver
 
         // public methods
         /// <summary>
+        /// Returns a WriteConcern value based on this instance's settings and a fire and forget default.
+        /// </summary>
+        /// <param name="fireAndForgetDefault">The fire and forget default.</param>
+        /// <returns>A WriteConcern.</returns>
+        public WriteConcern GetWriteConcern(bool fireAndForgetDefault)
+        {
+            var fireAndForget = fireAndForgetDefault;
+            if (_fireAndForget != null) { fireAndForget = _fireAndForget.Value; }
+            else if (_safe != null) { fireAndForget = !_safe.Value; }
+            else if (AnyWriteConcernSettingsAreSet()) { fireAndForget = false; }
+
+            var writeConcern = new WriteConcern { FireAndForget = fireAndForget };
+            if (_fsync != null) { writeConcern.FSync = _fsync.Value; }
+            if (_journal != null) { writeConcern.Journal = _journal.Value; }
+            if (_w != null) { writeConcern.W = _w; }
+            if (_wTimeout != null) { writeConcern.WTimeout = _wTimeout.Value; }
+            return writeConcern;
+        }
+
+        /// <summary>
         /// Parses a URL and sets all settings to match the URL.
         /// </summary>
         /// <param name="url">The URL.</param>
@@ -561,99 +780,93 @@ namespace MongoDB.Driver
                         switch (name.ToLower())
                         {
                             case "connect":
-                                _connectionMode = ParseConnectionMode(name, value);
+                                ConnectionMode = ParseConnectionMode(name, value);
                                 break;
                             case "connecttimeout":
                             case "connecttimeoutms":
-                                _connectTimeout = ParseTimeSpan(name, value);
+                                ConnectTimeout = ParseTimeSpan(name, value);
+                                break;
+                            case "fireandforget":
+                                FireAndForget = ParseBoolean(name, value);
                                 break;
                             case "fsync":
-                                if (_safeMode == null) { _safeMode = new SafeMode(false); }
-                                _safeMode.FSync = ParseBoolean(name, value);
+                                FSync = ParseBoolean(name, value);
                                 break;
                             case "guids":
                             case "uuidrepresentation":
-                                _guidRepresentation = (GuidRepresentation)Enum.Parse(typeof(GuidRepresentation), value, true); // ignoreCase
+                                GuidRepresentation = (GuidRepresentation)Enum.Parse(typeof(GuidRepresentation), value, true); // ignoreCase
                                 break;
                             case "ipv6":
-                                _ipv6 = ParseBoolean(name, value);
+                                IPv6 = ParseBoolean(name, value);
                                 break;
                             case "j":
                             case "journal":
-                                if (_safeMode == null) { _safeMode = new SafeMode(false); }
-                                SafeMode.Journal = ParseBoolean(name, value);
+                                Journal = ParseBoolean(name, value);
                                 break;
                             case "maxidletime":
                             case "maxidletimems":
-                                _maxConnectionIdleTime = ParseTimeSpan(name, value);
+                                MaxConnectionIdleTime = ParseTimeSpan(name, value);
                                 break;
                             case "maxlifetime":
                             case "maxlifetimems":
-                                _maxConnectionLifeTime = ParseTimeSpan(name, value);
+                                MaxConnectionLifeTime = ParseTimeSpan(name, value);
                                 break;
                             case "maxpoolsize":
-                                _maxConnectionPoolSize = ParseInt32(name, value);
+                                MaxConnectionPoolSize = ParseInt32(name, value);
                                 break;
                             case "minpoolsize":
-                                _minConnectionPoolSize = ParseInt32(name, value);
+                                MinConnectionPoolSize = ParseInt32(name, value);
                                 break;
                             case "readpreference":
                                 if (_readPreference == null) { _readPreference = new ReadPreference(); }
-                                _readPreference.ReadPreferenceMode = ParseReadPreferenceMode(name, value);
+                                ReadPreference.ReadPreferenceMode = ParseReadPreferenceMode(name, value);
                                 break;
                             case "readpreferencetags":
                                 if (_readPreference == null) { _readPreference = new ReadPreference { ReadPreferenceMode = ReadPreferenceMode.Primary }; }
-                                _readPreference.AddTagSet(ParseReplicaSetTagSet(name, value));
+                                ReadPreference.AddTagSet(ParseReplicaSetTagSet(name, value));
                                 break;
                             case "replicaset":
-                                _replicaSetName = value;
+                                ReplicaSetName = value;
                                 break;
                             case "safe":
-                                if (_safeMode == null) { _safeMode = new SafeMode(false); }
-                                SafeMode.Enabled = ParseBoolean(name, value);
+#pragma warning disable 618
+                                Safe = ParseBoolean(name, value);
+#pragma warning restore
                                 break;
                             case "secondaryacceptablelatency":
                             case "secondaryacceptablelatencyms":
-                                _secondaryAcceptableLatency = ParseTimeSpan(name, value);
+                                SecondaryAcceptableLatency = ParseTimeSpan(name, value);
                                 break;
                             case "sockettimeout":
                             case "sockettimeoutms":
-                                _socketTimeout = ParseTimeSpan(name, value);
+                                SocketTimeout = ParseTimeSpan(name, value);
                                 break;
                             case "ssl":
-                                _useSsl = ParseBoolean(name, value);
+                                UseSsl = ParseBoolean(name, value);
                                 break;
                             case "sslverifycertificate":
-                                _verifySslCertificate = ParseBoolean(name, value);
+                                VerifySslCertificate = ParseBoolean(name, value);
                                 break;
                             case "w":
-                                if (_safeMode == null) { _safeMode = new SafeMode(false); }
-                                try
-                                {
-                                    SafeMode.W = ParseInt32(name, value);
-                                }
-                                catch (FormatException)
-                                {
-                                    SafeMode.WMode = value;
-                                }
+                                W = WriteConcern.WValue.Parse(value);
                                 break;
                             case "waitqueuemultiple":
-                                _waitQueueMultiple = ParseDouble(name, value);
-                                _waitQueueSize = 0;
+                                WaitQueueMultiple = ParseDouble(name, value);
                                 break;
                             case "waitqueuesize":
-                                _waitQueueMultiple = 0;
-                                _waitQueueSize = ParseInt32(name, value);
+                                WaitQueueSize = ParseInt32(name, value);
                                 break;
                             case "waitqueuetimeout":
                             case "waitqueuetimeoutms":
-                                _waitQueueTimeout = ParseTimeSpan(name, value);
+                                WaitQueueTimeout = ParseTimeSpan(name, value);
                                 break;
                             case "wtimeout":
                             case "wtimeoutms":
-                                if (_safeMode == null) { _safeMode = new SafeMode(false); }
-                                SafeMode.WTimeout = ParseTimeSpan(name, value);
+                                WTimeout = ParseTimeSpan(name, value);
                                 break;
+                            default:
+                                var message = string.Format("Invalid option '{0}'.", name);
+                                throw new ArgumentException(message, "url");
                         }
                     }
                 }
@@ -677,30 +890,10 @@ namespace MongoDB.Driver
         /// Creates a new instance of MongoServerSettings based on the settings in this MongoUrlBuilder.
         /// </summary>
         /// <returns>A new instance of MongoServerSettings.</returns>
+        [Obsolete("Use ToMongoUrl and MongoServerSettings.FromUrl instead.")]
         public MongoServerSettings ToServerSettings()
         {
-            return new MongoServerSettings
-            {
-                ConnectionMode = _connectionMode,
-                ConnectTimeout = _connectTimeout,
-                DefaultCredentials = _defaultCredentials,
-                GuidRepresentation = _guidRepresentation,
-                IPv6 = _ipv6,
-                MaxConnectionIdleTime = _maxConnectionIdleTime,
-                MaxConnectionLifeTime = _maxConnectionLifeTime,
-                MaxConnectionPoolSize = _maxConnectionPoolSize,
-                MinConnectionPoolSize = _minConnectionPoolSize,
-                ReadPreference = _readPreference ?? ReadPreference.Primary,
-                ReplicaSetName = _replicaSetName,
-                SafeMode = _safeMode ?? MongoDefaults.SafeMode,
-                SecondaryAcceptableLatency = _secondaryAcceptableLatency,
-                Servers = _servers,
-                SocketTimeout = _socketTimeout,
-                UseSsl = _useSsl,
-                VerifySslCertificate = _verifySslCertificate,
-                WaitQueueSize = ComputedWaitQueueSize,
-                WaitQueueTimeout = _waitQueueTimeout
-            };
+            return MongoServerSettings.FromUrl(this.ToMongoUrl());
         }
 
         /// <summary>
@@ -770,32 +963,29 @@ namespace MongoDB.Driver
                     }
                 }
             }
-            if (_safeMode != null && _safeMode.Enabled)
+            if (_fireAndForget != null)
             {
-                query.AppendFormat("safe=true;");
-                if (_safeMode.FSync)
-                {
-                    query.Append("fsync=true;");
-                }
-                if (_safeMode.Journal)
-                {
-                    query.Append("journal=true;");
-                }
-                if (_safeMode.W != 0 || _safeMode.WMode != null)
-                {
-                    if (_safeMode.W != 0)
-                    {
-                        query.AppendFormat("w={0};", _safeMode.W);
-                    }
-                    else
-                    {
-                        query.AppendFormat("w={0};", _safeMode.WMode);
-                    }
-                    if (_safeMode.WTimeout != TimeSpan.Zero)
-                    {
-                        query.AppendFormat("wtimeout={0};", FormatTimeSpan(_safeMode.WTimeout));
-                    }
-                }
+                query.AppendFormat("fireAndForget={0};", XmlConvert.ToString(_fireAndForget.Value));
+            }
+            if (_safe != null)
+            {
+                query.AppendFormat("safe={0};", XmlConvert.ToString(_safe.Value));
+            }
+            if (_fsync != null)
+            {
+                query.AppendFormat("fsync={0};", XmlConvert.ToString(_fsync.Value));
+            }
+            if (_journal != null)
+            {
+                query.AppendFormat("journal={0};", XmlConvert.ToString(_journal.Value));
+            }
+            if (_w != null)
+            {
+                query.AppendFormat("w={0};", _w);
+            }
+            if (_wTimeout != null)
+            {
+                query.AppendFormat("wtimeout={0};", FormatTimeSpan(_wTimeout.Value));
             }
             if (_connectTimeout != MongoDefaults.ConnectTimeout)
             {
@@ -852,6 +1042,26 @@ namespace MongoDB.Driver
                 url.Append(query.ToString());
             }
             return url.ToString();
+        }
+
+        // private methods
+        private bool AnyWriteConcernSettingsAreSet()
+        {
+            return _fsync != null || _journal != null || _w != null || _wTimeout != null;
+        }
+
+        private void EnsureFireAndForgetIsNotTrue(string propertyName)
+        {
+            if (_fireAndForget != null && _fireAndForget.Value)
+            {
+                var message = string.Format("{0} cannot be set when FireAndForget is true.", propertyName);
+                throw new InvalidOperationException(message);
+            }
+            if (_safe != null && !_safe.Value)
+            {
+                var message = string.Format("{0} cannot be set when Safe is false.", propertyName);
+                throw new InvalidOperationException(message);
+            }
         }
     }
 }

@@ -696,11 +696,21 @@ namespace MongoDB.DriverUnitTests
         {
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) };
             Assert.AreEqual(false, builder.SafeMode.Enabled);
+            Assert.AreEqual("mongodb://localhost/?safe=false", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost";
+        [Test]
+        [TestCase("mongodb://localhost")]
+        [TestCase("mongodb://localhost/?safe=false")]
+        public void TestSafeModeFalse(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            var safeMode = builder.SafeMode;
+            if (safeMode != null)
+            {
+                Assert.AreEqual(false, safeMode.Enabled);
+            }
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=false").ToString());
         }
 
         [Test]
@@ -718,14 +728,21 @@ namespace MongoDB.DriverUnitTests
         public void TestSafeModeFSyncFalse()
         {
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = false } };
-            Assert.AreEqual(false, builder.SafeMode.Enabled);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(false, builder.SafeMode.FSync);
+            Assert.AreEqual("mongodb://localhost/?safe=true;fsync=false", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost";
+        [Test]
+        [TestCase("mongodb://localhost/?safe=true")]
+        [TestCase("mongodb://localhost/?fsync=false")]
+        [TestCase("mongodb://localhost/?safe=true;fsync=false")]
+        public void TestSafeModeFSyncFalse(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(false, builder.SafeMode.FSync);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=false;fsync=false").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=false").ToString());
         }
 
         [Test]
@@ -734,27 +751,41 @@ namespace MongoDB.DriverUnitTests
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = true } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(true, builder.SafeMode.FSync);
+            Assert.AreEqual("mongodb://localhost/?safe=true;fsync=true", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;fsync=true";
+        [Test]
+        [TestCase("mongodb://localhost/?fsync=true")]
+        [TestCase("mongodb://localhost/?safe=true;fsync=true")]
+        public void TestSafeModeFSyncTrue(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(true, builder.SafeMode.FSync);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true").ToString());
         }
 
         [Test]
         public void TestSafeModeJFalse()
         {
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { Journal = false } };
-            Assert.AreEqual(false, builder.SafeMode.Enabled);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(false, builder.SafeMode.Journal);
+            Assert.AreEqual("mongodb://localhost/?safe=true;journal=false", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost";
-            Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=false;journal=false").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=false;j=false").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?journal=false").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?j=false").ToString());
+        [Test]
+        [TestCase("mongodb://localhost/?j=false")]
+        [TestCase("mongodb://localhost/?journal=false")]
+        [TestCase("mongodb://localhost/?safe=true")]
+        [TestCase("mongodb://localhost/?safe=true;j=false")]
+        [TestCase("mongodb://localhost/?safe=true;journal=false")]
+        public void TestSafeModeJFalse(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(false, builder.SafeMode.Journal);
+            Assert.AreEqual(connectionString.Replace("j=", "journal="), builder.ToString());
         }
 
         [Test]
@@ -763,13 +794,20 @@ namespace MongoDB.DriverUnitTests
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { Journal = true } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(true, builder.SafeMode.Journal);
+            Assert.AreEqual("mongodb://localhost/?safe=true;journal=true", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;journal=true";
-            Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;j=true").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?journal=true").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?j=true").ToString());
+        [Test]
+        [TestCase("mongodb://localhost/?j=true")]
+        [TestCase("mongodb://localhost/?journal=true")]
+        [TestCase("mongodb://localhost/?safe=true;j=true")]
+        [TestCase("mongodb://localhost/?safe=true;journal=true")]
+        public void TestSafeModeJTrue(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(true, builder.SafeMode.Journal);
+            Assert.AreEqual(connectionString.Replace("j=", "journal="), builder.ToString());
         }
 
         [Test]
@@ -778,11 +816,18 @@ namespace MongoDB.DriverUnitTests
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { WMode = "majority" } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual("majority", builder.SafeMode.WMode);
+            Assert.AreEqual("mongodb://localhost/?safe=true;w=majority", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;w=majority";
+        [Test]
+        [TestCase("mongodb://localhost/?w=majority")]
+        [TestCase("mongodb://localhost/?safe=true;w=majority")]
+        public void TestSafeModeWMajority(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual("majority", builder.SafeMode.WMode);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=majority").ToString());
         }
 
         [Test]
@@ -791,11 +836,18 @@ namespace MongoDB.DriverUnitTests
             var builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { W = 2 } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(2, builder.SafeMode.W);
+            Assert.AreEqual("mongodb://localhost/?safe=true;w=2", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;w=2";
+        [Test]
+        [TestCase("mongodb://localhost/?w=2")]
+        [TestCase("mongodb://localhost/?safe=true;w=2")]
+        public void TestSafeModeW2(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(2, builder.SafeMode.W);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2").ToString());
         }
 
         [Test]
@@ -807,11 +859,11 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromMilliseconds(500), builder.SafeMode.WTimeout);
             var connectionString = "mongodb://localhost/?safe=true;w=2;wtimeout=500ms";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=500ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=0.5").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=0.5s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=00:00:00.500").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeoutMS=500").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=500ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=0.5").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=0.5s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=00:00:00.500").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeoutMS=500").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { W = 2, WTimeout = TimeSpan.FromSeconds(30) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -819,12 +871,12 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromSeconds(30), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;w=2;wtimeout=30s";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=30000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=30").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=30s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=0.5m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=00:00:30").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeoutMS=30000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=30000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=30").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=30s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=0.5m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=00:00:30").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeoutMS=30000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { W = 2, WTimeout = TimeSpan.FromMinutes(30) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -832,13 +884,13 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromMinutes(30), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;w=2;wtimeout=30m";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=1800000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=1800").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=1800s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=30m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=0.5h").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=00:30:00").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeoutMS=1800000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=1800000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=1800").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=1800s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=30m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=0.5h").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=00:30:00").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeoutMS=1800000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { W = 2, WTimeout = TimeSpan.FromHours(1) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -846,24 +898,24 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromHours(1), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;w=2;wtimeout=1h";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3600000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3600").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3600s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=60m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=1h").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=01:00:00").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeoutMS=3600000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3600000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3600").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3600s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=60m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=1h").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=01:00:00").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeoutMS=3600000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { W = 2, WTimeout = new TimeSpan(1, 2, 3) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(new TimeSpan(1, 2, 3), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;w=2;wtimeout=01:02:03";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3723000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3723").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=3723s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeout=01:02:03").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2;wtimeoutMS=3723000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3723000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3723").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=3723s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeout=01:02:03").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2;wtimeoutMS=3723000").ToString());
         }
 
         [Test]
@@ -873,14 +925,21 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(false, builder.SafeMode.FSync);
             Assert.AreEqual(2, builder.SafeMode.W);
+            Assert.AreEqual("mongodb://localhost/?safe=true;fsync=false;w=2", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;w=2";
+        [Test]
+        [TestCase("mongodb://localhost/?w=2")]
+        [TestCase("mongodb://localhost/?fsync=false;w=2")]
+        [TestCase("mongodb://localhost/?safe=true;w=2")]
+        [TestCase("mongodb://localhost/?safe=true;fsync=false;w=2")]
+        public void TestSafeModeTrueFSyncFalseW2(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(false, builder.SafeMode.FSync);
+            Assert.AreEqual(2, builder.SafeMode.W);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=false;w=2").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;w=2").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=false;w=2").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?w=2").ToString());
         }
 
         [Test]
@@ -890,11 +949,19 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(true, builder.SafeMode.Enabled);
             Assert.AreEqual(true, builder.SafeMode.FSync);
             Assert.AreEqual(2, builder.SafeMode.W);
+            Assert.AreEqual("mongodb://localhost/?safe=true;fsync=true;w=2", builder.ToString());
+        }
 
-            var connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2";
+        [Test]
+        [TestCase("mongodb://localhost/?fsync=true;w=2")]
+        [TestCase("mongodb://localhost/?safe=true;fsync=true;w=2")]
+        public void TestSafeModeTrueFSyncTrueW2(string connectionString)
+        {
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.AreEqual(true, builder.SafeMode.Enabled);
+            Assert.AreEqual(true, builder.SafeMode.FSync);
+            Assert.AreEqual(2, builder.SafeMode.W);
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder(connectionString).ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2").ToString());
         }
 
         [Test]
@@ -907,11 +974,11 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromMilliseconds(500), builder.SafeMode.WTimeout);
             var connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=500ms";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=500ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=0.5").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=0.5s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=00:00:00.500").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeoutMS=500").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=500ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=0.5").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=0.5s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=00:00:00.500").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeoutMS=500").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = true, W = 2, WTimeout = TimeSpan.FromSeconds(30) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -920,12 +987,12 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromSeconds(30), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30s";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=30000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=30").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=30s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=0.5m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=00:00:30").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeoutMS=30000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=0.5m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=00:00:30").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeoutMS=30000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = true, W = 2, WTimeout = TimeSpan.FromMinutes(30) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -934,13 +1001,13 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromMinutes(30), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30m";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=1800000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=1800").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=1800s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=30m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=0.5h").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=00:30:00").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeoutMS=1800000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=1800000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=1800").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=1800s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=30m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=0.5h").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=00:30:00").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeoutMS=1800000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = true, W = 2, WTimeout = TimeSpan.FromHours(1) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -949,13 +1016,13 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(TimeSpan.FromHours(1), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=1h";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3600000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3600").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3600s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=60m").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=1h").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=01:00:00").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeoutMS=3600000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3600000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3600").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3600s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=60m").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=1h").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=01:00:00").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeoutMS=3600000").ToString());
 
             builder = new MongoUrlBuilder("mongodb://localhost") { SafeMode = new SafeMode(false) { FSync = true, W = 2, WTimeout = new TimeSpan(1, 2, 3) } };
             Assert.AreEqual(true, builder.SafeMode.Enabled);
@@ -963,11 +1030,11 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(new TimeSpan(1, 2, 3), builder.SafeMode.WTimeout);
             connectionString = "mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=01:02:03";
             Assert.AreEqual(connectionString, builder.ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3723000ms").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3723").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=3723s").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeout=01:02:03").ToString());
-            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?fsync=true;w=2;wtimeoutMS=3723000").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3723000ms").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3723").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=3723s").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeout=01:02:03").ToString());
+            Assert.AreEqual(connectionString, new MongoUrlBuilder("mongodb://localhost/?safe=true;fsync=true;w=2;wtimeoutMS=3723000").ToString());
         }
 
         [Test]
@@ -1231,6 +1298,23 @@ namespace MongoDB.DriverUnitTests
         {
             var builder = new MongoUrlBuilder("mongodb://localhost") { WaitQueueSize = 123 };
             Assert.AreEqual(123, builder.ComputedWaitQueueSize);
+        }
+
+        [Test]
+        public void TestAll()
+        {
+            var connectionString = "mongodb://localhost/?connect=replicaSet;replicaSet=name;safe=true;fsync=true;journal=true;w=2;wtimeout=2s;uuidRepresentation=PythonLegacy";
+            var builder = new MongoUrlBuilder(connectionString);
+            Assert.IsNull(builder.DefaultCredentials);
+            Assert.AreEqual(1, builder.Servers.Count());
+            Assert.AreEqual("localhost", builder.Server.Host);
+            Assert.AreEqual(27017, builder.Server.Port);
+            Assert.AreEqual(null, builder.DatabaseName);
+            Assert.AreEqual(ConnectionMode.ReplicaSet, builder.ConnectionMode);
+            Assert.AreEqual("name", builder.ReplicaSetName);
+            Assert.AreEqual(GuidRepresentation.PythonLegacy, builder.GuidRepresentation);
+            Assert.AreEqual(new SafeMode(true) { FSync = true, Journal = true, W = 2, WTimeout = TimeSpan.FromSeconds(2) }, builder.SafeMode);
+            Assert.AreEqual(connectionString, builder.ToString());
         }
     }
 }

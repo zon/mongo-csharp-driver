@@ -31,7 +31,7 @@ namespace MongoDB.Driver
         private Setting<bool> _assignIdOnInsert;
         private Setting<GuidRepresentation> _guidRepresentation;
         private Setting<ReadPreference> _readPreference;
-        private Setting<SafeMode> _safeMode;
+        private Setting<WriteConcern> _writeConcern;
 
         // the following fields are set when Freeze is called
         private bool _isFrozen;
@@ -101,9 +101,10 @@ namespace MongoDB.Driver
         /// <summary>
         /// Gets or sets the SafeMode to use.
         /// </summary>
+        [Obsolete("Use WriteConcern instead.")]
         public SafeMode SafeMode
         {
-            get { return _safeMode.Value; }
+            get { return new SafeMode(_writeConcern.Value); }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
@@ -111,7 +112,24 @@ namespace MongoDB.Driver
                 {
                     throw new ArgumentNullException("value");
                 }
-                _safeMode.Value = value;
+                _writeConcern.Value = value.WriteConcern;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the WriteConcern to use.
+        /// </summary>
+        public WriteConcern WriteConcern
+        {
+            get { return _writeConcern.Value; }
+            set
+            {
+                if (_isFrozen) { throw new InvalidOperationException("MongoCollectionSettings is frozen."); }
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                _writeConcern.Value = value;
             }
         }
 
@@ -126,7 +144,7 @@ namespace MongoDB.Driver
             clone._assignIdOnInsert = _assignIdOnInsert.Clone();
             clone._guidRepresentation = _guidRepresentation.Clone();
             clone._readPreference = _readPreference.Clone();
-            clone._safeMode = _safeMode.Clone();
+            clone._writeConcern = _writeConcern.Clone();
             return clone;
         }
 
@@ -154,7 +172,7 @@ namespace MongoDB.Driver
                         _assignIdOnInsert.Value == rhs._assignIdOnInsert.Value &&
                         _guidRepresentation.Value == rhs._guidRepresentation.Value &&
                         _readPreference.Value == rhs._readPreference.Value &&
-                        _safeMode.Value == rhs._safeMode.Value;
+                        _writeConcern.Value == rhs._writeConcern.Value;
                 }
             }
         }
@@ -168,7 +186,7 @@ namespace MongoDB.Driver
             if (!_isFrozen)
             {
                 if (_readPreference.Value != null) { _readPreference.Value = _readPreference.Value.FrozenCopy(); }
-                if (_safeMode.Value != null) { _safeMode.Value = _safeMode.Value.FrozenCopy(); }
+                if (_writeConcern.Value != null) { _writeConcern.Value = _writeConcern.Value.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _frozenStringRepresentation = ToString();
                 _isFrozen = true;
@@ -208,7 +226,7 @@ namespace MongoDB.Driver
             hash = 37 * hash + _assignIdOnInsert.Value.GetHashCode();
             hash = 37 * hash + _guidRepresentation.Value.GetHashCode();
             hash = 37 * hash + ((_readPreference.Value == null) ? 0 : _readPreference.Value.GetHashCode());
-            hash = 37 * hash + ((_safeMode.Value == null) ? 0 :_safeMode.Value.GetHashCode());
+            hash = 37 * hash + ((_writeConcern.Value == null) ? 0 :_writeConcern.Value.GetHashCode());
             return hash;
         }
 
@@ -224,8 +242,8 @@ namespace MongoDB.Driver
             }
 
             return string.Format(
-                "AssignIdOnInsert={0};GuidRepresentation={1};ReadPreference={2};SafeMode={3}",
-                _assignIdOnInsert, _guidRepresentation, _readPreference, _safeMode);
+                "AssignIdOnInsert={0};GuidRepresentation={1};ReadPreference={2};WriteConcern={3}",
+                _assignIdOnInsert, _guidRepresentation, _readPreference, _writeConcern);
         }
 
         // internal methods
@@ -243,9 +261,9 @@ namespace MongoDB.Driver
             {
                 ReadPreference = databaseSettings.ReadPreference;
             }
-            if (!_safeMode.HasBeenSet)
+            if (!_writeConcern.HasBeenSet)
             {
-                SafeMode = databaseSettings.SafeMode;
+                WriteConcern = databaseSettings.WriteConcern;
             }
         }
     }

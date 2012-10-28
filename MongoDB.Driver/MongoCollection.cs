@@ -81,7 +81,7 @@ namespace MongoDB.Driver
                     AssignIdOnInsert = false,
                     GuidRepresentation = _settings.GuidRepresentation,
                     ReadPreference = _settings.ReadPreference,
-                    SafeMode = _settings.SafeMode
+                    WriteConcern = _settings.WriteConcern
                 };
                 _commandCollection = _database.GetCollection("$cmd", commandCollectionSettings);
             }
@@ -182,8 +182,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="keys">The indexed fields (usually an IndexKeysDocument or constructed using the IndexKeys builder).</param>
         /// <param name="options">The index options(usually an IndexOptionsDocument or created using the IndexOption builder).</param>
-        /// <returns>A SafeModeResult.</returns>
-        public virtual SafeModeResult CreateIndex(IMongoIndexKeys keys, IMongoIndexOptions options)
+        /// <returns>A WriteConcernResult.</returns>
+        public virtual WriteConcernResult CreateIndex(IMongoIndexKeys keys, IMongoIndexOptions options)
         {
             var keysDocument = keys.ToBsonDocument();
             var optionsDocument = options.ToBsonDocument();
@@ -202,7 +202,7 @@ namespace MongoDB.Driver
             var insertOptions = new MongoInsertOptions
             {
                 CheckElementNames = false,
-                SafeMode = SafeMode.True
+                WriteConcern = WriteConcern.Errors
             };
             var result = indexes.Insert(index, insertOptions);
             return result;
@@ -212,8 +212,8 @@ namespace MongoDB.Driver
         /// Creates an index for this collection.
         /// </summary>
         /// <param name="keys">The indexed fields (usually an IndexKeysDocument or constructed using the IndexKeys builder).</param>
-        /// <returns>A SafeModeResult.</returns>
-        public virtual SafeModeResult CreateIndex(IMongoIndexKeys keys)
+        /// <returns>A WriteConcernResult.</returns>
+        public virtual WriteConcernResult CreateIndex(IMongoIndexKeys keys)
         {
             return CreateIndex(keys, IndexOptions.Null);
         }
@@ -222,8 +222,8 @@ namespace MongoDB.Driver
         /// Creates an index for this collection.
         /// </summary>
         /// <param name="keyNames">The names of the indexed fields.</param>
-        /// <returns>A SafeModeResult.</returns>
-        public virtual SafeModeResult CreateIndex(params string[] keyNames)
+        /// <returns>A WriteConcernResult.</returns>
+        public virtual WriteConcernResult CreateIndex(params string[] keyNames)
         {
             return CreateIndex(IndexKeys.Ascending(keyNames));
         }
@@ -962,8 +962,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The nominal type of the document to insert.</typeparam>
         /// <param name="document">The document to insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert<TNominalType>(TNominalType document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert<TNominalType>(TNominalType document)
         {
             return Insert(typeof(TNominalType), document);
         }
@@ -974,8 +974,8 @@ namespace MongoDB.Driver
         /// <typeparam name="TNominalType">The nominal type of the document to insert.</typeparam>
         /// <param name="document">The document to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert<TNominalType>(TNominalType document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert<TNominalType>(TNominalType document, MongoInsertOptions options)
         {
             return Insert(typeof(TNominalType), document, options);
         }
@@ -985,11 +985,11 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The nominal type of the document to insert.</typeparam>
         /// <param name="document">The document to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert<TNominalType>(TNominalType document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert<TNominalType>(TNominalType document, WriteConcern writeConcern)
         {
-            return Insert(typeof(TNominalType), document, safeMode);
+            return Insert(typeof(TNominalType), document, writeConcern);
         }
 
         /// <summary>
@@ -997,8 +997,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The nominal type of the document to insert.</param>
         /// <param name="document">The document to insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(Type nominalType, object document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(Type nominalType, object document)
         {
             var options = new MongoInsertOptions();
             return Insert(nominalType, document, options);
@@ -1010,8 +1010,8 @@ namespace MongoDB.Driver
         /// <param name="nominalType">The nominal type of the document to insert.</param>
         /// <param name="document">The document to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(Type nominalType, object document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(Type nominalType, object document, MongoInsertOptions options)
         {
             if (document == null)
             {
@@ -1026,11 +1026,11 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The nominal type of the document to insert.</param>
         /// <param name="document">The document to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(Type nominalType, object document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(Type nominalType, object document, WriteConcern writeConcern)
         {
-            var options = new MongoInsertOptions { SafeMode = safeMode };
+            var options = new MongoInsertOptions { WriteConcern = writeConcern};
             return Insert(nominalType, document, options);
         }
 
@@ -1039,8 +1039,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The type of the documents to insert.</typeparam>
         /// <param name="documents">The documents to insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(IEnumerable<TNominalType> documents)
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch<TNominalType>(IEnumerable<TNominalType> documents)
         {
             if (documents == null)
             {
@@ -1055,8 +1055,8 @@ namespace MongoDB.Driver
         /// <typeparam name="TNominalType">The type of the documents to insert.</typeparam>
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch<TNominalType>(
             IEnumerable<TNominalType> documents,
             MongoInsertOptions options)
         {
@@ -1072,17 +1072,17 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The type of the documents to insert.</typeparam>
         /// <param name="documents">The documents to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch<TNominalType>(
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch<TNominalType>(
             IEnumerable<TNominalType> documents,
-            SafeMode safeMode)
+            WriteConcern writeConcern)
         {
             if (documents == null)
             {
                 throw new ArgumentNullException("documents");
             }
-            return InsertBatch(typeof(TNominalType), documents.Cast<object>(), safeMode);
+            return InsertBatch(typeof(TNominalType), documents.Cast<object>(), writeConcern);
         }
 
         /// <summary>
@@ -1090,8 +1090,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The nominal type of the documents to insert.</param>
         /// <param name="documents">The documents to insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(Type nominalType, IEnumerable documents)
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(Type nominalType, IEnumerable documents)
         {
             var options = new MongoInsertOptions();
             return InsertBatch(nominalType, documents, options);
@@ -1102,14 +1102,14 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The nominal type of the documents to insert.</param>
         /// <param name="documents">The documents to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(
             Type nominalType,
             IEnumerable documents,
-            SafeMode safeMode)
+            WriteConcern writeConcern)
         {
-            var options = new MongoInsertOptions { SafeMode = safeMode };
+            var options = new MongoInsertOptions { WriteConcern = writeConcern};
             return InsertBatch(nominalType, documents, options);
         }
 
@@ -1119,8 +1119,8 @@ namespace MongoDB.Driver
         /// <param name="nominalType">The nominal type of the documents to insert.</param>
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(
             Type nominalType,
             IEnumerable documents,
             MongoInsertOptions options)
@@ -1138,9 +1138,9 @@ namespace MongoDB.Driver
             var connection = _server.AcquireConnection(_database, ReadPreference.Primary);
             try
             {
-                var safeMode = options.SafeMode ?? _settings.SafeMode;
+                var writeConcern = options.WriteConcern ?? _settings.WriteConcern;
 
-                List<SafeModeResult> results = (safeMode.Enabled) ? new List<SafeModeResult>() : null;
+                List<WriteConcernResult> results = (writeConcern.FireAndForget) ? null : new List<WriteConcernResult>();
 
                 var writerSettings = GetWriterSettings(connection);
                 using (var message = new MongoInsertMessage(writerSettings, FullName, options.CheckElementNames, options.Flags))
@@ -1178,14 +1178,14 @@ namespace MongoDB.Driver
                         if (message.MessageLength > connection.ServerInstance.MaxMessageLength)
                         {
                             byte[] lastDocument = message.RemoveLastDocument();
-                            var intermediateResult = connection.SendMessage(message, safeMode, _database.Name);
-                            if (safeMode.Enabled) { results.Add(intermediateResult); }
+                            var intermediateResult = connection.SendMessage(message, writeConcern, _database.Name);
+                            if (!writeConcern.FireAndForget) { results.Add(intermediateResult); }
                             message.ResetBatch(lastDocument);
                         }
                     }
 
-                    var finalResult = connection.SendMessage(message, safeMode, _database.Name);
-                    if (safeMode.Enabled) { results.Add(finalResult); }
+                    var finalResult = connection.SendMessage(message, writeConcern, _database.Name);
+                    if (!writeConcern.FireAndForget) { results.Add(finalResult); }
 
                     return results;
                 }
@@ -1287,8 +1287,8 @@ namespace MongoDB.Driver
         /// Removes documents from this collection that match a query.
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Remove(IMongoQuery query)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Remove(IMongoQuery query)
         {
             return Remove(query, RemoveFlags.None, null);
         }
@@ -1297,11 +1297,11 @@ namespace MongoDB.Driver
         /// Removes documents from this collection that match a query.
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Remove(IMongoQuery query, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Remove(IMongoQuery query, WriteConcern writeConcern)
         {
-            return Remove(query, RemoveFlags.None, safeMode);
+            return Remove(query, RemoveFlags.None, writeConcern);
         }
 
         /// <summary>
@@ -1309,8 +1309,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="flags">The flags for this Remove (see <see cref="RemoveFlags"/>).</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Remove(IMongoQuery query, RemoveFlags flags)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Remove(IMongoQuery query, RemoveFlags flags)
         {
             return Remove(query, flags, null);
         }
@@ -1320,9 +1320,9 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="flags">The flags for this Remove (see <see cref="RemoveFlags"/>).</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Remove(IMongoQuery query, RemoveFlags flags, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Remove(IMongoQuery query, RemoveFlags flags, WriteConcern writeConcern)
         {
             var connection = _server.AcquireConnection(_database, ReadPreference.Primary);
             try
@@ -1330,7 +1330,7 @@ namespace MongoDB.Driver
                 var writerSettings = GetWriterSettings(connection);
                 using (var message = new MongoDeleteMessage(writerSettings, FullName, flags, query))
                 {
-                    return connection.SendMessage(message, safeMode ?? _settings.SafeMode, _database.Name);
+                    return connection.SendMessage(message, writeConcern ?? _settings.WriteConcern, _database.Name);
                 }
             }
             finally
@@ -1342,8 +1342,8 @@ namespace MongoDB.Driver
         /// <summary>
         /// Removes all documents from this collection (see also <see cref="Drop"/>).
         /// </summary>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult RemoveAll()
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult RemoveAll()
         {
             return Remove(Query.Null, RemoveFlags.None, null);
         }
@@ -1351,11 +1351,11 @@ namespace MongoDB.Driver
         /// <summary>
         /// Removes all documents from this collection (see also <see cref="Drop"/>).
         /// </summary>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult RemoveAll(SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult RemoveAll(WriteConcern writeConcern)
         {
-            return Remove(Query.Null, RemoveFlags.None, safeMode);
+            return Remove(Query.Null, RemoveFlags.None, writeConcern);
         }
 
         /// <summary>
@@ -1374,8 +1374,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The type of the document to save.</typeparam>
         /// <param name="document">The document to save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save<TNominalType>(TNominalType document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save<TNominalType>(TNominalType document)
         {
             return Save(typeof(TNominalType), document);
         }
@@ -1387,8 +1387,8 @@ namespace MongoDB.Driver
         /// <typeparam name="TNominalType">The type of the document to save.</typeparam>
         /// <param name="document">The document to save.</param>
         /// <param name="options">The options to use for this Save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save<TNominalType>(TNominalType document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save<TNominalType>(TNominalType document, MongoInsertOptions options)
         {
             return Save(typeof(TNominalType), document, options);
         }
@@ -1399,11 +1399,11 @@ namespace MongoDB.Driver
         /// </summary>
         /// <typeparam name="TNominalType">The type of the document to save.</typeparam>
         /// <param name="document">The document to save.</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save<TNominalType>(TNominalType document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save<TNominalType>(TNominalType document, WriteConcern writeConcern)
         {
-            return Save(typeof(TNominalType), document, safeMode);
+            return Save(typeof(TNominalType), document, writeConcern);
         }
 
         /// <summary>
@@ -1412,8 +1412,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The type of the document to save.</param>
         /// <param name="document">The document to save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(Type nominalType, object document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(Type nominalType, object document)
         {
             var options = new MongoInsertOptions();
             return Save(nominalType, document, options);
@@ -1426,8 +1426,8 @@ namespace MongoDB.Driver
         /// <param name="nominalType">The type of the document to save.</param>
         /// <param name="document">The document to save.</param>
         /// <param name="options">The options to use for this Save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(Type nominalType, object document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(Type nominalType, object document, MongoInsertOptions options)
         {
             if (document == null)
             {
@@ -1485,7 +1485,7 @@ namespace MongoDB.Driver
                     {
                         CheckElementNames = options.CheckElementNames,
                         Flags = UpdateFlags.Upsert,
-                        SafeMode = options.SafeMode
+                        WriteConcern = options.WriteConcern
                     };
                     return Update(query, update, updateOptions);
                 }
@@ -1502,11 +1502,11 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="nominalType">The type of the document to save.</param>
         /// <param name="document">The document to save.</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(Type nominalType, object document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(Type nominalType, object document, WriteConcern writeConcern)
         {
-            var options = new MongoInsertOptions { SafeMode = safeMode };
+            var options = new MongoInsertOptions { WriteConcern = writeConcern};
             return Save(nominalType, document, options);
         }
 
@@ -1524,8 +1524,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="update">The update to perform on the matching document.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(IMongoQuery query, IMongoUpdate update)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Update(IMongoQuery query, IMongoUpdate update)
         {
             var options = new MongoUpdateOptions();
             return Update(query, update, options);
@@ -1537,8 +1537,8 @@ namespace MongoDB.Driver
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="update">The update to perform on the matching document.</param>
         /// <param name="options">The update options.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(IMongoQuery query, IMongoUpdate update, MongoUpdateOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Update(IMongoQuery query, IMongoUpdate update, MongoUpdateOptions options)
         {
             var updateBuilder = update as UpdateBuilder;
             if (updateBuilder != null)
@@ -1560,8 +1560,8 @@ namespace MongoDB.Driver
                 var writerSettings = GetWriterSettings(connection);
                 using (var message = new MongoUpdateMessage(writerSettings, FullName, options.CheckElementNames, options.Flags, query, update))
                 {
-                    var safeMode = options.SafeMode ?? _settings.SafeMode;
-                    return connection.SendMessage(message, safeMode, _database.Name);
+                    var writeConcern = options.WriteConcern ?? _settings.WriteConcern;
+                    return connection.SendMessage(message, writeConcern, _database.Name);
                 }
             }
             finally
@@ -1575,11 +1575,11 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="update">The update to perform on the matching document.</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(IMongoQuery query, IMongoUpdate update, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Update(IMongoQuery query, IMongoUpdate update, WriteConcern writeConcern)
         {
-            var options = new MongoUpdateOptions { SafeMode = safeMode };
+            var options = new MongoUpdateOptions { WriteConcern = writeConcern};
             return Update(query, update, options);
         }
 
@@ -1589,8 +1589,8 @@ namespace MongoDB.Driver
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="update">The update to perform on the matching document.</param>
         /// <param name="flags">The flags for this Update.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(IMongoQuery query, IMongoUpdate update, UpdateFlags flags)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Update(IMongoQuery query, IMongoUpdate update, UpdateFlags flags)
         {
             var options = new MongoUpdateOptions { Flags = flags };
             return Update(query, update, options);
@@ -1602,18 +1602,18 @@ namespace MongoDB.Driver
         /// <param name="query">The query (usually a QueryDocument or constructed using the Query builder).</param>
         /// <param name="update">The update to perform on the matching document.</param>
         /// <param name="flags">The flags for this Update.</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Update(
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Update(
             IMongoQuery query,
             IMongoUpdate update,
             UpdateFlags flags,
-            SafeMode safeMode)
+            WriteConcern writeConcern)
         {
             var options = new MongoUpdateOptions
             {
                 Flags = flags,
-                SafeMode = safeMode
+                WriteConcern = writeConcern
             };
             return Update(query, update, options);
         }
@@ -1862,8 +1862,8 @@ namespace MongoDB.Driver
         /// Inserts a document into this collection (see also InsertBatch to insert multiple documents at once).
         /// </summary>
         /// <param name="document">The document to insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(TDefaultDocument document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(TDefaultDocument document)
         {
             return Insert<TDefaultDocument>(document);
         }
@@ -1873,8 +1873,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="document">The document to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(TDefaultDocument document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(TDefaultDocument document, MongoInsertOptions options)
         {
             return Insert<TDefaultDocument>(document, options);
         }
@@ -1883,19 +1883,19 @@ namespace MongoDB.Driver
         /// Inserts a document into this collection (see also InsertBatch to insert multiple documents at once).
         /// </summary>
         /// <param name="document">The document to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Insert(TDefaultDocument document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Insert(TDefaultDocument document, WriteConcern writeConcern)
         {
-            return Insert<TDefaultDocument>(document, safeMode);
+            return Insert<TDefaultDocument>(document, writeConcern);
         }
 
         /// <summary>
         /// Inserts multiple documents at once into this collection (see also Insert to insert a single document).
         /// </summary>
         /// <param name="documents">The documents to insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(IEnumerable<TDefaultDocument> documents)
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(IEnumerable<TDefaultDocument> documents)
         {
             return InsertBatch<TDefaultDocument>(documents);
         }
@@ -1905,8 +1905,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="documents">The documents to insert.</param>
         /// <param name="options">The options to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(
             IEnumerable<TDefaultDocument> documents,
             MongoInsertOptions options)
         {
@@ -1917,13 +1917,13 @@ namespace MongoDB.Driver
         /// Inserts multiple documents at once into this collection (see also Insert to insert a single document).
         /// </summary>
         /// <param name="documents">The documents to insert.</param>
-        /// <param name="safeMode">The SafeMode to use for this Insert.</param>
-        /// <returns>A list of SafeModeResults (or null if SafeMode is not being used).</returns>
-        public virtual IEnumerable<SafeModeResult> InsertBatch(
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A list of WriteConcernResults (or null if WriteConcern is disabled).</returns>
+        public virtual IEnumerable<WriteConcernResult> InsertBatch(
             IEnumerable<TDefaultDocument> documents,
-            SafeMode safeMode)
+            WriteConcern writeConcern)
         {
-            return InsertBatch<TDefaultDocument>(documents, safeMode);
+            return InsertBatch<TDefaultDocument>(documents, writeConcern);
         }
 
         /// <summary>
@@ -1931,8 +1931,8 @@ namespace MongoDB.Driver
         /// of the Id field Save will perform either an Insert or an Update.
         /// </summary>
         /// <param name="document">The document to save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(TDefaultDocument document)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(TDefaultDocument document)
         {
             return Save<TDefaultDocument>(document);
         }
@@ -1943,8 +1943,8 @@ namespace MongoDB.Driver
         /// </summary>
         /// <param name="document">The document to save.</param>
         /// <param name="options">The options to use for this Save.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(TDefaultDocument document, MongoInsertOptions options)
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(TDefaultDocument document, MongoInsertOptions options)
         {
             return Save<TDefaultDocument>(document, options);
         }
@@ -1954,11 +1954,11 @@ namespace MongoDB.Driver
         /// of the Id field Save will perform either an Insert or an Update.
         /// </summary>
         /// <param name="document">The document to save.</param>
-        /// <param name="safeMode">The SafeMode to use for this operation.</param>
-        /// <returns>A SafeModeResult (or null if SafeMode is not being used).</returns>
-        public virtual SafeModeResult Save(TDefaultDocument document, SafeMode safeMode)
+        /// <param name="writeConcern">The write concern to use for this Insert.</param>
+        /// <returns>A WriteConcernResult (or null if WriteConcern is disabled).</returns>
+        public virtual WriteConcernResult Save(TDefaultDocument document, WriteConcern writeConcern)
         {
-            return Save<TDefaultDocument>(document, safeMode);
+            return Save<TDefaultDocument>(document, writeConcern);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(MongoDefaults.MaxConnectionLifeTime, url.MaxConnectionLifeTime);
             Assert.AreEqual(MongoDefaults.MaxConnectionPoolSize, url.MaxConnectionPoolSize);
             Assert.AreEqual(null, url.ReplicaSetName);
-            Assert.AreEqual(SafeMode.False, url.SafeMode);
+            Assert.AreEqual(null, url.SafeMode);
             Assert.AreEqual(MongoDefaults.SecondaryAcceptableLatency, url.SecondaryAcceptableLatency);
             Assert.AreEqual(MongoDefaults.SocketTimeout, url.SocketTimeout);
             Assert.AreEqual(false, url.UseSsl);
@@ -303,7 +303,7 @@ namespace MongoDB.DriverUnitTests
             string connectionString = "mongodb://localhost/?safe=false";
             MongoUrl url = new MongoUrl(connectionString);
             Assert.AreEqual(SafeMode.False, url.SafeMode);
-            Assert.AreEqual("mongodb://localhost", url.ToString()); // safe=false dropped
+            Assert.AreEqual(connectionString, url.ToString());
         }
 
         [Test]
@@ -321,7 +321,7 @@ namespace MongoDB.DriverUnitTests
             string connectionString = "mongodb://localhost/?safe=true;fsync=false";
             MongoUrl url = new MongoUrl(connectionString);
             Assert.AreEqual(SafeMode.True, url.SafeMode);
-            Assert.AreEqual("mongodb://localhost/?safe=true", url.ToString()); // fsync=false dropped
+            Assert.AreEqual(connectionString, url.ToString());
         }
 
         [Test]
@@ -339,7 +339,7 @@ namespace MongoDB.DriverUnitTests
             string connectionString = "mongodb://localhost/?w=2";
             MongoUrl url = new MongoUrl(connectionString);
             Assert.AreEqual(SafeMode.W2, url.SafeMode);
-            Assert.AreEqual("mongodb://localhost/?safe=true;w=2", url.ToString()); // safe=true added
+            Assert.AreEqual(connectionString, url.ToString());
         }
 
         [Test]

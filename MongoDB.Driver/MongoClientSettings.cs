@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 
 using MongoDB.Bson;
@@ -24,9 +25,9 @@ using MongoDB.Bson;
 namespace MongoDB.Driver
 {
     /// <summary>
-    /// The settings used to access a MongoDB server.
+    /// The settings for a MongoDB client.
     /// </summary>
-    public class MongoServerSettings
+    public class MongoClientSettings
     {
         // private fields
         private ConnectionMode _connectionMode;
@@ -57,9 +58,9 @@ namespace MongoDB.Driver
 
         // constructors
         /// <summary>
-        /// Creates a new instance of MongoServerSettings. Usually you would use a connection string instead.
+        /// Creates a new instance of MongoClientSettings. Usually you would use a connection string instead.
         /// </summary>
-        public MongoServerSettings()
+        public MongoClientSettings()
         {
             _connectionMode = ConnectionMode.Automatic;
             _connectTimeout = MongoDefaults.ConnectTimeout;
@@ -80,9 +81,7 @@ namespace MongoDB.Driver
             _verifySslCertificate = true;
             _waitQueueSize = MongoDefaults.ComputedWaitQueueSize;
             _waitQueueTimeout = MongoDefaults.WaitQueueTimeout;
-#pragma warning disable 612, 618
-            _writeConcern = MongoDefaults.SafeMode.WriteConcern;
-#pragma warning restore
+            _writeConcern = WriteConcern.Errors;
         }
 
         // public properties
@@ -94,7 +93,7 @@ namespace MongoDB.Driver
             get { return _connectionMode; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _connectionMode = value;
             }
         }
@@ -107,7 +106,7 @@ namespace MongoDB.Driver
             get { return _connectTimeout; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _connectTimeout = value;
             }
         }
@@ -120,7 +119,7 @@ namespace MongoDB.Driver
             get { return _credentialsStore; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 if (value == null)
                 {
                     throw new ArgumentNullException("value");
@@ -137,7 +136,7 @@ namespace MongoDB.Driver
             get { return _defaultCredentials; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _defaultCredentials = value;
             }
         }
@@ -150,7 +149,7 @@ namespace MongoDB.Driver
             get { return _guidRepresentation; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _guidRepresentation = value;
             }
         }
@@ -171,7 +170,7 @@ namespace MongoDB.Driver
             get { return _ipv6; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _ipv6 = value;
             }
         }
@@ -184,7 +183,7 @@ namespace MongoDB.Driver
             get { return _maxConnectionIdleTime; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _maxConnectionIdleTime = value;
             }
         }
@@ -197,7 +196,7 @@ namespace MongoDB.Driver
             get { return _maxConnectionLifeTime; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _maxConnectionLifeTime = value;
             }
         }
@@ -210,7 +209,7 @@ namespace MongoDB.Driver
             get { return _maxConnectionPoolSize; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _maxConnectionPoolSize = value;
             }
         }
@@ -223,7 +222,7 @@ namespace MongoDB.Driver
             get { return _minConnectionPoolSize; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _minConnectionPoolSize = value;
             }
         }
@@ -236,7 +235,7 @@ namespace MongoDB.Driver
             get { return _readPreference; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 if (value == null)
                 {
                     throw new ArgumentNullException("value");
@@ -253,26 +252,8 @@ namespace MongoDB.Driver
             get { return _replicaSetName; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _replicaSetName = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the SafeMode to use.
-        /// </summary>
-        [Obsolete("Use WriteConcern instead.")]
-        public SafeMode SafeMode
-        {
-            get { return new SafeMode(_writeConcern); }
-            set
-            {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-                _writeConcern = value.WriteConcern;
             }
         }
 
@@ -285,7 +266,7 @@ namespace MongoDB.Driver
             get { return _secondaryAcceptableLatency; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _secondaryAcceptableLatency = value;
             }
         }
@@ -298,7 +279,7 @@ namespace MongoDB.Driver
             get { return _servers.Single(); }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 if (value == null)
                 {
                     throw new ArgumentNullException("value");
@@ -315,7 +296,7 @@ namespace MongoDB.Driver
             get { return new ReadOnlyCollection<MongoServerAddress>(_servers); }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 if (value == null)
                 {
                     throw new ArgumentNullException("value");
@@ -332,7 +313,7 @@ namespace MongoDB.Driver
             get { return _socketTimeout; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _socketTimeout = value;
             }
         }
@@ -345,7 +326,7 @@ namespace MongoDB.Driver
             get { return _useSsl; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _useSsl = value;
             }
         }
@@ -358,7 +339,7 @@ namespace MongoDB.Driver
             get { return _verifySslCertificate; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _verifySslCertificate = value;
             }
         }
@@ -371,7 +352,7 @@ namespace MongoDB.Driver
             get { return _waitQueueSize; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _waitQueueSize = value;
             }
         }
@@ -384,7 +365,7 @@ namespace MongoDB.Driver
             get { return _waitQueueTimeout; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 _waitQueueTimeout = value;
             }
         }
@@ -397,7 +378,7 @@ namespace MongoDB.Driver
             get { return _writeConcern; }
             set
             {
-                if (_isFrozen) { throw new InvalidOperationException("MongoServerSettings is frozen."); }
+                if (_isFrozen) { throw new InvalidOperationException("MongoClientSettings is frozen."); }
                 if (value == null)
                 {
                     throw new ArgumentNullException("value");
@@ -408,66 +389,33 @@ namespace MongoDB.Driver
 
         // public static methods
         /// <summary>
-        /// Creates a new MongoServerSettings object from a MongoClientSettings object.
+        /// Gets a MongoClientSettings object intialized with values from a URL.
         /// </summary>
-        /// <param name="clientSettings"></param>
-        /// <returns></returns>
-        public static MongoServerSettings FromClientSettings(MongoClientSettings clientSettings)
+        /// <returns>A MongoClientSettings.</returns>
+        public static MongoClientSettings FromUrl(MongoUrl url)
         {
-            var serverSettings = new MongoServerSettings();
-            serverSettings.ConnectionMode = clientSettings.ConnectionMode;
-            serverSettings.ConnectTimeout = clientSettings.ConnectTimeout;
-            serverSettings.CredentialsStore = clientSettings.CredentialsStore;
-            serverSettings.DefaultCredentials = clientSettings.DefaultCredentials;
-            serverSettings.GuidRepresentation = clientSettings.GuidRepresentation;
-            serverSettings.IPv6 = clientSettings.IPv6;
-            serverSettings.MaxConnectionIdleTime = clientSettings.MaxConnectionIdleTime;
-            serverSettings.MaxConnectionLifeTime = clientSettings.MaxConnectionLifeTime;
-            serverSettings.MaxConnectionPoolSize = clientSettings.MaxConnectionPoolSize;
-            serverSettings.MinConnectionPoolSize = clientSettings.MinConnectionPoolSize;
-            serverSettings.ReadPreference = clientSettings.ReadPreference;
-            serverSettings.ReplicaSetName = clientSettings.ReplicaSetName;
-            serverSettings.SecondaryAcceptableLatency = clientSettings.SecondaryAcceptableLatency;
-            serverSettings.Servers = new List<MongoServerAddress>(clientSettings.Servers);
-            serverSettings.SocketTimeout = clientSettings.SocketTimeout;
-            serverSettings.UseSsl = clientSettings.UseSsl;
-            serverSettings.VerifySslCertificate = clientSettings.VerifySslCertificate;
-            serverSettings.WaitQueueSize = clientSettings.WaitQueueSize;
-            serverSettings.WaitQueueTimeout = clientSettings.WaitQueueTimeout;
-            serverSettings.WriteConcern = clientSettings.WriteConcern;
-            return serverSettings;
-        }
-
-        /// <summary>
-        /// Gets a MongoServerSettings object intialized with values from a URL.
-        /// </summary>
-        /// <returns>A MongoServerSettings.</returns>
-        public static MongoServerSettings FromUrl(MongoUrl url)
-        {
-            var serverSettings = new MongoServerSettings();
-            serverSettings.ConnectionMode = url.ConnectionMode;
-            serverSettings.ConnectTimeout = url.ConnectTimeout;
-            serverSettings.CredentialsStore = new MongoCredentialsStore();
-            serverSettings.DefaultCredentials = url.DefaultCredentials;
-            serverSettings.GuidRepresentation = url.GuidRepresentation;
-            serverSettings.IPv6 = url.IPv6;
-            serverSettings.MaxConnectionIdleTime = url.MaxConnectionIdleTime;
-            serverSettings.MaxConnectionLifeTime = url.MaxConnectionLifeTime;
-            serverSettings.MaxConnectionPoolSize = url.MaxConnectionPoolSize;
-            serverSettings.MinConnectionPoolSize = url.MinConnectionPoolSize;
-            serverSettings.ReadPreference = (url.ReadPreference == null) ? ReadPreference.Primary : url.ReadPreference;
-            serverSettings.ReplicaSetName = url.ReplicaSetName;
-            serverSettings.SecondaryAcceptableLatency = url.SecondaryAcceptableLatency;
-            serverSettings.Servers = new List<MongoServerAddress>(url.Servers);
-            serverSettings.SocketTimeout = url.SocketTimeout;
-            serverSettings.UseSsl = url.UseSsl;
-            serverSettings.VerifySslCertificate = url.VerifySslCertificate;
-            serverSettings.WaitQueueSize = url.ComputedWaitQueueSize;
-            serverSettings.WaitQueueTimeout = url.WaitQueueTimeout;
-#pragma warning disable 618
-            serverSettings.WriteConcern = url.GetWriteConcern(!MongoDefaults.SafeMode.Enabled);
-#pragma warning restore
-            return serverSettings;
+            var clientSettings = new MongoClientSettings();
+            clientSettings.ConnectionMode = url.ConnectionMode;
+            clientSettings.ConnectTimeout = url.ConnectTimeout;
+            clientSettings.CredentialsStore = new MongoCredentialsStore();
+            clientSettings.DefaultCredentials = url.DefaultCredentials;
+            clientSettings.GuidRepresentation = url.GuidRepresentation;
+            clientSettings.IPv6 = url.IPv6;
+            clientSettings.MaxConnectionIdleTime = url.MaxConnectionIdleTime;
+            clientSettings.MaxConnectionLifeTime = url.MaxConnectionLifeTime;
+            clientSettings.MaxConnectionPoolSize = url.MaxConnectionPoolSize;
+            clientSettings.MinConnectionPoolSize = url.MinConnectionPoolSize;
+            clientSettings.ReadPreference = (url.ReadPreference == null) ? ReadPreference.Primary : url.ReadPreference;
+            clientSettings.ReplicaSetName = url.ReplicaSetName;
+            clientSettings.SecondaryAcceptableLatency = url.SecondaryAcceptableLatency;
+            clientSettings.Servers = new List<MongoServerAddress>(url.Servers);
+            clientSettings.SocketTimeout = url.SocketTimeout;
+            clientSettings.UseSsl = url.UseSsl;
+            clientSettings.VerifySslCertificate = url.VerifySslCertificate;
+            clientSettings.WaitQueueSize = url.ComputedWaitQueueSize;
+            clientSettings.WaitQueueTimeout = url.WaitQueueTimeout;
+            clientSettings.WriteConcern = url.GetWriteConcern(false); // fireAndForget default for MongoClientSettings is false
+            return clientSettings;
         }
 
         // public methods
@@ -475,9 +423,9 @@ namespace MongoDB.Driver
         /// Creates a clone of the settings.
         /// </summary>
         /// <returns>A clone of the settings.</returns>
-        public MongoServerSettings Clone()
+        public MongoClientSettings Clone()
         {
-            var clone = new MongoServerSettings();
+            var clone = new MongoClientSettings();
             clone._connectionMode = _connectionMode;
             clone._connectTimeout = _connectTimeout;
             clone._credentialsStore = _credentialsStore.Clone();
@@ -502,13 +450,13 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Compares two MongoServerSettings instances.
+        /// Compares two MongoClientSettings instances.
         /// </summary>
         /// <param name="obj">The other instance.</param>
         /// <returns>True if the two instances are equal.</returns>
         public override bool Equals(object obj)
         {
-            var rhs = obj as MongoServerSettings;
+            var rhs = obj as MongoClientSettings;
             if (rhs == null)
             {
                 return false;
@@ -550,7 +498,7 @@ namespace MongoDB.Driver
         /// Freezes the settings.
         /// </summary>
         /// <returns>The frozen settings.</returns>
-        public MongoServerSettings Freeze()
+        public MongoClientSettings Freeze()
         {
             if (!_isFrozen)
             {
@@ -568,7 +516,7 @@ namespace MongoDB.Driver
         /// Returns a frozen copy of the settings.
         /// </summary>
         /// <returns>A frozen copy of the settings.</returns>
-        public MongoServerSettings FrozenCopy()
+        public MongoClientSettings FrozenCopy()
         {
             if (_isFrozen)
             {
@@ -578,36 +526,6 @@ namespace MongoDB.Driver
             {
                 return Clone().Freeze();
             }
-        }
-
-        /// <summary>
-        /// Gets credentials for a particular database.
-        /// </summary>
-        /// <param name="databaseName">The database name.</param>
-        /// <returns>The credentials for that database (or null).</returns>
-        public MongoCredentials GetCredentials(string databaseName)
-        {
-            if (databaseName == null)
-            {
-                throw new ArgumentNullException("databaseName");
-            }
-
-            MongoCredentials credentials;
-            if (_credentialsStore.TryGetCredentials(databaseName, out credentials))
-            {
-                return credentials;
-            }
-
-            if (databaseName == "admin" && _defaultCredentials != null && _defaultCredentials.Admin)
-            {
-                return _defaultCredentials;
-            }
-            if (databaseName != "admin")
-            {
-                return _defaultCredentials;
-            }
-
-            return null;
         }
 
         /// <summary>

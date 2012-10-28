@@ -104,6 +104,7 @@
     <Compile Include="CommandResults\IsMasterResult.cs" />
     <Compile Include="CommandResults\SafeModeResult.cs" />
     <Compile Include="CommandResults\ValidateCollectionResult.cs" />
+    <Compile Include="CommandResults\WriteConcernResult.cs" />
     <Compile Include="EvalFlags.cs" />
     <Compile Include="InsertFlags.cs" />
     <Compile Include="Interfaces\IMongoCollectionOptions.cs" />
@@ -119,6 +120,8 @@
     <Compile Include="Interfaces\IMongoScope.cs" />
     <Compile Include="Interfaces\IMongoSortBy.cs" />
     <Compile Include="Interfaces\IMongoUpdate.cs" />
+    <Compile Include="MongoClient.cs" />
+    <Compile Include="MongoClientSettings.cs" />
     <Compile Include="MongoCollectionSettings.cs" />
     <Compile Include="MongoCredentialsStore.cs" />
     <Compile Include="MongoDatabaseSettings.cs" />
@@ -163,9 +166,11 @@
     <Compile Include="Wrappers\SortByWrapper.cs" />
     <Compile Include="Wrappers\UpdateDocument.cs" />
     <Compile Include="Wrappers\UpdateWrapper.cs" />
+    <Compile Include="WriteConcern.cs" />
     <Compile Include="Exceptions\MongoAuthenticationException.cs" />
     <Compile Include="Exceptions\MongoCommandException.cs" />
     <Compile Include="Exceptions\MongoConnectionException.cs" />
+    <Compile Include="Exceptions\WriteConcernException.cs" />
     <Compile Include="GridFS\MongoGridFSException.cs" />
     <Compile Include="Exceptions\MongoInternalException.cs" />
     <Compile Include="Exceptions\MongoQueryException.cs" />

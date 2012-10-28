@@ -32,9 +32,9 @@ namespace MongoDB.Driver.GridFS
         // private fields
         private Setting<int> _chunkSize;
         private Setting<string> _root;
-        private Setting<SafeMode> _safeMode;
         private Setting<bool> _updateMD5;
         private Setting<bool> _verifyMD5;
+        private Setting<WriteConcern> _writeConcern;
 
         private bool _isFrozen;
         private int _frozenHashCode;
@@ -112,9 +112,10 @@ namespace MongoDB.Driver.GridFS
         /// <summary>
         /// Gets or sets the safe mode.
         /// </summary>
+        [Obsolete("Use WriteConcern instead.")]
         public SafeMode SafeMode
         {
-            get { return _safeMode.Value; }
+            get { return (_writeConcern.Value == null) ? null : new SafeMode(_writeConcern.Value); }
             set
             {
                 if (_isFrozen) { ThrowFrozen(); }
@@ -122,7 +123,7 @@ namespace MongoDB.Driver.GridFS
                 {
                     throw new ArgumentNullException("value");
                 }
-                _safeMode.Value = value;
+                _writeConcern.Value = (value == null) ? null : value.WriteConcern;
             }
         }
 
@@ -147,6 +148,23 @@ namespace MongoDB.Driver.GridFS
             set {
                 if (_isFrozen) { ThrowFrozen(); }
                 _verifyMD5.Value = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the WriteConcern.
+        /// </summary>
+        public WriteConcern WriteConcern
+        {
+            get { return _writeConcern.Value; }
+            set
+            {
+                if (_isFrozen) { ThrowFrozen(); }
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                _writeConcern.Value = value;
             }
         }
 
@@ -183,9 +201,9 @@ namespace MongoDB.Driver.GridFS
             var clone = new MongoGridFSSettings();
             clone._chunkSize = _chunkSize.Clone();
             clone._root = _root.Clone();
-            clone._safeMode = _safeMode.Clone();
             clone._updateMD5 = _updateMD5.Clone();
             clone._verifyMD5 = _verifyMD5.Clone();
+            clone._writeConcern = _writeConcern.Clone();
             return clone;
         }
 
@@ -200,9 +218,9 @@ namespace MongoDB.Driver.GridFS
             return
                 _chunkSize.Value == rhs._chunkSize.Value &&
                 _root.Value == rhs._root.Value &&
-                _safeMode.Value == rhs._safeMode.Value &&
                 _updateMD5.Value == rhs._updateMD5.Value &&
-                _verifyMD5.Value == rhs._verifyMD5.Value;
+                _verifyMD5.Value == rhs._verifyMD5.Value &&
+                _writeConcern.Value == rhs._writeConcern.Value;
         }
 
         /// <summary>
@@ -223,7 +241,7 @@ namespace MongoDB.Driver.GridFS
         {
             if (!_isFrozen)
             {
-                if (_safeMode.Value != null) { _safeMode.Value = _safeMode.Value.FrozenCopy(); }
+                if (_writeConcern.Value != null) { _writeConcern.Value = _writeConcern.Value.FrozenCopy(); }
                 _frozenHashCode = GetHashCode();
                 _isFrozen = true;
             }
@@ -261,9 +279,9 @@ namespace MongoDB.Driver.GridFS
             int hash = 17;
             hash = 37 * hash + _chunkSize.Value.GetHashCode();
             hash = 37 * hash + ((_root.Value == null) ? 0 : _root.Value.GetHashCode());
-            hash = 37 * hash + ((_safeMode.Value == null) ? 0 : _safeMode.Value.GetHashCode());
             hash = 37 * hash + _updateMD5.Value.GetHashCode();
             hash = 37 * hash + _verifyMD5.Value.GetHashCode();
+            hash = 37 * hash + ((_writeConcern.Value == null) ? 0 : _writeConcern.Value.GetHashCode());
             return hash;
         }
 
@@ -278,10 +296,6 @@ namespace MongoDB.Driver.GridFS
             {
                 Root = __defaults.Root;
             }
-            if (!_safeMode.HasBeenSet)
-            {
-                SafeMode = databaseSettings.SafeMode;
-            }
             if (!_updateMD5.HasBeenSet)
             {
                 UpdateMD5 = __defaults.UpdateMD5;
@@ -289,6 +303,10 @@ namespace MongoDB.Driver.GridFS
             if (!_verifyMD5.HasBeenSet)
             {
                 VerifyMD5 = __defaults.VerifyMD5;
+            }
+            if (!_writeConcern.HasBeenSet)
+            {
+                WriteConcern = databaseSettings.WriteConcern;
             }
         }
 
