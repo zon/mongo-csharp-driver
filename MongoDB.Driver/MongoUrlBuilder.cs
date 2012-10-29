@@ -135,7 +135,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "ConnectTimeout must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "ConnectTimeout must be greater than or equal to zero.");
                 }
                 _connectTimeout = value;
             }
@@ -233,7 +233,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "MaxConnectionIdleTime must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionIdleTime must be greater than or equal to zero.");
                 }
                 _maxConnectionIdleTime = value;
             }
@@ -249,7 +249,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "MaxConnectionLifeTime must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionLifeTime must be greater than or equal to zero.");
                 }
                 _maxConnectionLifeTime = value;
             }
@@ -265,7 +265,7 @@ namespace MongoDB.Driver
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "MaxConnectionPoolSize must be larger than zero.");
+                    throw new ArgumentOutOfRangeException("value", "MaxConnectionPoolSize must be greater than zero.");
                 }
                 _maxConnectionPoolSize = value;
             }
@@ -279,9 +279,9 @@ namespace MongoDB.Driver
             get { return _minConnectionPoolSize; }
             set
             {
-                if (value <= 0)
+                if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "MinConnectionPoolSize must be larger than zero.");
+                    throw new ArgumentOutOfRangeException("value", "MinConnectionPoolSize must be greater than or equal to zero.");
                 }
                 _minConnectionPoolSize = value;
             }
@@ -380,7 +380,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "SecondaryAcceptableLatency must be larger than zero.");
+                    throw new ArgumentOutOfRangeException("value", "SecondaryAcceptableLatency must be greater than or equal to zero.");
                 }
                 _secondaryAcceptableLatency = value;
             }
@@ -414,7 +414,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "SocketTimeout must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "SocketTimeout must be greater than or equal to zero.");
                 }
                 _socketTimeout = value;
             }
@@ -461,7 +461,7 @@ namespace MongoDB.Driver
             {
                 if (value <= 0.0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "WaitQueueMultiple must be larger than zero.");
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueMultiple must be greater than zero.");
                 }
                 _waitQueueMultiple = value;
                 _waitQueueSize = 0;
@@ -478,7 +478,7 @@ namespace MongoDB.Driver
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "WaitQueueSize must be larger than 0.");
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueSize must be greater than zero.");
                 }
                 _waitQueueSize = value;
                 _waitQueueMultiple = 0.0;
@@ -495,7 +495,7 @@ namespace MongoDB.Driver
             {
                 if (value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "WaitQueueTimeout must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "WaitQueueTimeout must be greater than or equal to zero.");
                 }
                 _waitQueueTimeout = value;
             }
@@ -512,7 +512,7 @@ namespace MongoDB.Driver
                 if (value != null) { EnsureFireAndForgetIsNotTrue("WTimeout"); }
                 if (value != null && value.Value < TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException("value", "WTimeout must be larger than or equal to zero.");
+                    throw new ArgumentOutOfRangeException("value", "WTimeout must be greater than or equal to zero.");
                 }
                 _wTimeout = value;
             }
