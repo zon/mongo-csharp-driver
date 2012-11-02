@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using NUnit.Framework;
 
@@ -26,7 +25,7 @@ using MongoDB.Driver;
 namespace MongoDB.DriverUnitTests
 {
     [TestFixture]
-    public class MongoServerSettingsTests
+    public class MongoClientSettingsTests
     {
         private readonly MongoServerAddress _localHost = new MongoServerAddress("localhost");
 
@@ -43,7 +42,7 @@ namespace MongoDB.DriverUnitTests
                 "fireAndForget=false;fsync=true;journal=true;w=2;wtimeout=131";
             var builder = new MongoUrlBuilder(connectionString);
             var url = builder.ToMongoUrl();
-            var settings = MongoServerSettings.FromUrl(url);
+            var settings = MongoClientSettings.FromUrl(url);
 
             var clone = settings.Clone();
             Assert.AreEqual(settings, clone);
@@ -52,7 +51,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestConnectionMode()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(ConnectionMode.Automatic, settings.ConnectionMode);
 
             var connectionMode = ConnectionMode.Direct;
@@ -67,7 +66,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestConnectTimeout()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.ConnectTimeout, settings.ConnectTimeout);
 
             var connectTimeout = new TimeSpan(1, 2, 3);
@@ -82,7 +81,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestCredentialsStore()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual("{}", settings.CredentialsStore.ToString());
 
             var credentialsStore = new MongoCredentialsStore();
@@ -99,7 +98,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestDefaultCredentials()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(null, settings.DefaultCredentials);
 
             var defaultCredentials = new MongoCredentials("user1", "password1");
@@ -114,7 +113,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestDefaults()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(ConnectionMode.Automatic, settings.ConnectionMode);
             Assert.AreEqual(MongoDefaults.ConnectTimeout, settings.ConnectTimeout);
             Assert.AreEqual("{}", settings.CredentialsStore.ToString());
@@ -135,13 +134,13 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(true, settings.VerifySslCertificate);
             Assert.AreEqual(MongoDefaults.ComputedWaitQueueSize, settings.WaitQueueSize);
             Assert.AreEqual(MongoDefaults.WaitQueueTimeout, settings.WaitQueueTimeout);
-            Assert.AreEqual(WriteConcern.None, settings.WriteConcern);
+            Assert.AreEqual(WriteConcern.Errors, settings.WriteConcern);
         }
 
         [Test]
         public void TestEquals()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             var clone = settings.Clone();
             Assert.IsTrue(clone.Equals(settings));
 
@@ -230,7 +229,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestFreeze()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             settings.ReadPreference = new ReadPreference();
             settings.WriteConcern = new WriteConcern();
 
@@ -251,44 +250,6 @@ namespace MongoDB.DriverUnitTests
         }
 
         [Test]
-        public void TestFromClientSettings()
-        {
-            // set everything to non default values to test that all settings are converted
-            var connectionString =
-                "mongodb://user1:password1@somehost/?" +
-                "connect=direct;connectTimeout=123;uuidRepresentation=pythonLegacy;ipv6=true;" +
-                "maxIdleTime=124;maxLifeTime=125;maxPoolSize=126;minPoolSize=127;" +
-                "readPreference=secondary;readPreferenceTags=a:1,b:2;readPreferenceTags=c:3,d:4;secondaryAcceptableLatency=128;socketTimeout=129;" +
-                "ssl=true;sslVerifyCertificate=false;waitqueuesize=130;waitQueueTimeout=131;" +
-                "fireAndForget=false;fsync=true;journal=true;w=2;wtimeout=131";
-            var builder = new MongoUrlBuilder(connectionString);
-            var url = builder.ToMongoUrl();
-            var clientSettings = MongoClientSettings.FromUrl(url);
-
-            var settings = MongoServerSettings.FromClientSettings(clientSettings);
-            Assert.AreEqual(url.ConnectionMode, settings.ConnectionMode);
-            Assert.AreEqual(url.ConnectTimeout, settings.ConnectTimeout);
-            Assert.AreEqual("{}", settings.CredentialsStore.ToString());
-            Assert.AreEqual(url.DefaultCredentials, settings.DefaultCredentials);
-            Assert.AreEqual(url.GuidRepresentation, settings.GuidRepresentation);
-            Assert.AreEqual(url.IPv6, settings.IPv6);
-            Assert.AreEqual(url.MaxConnectionIdleTime, settings.MaxConnectionIdleTime);
-            Assert.AreEqual(url.MaxConnectionLifeTime, settings.MaxConnectionLifeTime);
-            Assert.AreEqual(url.MaxConnectionPoolSize, settings.MaxConnectionPoolSize);
-            Assert.AreEqual(url.MinConnectionPoolSize, settings.MinConnectionPoolSize);
-            Assert.AreEqual(url.ReadPreference, settings.ReadPreference);
-            Assert.AreEqual(url.ReplicaSetName, settings.ReplicaSetName);
-            Assert.AreEqual(url.SecondaryAcceptableLatency, settings.SecondaryAcceptableLatency);
-            Assert.IsTrue(url.Servers.SequenceEqual(settings.Servers));
-            Assert.AreEqual(url.SocketTimeout, settings.SocketTimeout);
-            Assert.AreEqual(url.UseSsl, settings.UseSsl);
-            Assert.AreEqual(url.VerifySslCertificate, settings.VerifySslCertificate);
-            Assert.AreEqual(url.ComputedWaitQueueSize, settings.WaitQueueSize);
-            Assert.AreEqual(url.WaitQueueTimeout, settings.WaitQueueTimeout);
-            Assert.AreEqual(url.GetWriteConcern(false), settings.WriteConcern);
-        }
-
-        [Test]
         public void TestFromUrl()
         {
             // set everything to non default values to test that all settings are converted
@@ -302,7 +263,7 @@ namespace MongoDB.DriverUnitTests
             var builder = new MongoUrlBuilder(connectionString);
             var url = builder.ToMongoUrl();
 
-            var settings = MongoServerSettings.FromUrl(url);
+            var settings = MongoClientSettings.FromUrl(url);
             Assert.AreEqual(url.ConnectionMode, settings.ConnectionMode);
             Assert.AreEqual(url.ConnectTimeout, settings.ConnectTimeout);
             Assert.AreEqual("{}", settings.CredentialsStore.ToString());
@@ -328,7 +289,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestFrozenCopy()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(false, settings.IsFrozen);
 
             var frozenCopy = settings.FrozenCopy();
@@ -341,34 +302,9 @@ namespace MongoDB.DriverUnitTests
         }
 
         [Test]
-        public void TestGetCredentials()
-        {
-            var settings = new MongoServerSettings();
-            var credentialsStore = new MongoCredentialsStore();
-            credentialsStore.AddCredentials("db1", new MongoCredentials("user1", "password1"));
-            credentialsStore.AddCredentials("db2", new MongoCredentials("user2", "password2"));
-            settings.CredentialsStore = credentialsStore;
-
-            Assert.AreEqual(new MongoCredentials("user1", "password1"), settings.GetCredentials("db1"));
-            Assert.AreEqual(new MongoCredentials("user2", "password2"), settings.GetCredentials("db2"));
-            Assert.AreEqual(null, settings.GetCredentials("db3"));
-            Assert.AreEqual(null, settings.GetCredentials("admin"));
-
-            var defaultCredentials = new MongoCredentials("defaultuser", "defaultpassword");
-            settings.DefaultCredentials = defaultCredentials;
-            Assert.AreEqual(defaultCredentials, settings.GetCredentials("db3"));
-            Assert.AreEqual(null, settings.GetCredentials("admin")); // default credentials aren't admin credentials
-
-            defaultCredentials = new MongoCredentials("defaultuser", "defaultpassword", true);
-            settings.DefaultCredentials = defaultCredentials;
-            Assert.AreEqual(defaultCredentials, settings.GetCredentials("db3"));
-            Assert.AreEqual(defaultCredentials, settings.GetCredentials("admin")); // default credentials are admin credentials
-        }
-
-        [Test]
         public void TestGuidRepresentation()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.GuidRepresentation, settings.GuidRepresentation);
 
             var guidRepresentation = GuidRepresentation.PythonLegacy;
@@ -383,7 +319,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestIPv6()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(false, settings.IPv6);
 
             var ipv6 = true;
@@ -398,7 +334,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestMaxConnectionIdleTime()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.MaxConnectionIdleTime, settings.MaxConnectionIdleTime);
 
             var maxConnectionIdleTime = new TimeSpan(1, 2, 3);
@@ -413,7 +349,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestMaxConnectionLifeTime()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.MaxConnectionLifeTime, settings.MaxConnectionLifeTime);
 
             var maxConnectionLifeTime = new TimeSpan(1, 2, 3);
@@ -428,7 +364,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestMaxConnectionPoolSize()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.MaxConnectionPoolSize, settings.MaxConnectionPoolSize);
 
             var maxConnectionPoolSize = 123;
@@ -443,7 +379,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestMinConnectionPoolSize()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.MinConnectionPoolSize, settings.MinConnectionPoolSize);
 
             var minConnectionPoolSize = 123;
@@ -458,7 +394,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestReadPreference()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(ReadPreference.Primary, settings.ReadPreference);
 
             var readPreference = new ReadPreference();
@@ -475,7 +411,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestReplicaSetName()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(null, settings.ReplicaSetName);
 
             var replicaSetName = "abc";
@@ -490,7 +426,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestSecondaryAcceptableLatency()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.SecondaryAcceptableLatency, settings.SecondaryAcceptableLatency);
 
             var secondaryAcceptableLatency = new TimeSpan(1, 2, 3);
@@ -505,7 +441,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestServer()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(_localHost, settings.Server);
             Assert.IsTrue(new[] { _localHost }.SequenceEqual(settings.Servers));
 
@@ -524,7 +460,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestServersWithOneServer()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(_localHost, settings.Server);
             Assert.IsTrue(new[] { _localHost }.SequenceEqual(settings.Servers));
 
@@ -543,7 +479,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestServersWithTwoServers()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(_localHost, settings.Server);
             Assert.IsTrue(new[] { _localHost }.SequenceEqual(settings.Servers));
 
@@ -565,7 +501,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestSocketTimeout()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.SocketTimeout, settings.SocketTimeout);
 
             var socketTimeout = new TimeSpan(1, 2, 3);
@@ -580,7 +516,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestUseSsl()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(false, settings.UseSsl);
 
             var useSsl = true;
@@ -595,7 +531,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestVerifySslCertificate()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(true, settings.VerifySslCertificate);
 
             var verifySslCertificate = false;
@@ -610,7 +546,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestWaitQueueSize()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.ComputedWaitQueueSize, settings.WaitQueueSize);
 
             var waitQueueSize = 123;
@@ -625,7 +561,7 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestWaitQueueTimeout()
         {
-            var settings = new MongoServerSettings();
+            var settings = new MongoClientSettings();
             Assert.AreEqual(MongoDefaults.WaitQueueTimeout, settings.WaitQueueTimeout);
 
             var waitQueueTimeout = new TimeSpan(1, 2, 3);
@@ -640,8 +576,8 @@ namespace MongoDB.DriverUnitTests
         [Test]
         public void TestWriteConcern()
         {
-            var settings = new MongoServerSettings();
-            Assert.AreEqual(WriteConcern.None, settings.WriteConcern);
+            var settings = new MongoClientSettings();
+            Assert.AreEqual(WriteConcern.Errors, settings.WriteConcern);
 
             var writeConcern = new WriteConcern();
             settings.WriteConcern = writeConcern;

@@ -104,7 +104,7 @@ namespace MongoDB.Driver
         [Obsolete("Use WriteConcern instead.")]
         public SafeMode SafeMode
         {
-            get { return new SafeMode(_writeConcern.Value); }
+            get { return (_writeConcern.Value == null) ? null : new SafeMode(_writeConcern.Value); }
             set
             {
                 if (_isFrozen) { throw new InvalidOperationException("MongoDatabaseSettings is frozen."); }
