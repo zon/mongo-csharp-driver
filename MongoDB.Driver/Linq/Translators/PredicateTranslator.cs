@@ -1096,7 +1096,7 @@ namespace MongoDB.Driver.Linq
             }
 
             var methodName = methodExpression.Method.Name;
-            if ((methodName != "ToLower" && methodName != "ToUpper") ||
+            if ((methodName != "ToLower" && methodName != "ToUpper" && methodName != "ToLowerInvariant" && methodName != "ToUpperInvariant") ||
                 methodExpression.Object == null ||
                 methodExpression.Type != typeof(string) ||
                 methodExpression.Arguments.Count != 0)
@@ -1117,7 +1117,9 @@ namespace MongoDB.Driver.Linq
                 var stringValue = serializedValue.AsString;
                 var stringValueCaseMatches =
                     methodName == "ToLower" && stringValue == stringValue.ToLower(CultureInfo.InvariantCulture) ||
-                    methodName == "ToUpper" && stringValue == stringValue.ToUpper(CultureInfo.InvariantCulture);
+                    methodName == "ToLowerInvariant" && stringValue == stringValue.ToLower(CultureInfo.InvariantCulture) ||
+                    methodName == "ToUpper" && stringValue == stringValue.ToUpper(CultureInfo.InvariantCulture) ||
+                    methodName == "ToUpperInvariant" && stringValue == stringValue.ToUpper(CultureInfo.InvariantCulture);
 
                 if (stringValueCaseMatches)
                 {
@@ -1206,7 +1208,13 @@ namespace MongoDB.Driver.Linq
                     case "ToLower":
                         caseInsensitive = true;
                         break;
+                    case "ToLowerInvariant":
+                        caseInsensitive = true;
+                        break;
                     case "ToUpper":
+                        caseInsensitive = true;
+                        break;
+                    case "ToUpperInvariant":
                         caseInsensitive = true;
                         break;
                     case "Trim":
