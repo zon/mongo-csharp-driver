@@ -254,6 +254,14 @@ namespace MongoDB.Bson.Serialization
         }
 
         /// <summary>
+        /// Returns all registered class maps.
+        /// </summary>
+        public static IEnumerable<BsonClassMap> GetRegisteredClassMaps()
+        {
+            return __classMaps.Values;
+        }
+
+        /// <summary>
         /// Checks whether a class map is registered for a type.
         /// </summary>
         /// <param name="type">The type to check.</param>
@@ -274,14 +282,6 @@ namespace MongoDB.Bson.Serialization
             {
                 BsonSerializer.ConfigLock.ExitReadLock();
             }
-        }
-
-        /// <summary>
-        /// Returns all registered class maps.
-        /// </summary>
-        public static IEnumerable<BsonClassMap> AllClassMaps()
-        {
-            return __classMaps.Values;
         }
 
         /// <summary>
