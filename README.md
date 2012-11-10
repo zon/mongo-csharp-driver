@@ -45,6 +45,6 @@ http://jira.mongodb.org/browse/CSHARP
 * Alexander Nagy            optimiz3@gmail.com
 * Andrew Rondeau            github@andrewrondeau.com
 * Ed Rooth                  edward.rooth@wallstreetjapan.com
-* Testo                     test1@doramail.com   
-
+* Testo                     test1@doramail.com
+* staywellandy              https://github.com/staywellandy
 If you have contributed and we have neglected to add you to this list please contact one of the maintainers to be added to the list (with apologies).

@@ -1206,14 +1206,8 @@ namespace MongoDB.Driver.Linq
                 switch (stringMethodCallExpression.Method.Name)
                 {
                     case "ToLower":
-                        caseInsensitive = true;
-                        break;
                     case "ToLowerInvariant":
-                        caseInsensitive = true;
-                        break;
                     case "ToUpper":
-                        caseInsensitive = true;
-                        break;
                     case "ToUpperInvariant":
                         caseInsensitive = true;
                         break;
