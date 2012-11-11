@@ -40,7 +40,7 @@ namespace MongoDB.DriverUnitTests
                 "maxIdleTime=124;maxLifeTime=125;maxPoolSize=126;minPoolSize=127;" +
                 "readPreference=secondary;readPreferenceTags=a:1,b:2;readPreferenceTags=c:3,d:4;secondaryAcceptableLatency=128;socketTimeout=129;" +
                 "ssl=true;sslVerifyCertificate=false;waitqueuesize=130;waitQueueTimeout=131;" +
-                "fireAndForget=false;fsync=true;journal=true;w=2;wtimeout=131";
+                "safe=true;fsync=true;journal=true;w=2;wtimeout=131";
             var builder = new MongoUrlBuilder(connectionString);
             var url = builder.ToMongoUrl();
             var settings = MongoServerSettings.FromUrl(url);
@@ -260,7 +260,7 @@ namespace MongoDB.DriverUnitTests
                 "maxIdleTime=124;maxLifeTime=125;maxPoolSize=126;minPoolSize=127;" +
                 "readPreference=secondary;readPreferenceTags=a:1,b:2;readPreferenceTags=c:3,d:4;secondaryAcceptableLatency=128;socketTimeout=129;" +
                 "ssl=true;sslVerifyCertificate=false;waitqueuesize=130;waitQueueTimeout=131;" +
-                "fireAndForget=false;fsync=true;journal=true;w=2;wtimeout=131";
+                "safe=true;fsync=true;journal=true;w=2;wtimeout=131";
             var builder = new MongoUrlBuilder(connectionString);
             var url = builder.ToMongoUrl();
             var clientSettings = MongoClientSettings.FromUrl(url);
@@ -285,7 +285,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(url.VerifySslCertificate, settings.VerifySslCertificate);
             Assert.AreEqual(url.ComputedWaitQueueSize, settings.WaitQueueSize);
             Assert.AreEqual(url.WaitQueueTimeout, settings.WaitQueueTimeout);
-            Assert.AreEqual(url.GetWriteConcern(false), settings.WriteConcern);
+            Assert.AreEqual(url.GetWriteConcern(true), settings.WriteConcern);
         }
 
         [Test]
@@ -298,7 +298,7 @@ namespace MongoDB.DriverUnitTests
                 "maxIdleTime=124;maxLifeTime=125;maxPoolSize=126;minPoolSize=127;" +
                 "readPreference=secondary;readPreferenceTags=a:1,b:2;readPreferenceTags=c:3,d:4;secondaryAcceptableLatency=128;socketTimeout=129;" +
                 "ssl=true;sslVerifyCertificate=false;waitqueuesize=130;waitQueueTimeout=131;" +
-                "fireAndForget=false;fsync=true;journal=true;w=2;wtimeout=131";
+                "safe=true;fsync=true;journal=true;w=2;wtimeout=131";
             var builder = new MongoUrlBuilder(connectionString);
             var url = builder.ToMongoUrl();
 
@@ -322,7 +322,7 @@ namespace MongoDB.DriverUnitTests
             Assert.AreEqual(url.VerifySslCertificate, settings.VerifySslCertificate);
             Assert.AreEqual(url.ComputedWaitQueueSize, settings.WaitQueueSize);
             Assert.AreEqual(url.WaitQueueTimeout, settings.WaitQueueTimeout);
-            Assert.AreEqual(url.GetWriteConcern(false), settings.WriteConcern);
+            Assert.AreEqual(url.GetWriteConcern(MongoDefaults.SafeMode.Enabled), settings.WriteConcern);
         }
 
         [Test]

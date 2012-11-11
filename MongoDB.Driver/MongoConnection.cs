@@ -485,11 +485,11 @@ namespace MongoDB.Driver
 
                 message.WriteToBuffer();
                 CommandDocument getLastErrorCommand = null;
-                if (writeConcern != null && !writeConcern.FireAndForget)
+                if (writeConcern != null && writeConcern.Enabled)
                 {
                     var fsync = (writeConcern.FSync == null) ? null : (BsonValue)writeConcern.FSync;
                     var journal = (writeConcern.Journal == null) ? null : (BsonValue)writeConcern.Journal;
-                    var w = (writeConcern.W == null) ? null : writeConcern.W.ToBsonValue();
+                    var w = (writeConcern.W == null) ? null : writeConcern.W.ToGetLastErrorWValue();
                     var wTimeout = (writeConcern.WTimeout == null) ? null : (BsonValue)(int)writeConcern.WTimeout.Value.TotalMilliseconds;
 
                     getLastErrorCommand = new CommandDocument
@@ -525,7 +525,7 @@ namespace MongoDB.Driver
                 }
 
                 WriteConcernResult writeConcernResult = null;
-                if (writeConcern != null && !writeConcern.FireAndForget)
+                if (writeConcern != null && writeConcern.Enabled)
                 {
                     var readerSettings = new BsonBinaryReaderSettings
                     {

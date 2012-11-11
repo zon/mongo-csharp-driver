@@ -414,7 +414,7 @@ namespace MongoDB.Driver
             clientSettings.VerifySslCertificate = url.VerifySslCertificate;
             clientSettings.WaitQueueSize = url.ComputedWaitQueueSize;
             clientSettings.WaitQueueTimeout = url.WaitQueueTimeout;
-            clientSettings.WriteConcern = url.GetWriteConcern(false); // fireAndForget default for MongoClientSettings is false
+            clientSettings.WriteConcern = url.GetWriteConcern(true); // WriteConcern is enabled by default for MongoClient
             return clientSettings;
         }
 
