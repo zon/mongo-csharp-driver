@@ -72,7 +72,6 @@ namespace MongoDB.Driver
         private readonly int _minConnectionPoolSize;
         private readonly ReadPreference _readPreference;
         private readonly string _replicaSetName;
-        private readonly bool? _safe;
         private readonly TimeSpan _secondaryAcceptableLatency;
         private readonly IEnumerable<MongoServerAddress> _servers;
         private readonly TimeSpan _socketTimeout;
@@ -107,9 +106,6 @@ namespace MongoDB.Driver
             _minConnectionPoolSize = builder.MinConnectionPoolSize;
             _readPreference = builder.ReadPreference;
             _replicaSetName = builder.ReplicaSetName;
-#pragma warning disable 618
-            _safe = builder.Safe;
-#pragma warning restore
             _secondaryAcceptableLatency = builder.SecondaryAcceptableLatency;
             _servers = builder.Servers;
             _socketTimeout = builder.SocketTimeout;
@@ -255,15 +251,6 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Gets the safe value.
-        /// </summary>
-        [Obsolete("Use W=0 or W=1 instead.")]
-        public bool? Safe
-        {
-            get { return _safe; }
-        }
-
-        /// <summary>
         /// Gets the SafeMode to use.
         /// </summary>
         [Obsolete("Use FSync, Journal, W and WTimeout instead.")]
@@ -271,7 +258,7 @@ namespace MongoDB.Driver
         {
             get
             {
-                if (_safe != null || AnyWriteConcernSettingsAreSet())
+                if (AnyWriteConcernSettingsAreSet())
                 {
 #pragma warning disable 618
                     return new SafeMode(GetWriteConcern(false));
@@ -484,7 +471,7 @@ namespace MongoDB.Driver
         /// <returns>A WriteConcern.</returns>
         public WriteConcern GetWriteConcern(bool enabledDefault)
         {
-            return new WriteConcern(_safe.HasValue ? _safe.Value : enabledDefault)
+            return new WriteConcern(enabledDefault)
             {
                 FSync = _fsync,
                 Journal = _journal,

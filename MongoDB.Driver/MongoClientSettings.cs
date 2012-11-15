@@ -81,7 +81,7 @@ namespace MongoDB.Driver
             _verifySslCertificate = true;
             _waitQueueSize = MongoDefaults.ComputedWaitQueueSize;
             _waitQueueTimeout = MongoDefaults.WaitQueueTimeout;
-            _writeConcern = WriteConcern.Errors;
+            _writeConcern = WriteConcern.Acknowledged;
         }
 
         // public properties

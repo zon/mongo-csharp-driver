@@ -49,13 +49,13 @@ namespace MongoDB.DriverUnitTests.GridFS
                 Root = "root",
                 UpdateMD5 = true,
                 VerifyMD5 = true,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
             Assert.AreEqual(64 * 1024, settings.ChunkSize);
             Assert.AreEqual("root", settings.Root);
             Assert.AreEqual(true, settings.UpdateMD5);
             Assert.AreEqual(true, settings.VerifyMD5);
-            Assert.AreEqual(WriteConcern.Errors, settings.WriteConcern);
+            Assert.AreEqual(WriteConcern.Acknowledged, settings.WriteConcern);
             Assert.AreEqual(false, settings.IsFrozen);
         }
 
@@ -80,7 +80,7 @@ namespace MongoDB.DriverUnitTests.GridFS
                 Root = "root",
                 UpdateMD5 = false,
                 VerifyMD5 = false,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
             var clone = settings.Clone();
             Assert.IsTrue(settings == clone);
@@ -128,7 +128,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             Assert.Throws<InvalidOperationException>(() => settings.Root = "root");
             Assert.Throws<InvalidOperationException>(() => settings.UpdateMD5 = true);
             Assert.Throws<InvalidOperationException>(() => settings.VerifyMD5 = true);
-            Assert.Throws<InvalidOperationException>(() => settings.WriteConcern = WriteConcern.Errors);
+            Assert.Throws<InvalidOperationException>(() => settings.WriteConcern = WriteConcern.Acknowledged);
         }
     }
 }

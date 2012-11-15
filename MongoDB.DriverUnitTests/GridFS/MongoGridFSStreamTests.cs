@@ -42,7 +42,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             var settings = new MongoGridFSSettings
             {
                 ChunkSize = 16,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
             _gridFS = _database.GetGridFS(settings);
         }
@@ -281,7 +281,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             {
                 ChunkSize = 16,
                 UpdateMD5 = false,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
             var gridFS = _database.GetGridFS(settings);
 
@@ -300,7 +300,7 @@ namespace MongoDB.DriverUnitTests.GridFS
             {
                 ChunkSize = 16,
                 UpdateMD5 = true,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
             gridFS = _database.GetGridFS(settings);
 

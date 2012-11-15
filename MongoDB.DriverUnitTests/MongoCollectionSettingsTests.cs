@@ -35,13 +35,13 @@ namespace MongoDB.DriverUnitTests
                 AssignIdOnInsert = true,
                 GuidRepresentation = GuidRepresentation.PythonLegacy,
                 ReadPreference = ReadPreference.Primary,
-                WriteConcern = WriteConcern.Errors
+                WriteConcern = WriteConcern.Acknowledged
             };
 
             Assert.AreEqual(true, settings.AssignIdOnInsert);
             Assert.AreEqual(GuidRepresentation.PythonLegacy, settings.GuidRepresentation);
             Assert.AreSame(ReadPreference.Primary, settings.ReadPreference);
-            Assert.AreSame(WriteConcern.Errors, settings.WriteConcern);
+            Assert.AreSame(WriteConcern.Acknowledged, settings.WriteConcern);
         }
 
         [Test]
