@@ -23,57 +23,40 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Messages
 {
-    internal class MongoQueryMessage : MongoRequestMessage
+    internal class MongoUpdateMessage : MongoRequestMessage
     {
         // private fields
         private string _collectionFullName;
-        private QueryFlags _flags;
-        private int _numberToSkip;
-        private int _numberToReturn;
+        private bool _checkUpdateDocument;
+        private UpdateFlags _flags;
         private IMongoQuery _query;
-        private IMongoFields _fields;
+        private IMongoUpdate _update;
 
         // constructors
-        internal MongoQueryMessage(
+        internal MongoUpdateMessage(
             BsonBinaryWriterSettings writerSettings,
             string collectionFullName,
-            QueryFlags flags,
-            int numberToSkip,
-            int numberToReturn,
+            bool checkUpdateDocument,
+            UpdateFlags flags,
             IMongoQuery query,
-            IMongoFields fields)
-            : this(null, writerSettings, collectionFullName, flags, numberToSkip, numberToReturn, query, fields)
-        {
-        }
-
-        internal MongoQueryMessage(
-            BsonBuffer buffer,
-            BsonBinaryWriterSettings writerSettings,
-            string collectionFullName,
-            QueryFlags flags,
-            int numberToSkip,
-            int numberToReturn,
-            IMongoQuery query,
-            IMongoFields fields)
-            : base(MessageOpcode.Query, buffer, writerSettings)
+            IMongoUpdate update)
+            : base(MessageOpcode.Update, null, writerSettings)
         {
             _collectionFullName = collectionFullName;
+            _checkUpdateDocument = checkUpdateDocument;
             _flags = flags;
-            _numberToSkip = numberToSkip;
-            _numberToReturn = numberToReturn;
             _query = query;
-            _fields = fields;
+            _update = update;
         }
 
         // protected methods
         protected override void WriteBody()
         {
-            Buffer.WriteInt32((int)_flags);
+            Buffer.WriteInt32(0); // reserved
             Buffer.WriteCString(_collectionFullName);
-            Buffer.WriteInt32(_numberToSkip);
-            Buffer.WriteInt32(_numberToReturn);
+            Buffer.WriteInt32((int)_flags);
 
             using (var bsonWriter = BsonWriter.Create(Buffer, WriterSettings))
             {
@@ -86,10 +69,8 @@ namespace MongoDB.Driver
                 {
                     BsonSerializer.Serialize(bsonWriter, _query.GetType(), _query, DocumentSerializationOptions.SerializeIdFirstInstance);
                 }
-                if (_fields != null)
-                {
-                    BsonSerializer.Serialize(bsonWriter, _fields);
-                }
+                bsonWriter.CheckUpdateDocument = _checkUpdateDocument;
+                BsonSerializer.Serialize(bsonWriter, _update.GetType(), _update, DocumentSerializationOptions.SerializeIdFirstInstance);
             }
         }
     }

@@ -26,8 +26,9 @@ using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver.Communication.Messages;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication
 {
     /// <summary>
     /// Represents the state of a connection.

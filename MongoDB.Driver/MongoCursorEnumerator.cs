@@ -23,6 +23,8 @@ using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver.Communication.Messages;
+using MongoDB.Driver.Communication;
 
 namespace MongoDB.Driver
 {

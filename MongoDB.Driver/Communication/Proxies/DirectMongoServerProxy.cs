@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Proxies
 {
     /// <summary>
     /// Connects directly to a specified instance, failing over to other addresses as necessary.

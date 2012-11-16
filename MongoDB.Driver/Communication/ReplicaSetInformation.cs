@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication
 {
     /// <summary>
     /// Information about a replica set member.

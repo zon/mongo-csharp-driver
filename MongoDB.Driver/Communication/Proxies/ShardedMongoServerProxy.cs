@@ -19,7 +19,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Proxies
 {
     /// <summary>
     /// Connects to a number of mongos' and distributes load based on ping times.

@@ -21,29 +21,31 @@ using System.Text;
 
 using MongoDB.Bson;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Messages
 {
-    internal class MongoKillCursorsMessage : MongoRequestMessage
+    internal class MongoGetMoreMessage : MongoRequestMessage
     {
         // private fields
-        private long[] _cursorIds;
+        private string _collectionFullName;
+        private int _numberToReturn;
+        private long _cursorId;
 
         // constructors
-        internal MongoKillCursorsMessage(params long[] cursorIds)
-            : base(MessageOpcode.KillCursors, null, null)
+        internal MongoGetMoreMessage(string collectionFullName, int numberToReturn, long cursorId)
+            : base(MessageOpcode.GetMore, null, null)
         {
-            _cursorIds = cursorIds;
+            _collectionFullName = collectionFullName;
+            _numberToReturn = numberToReturn;
+            _cursorId = cursorId;
         }
 
         // protected methods
         protected override void WriteBody()
         {
             Buffer.WriteInt32(0); // reserved
-            Buffer.WriteInt32(_cursorIds.Length);
-            foreach (long cursorId in _cursorIds)
-            {
-                Buffer.WriteInt64(cursorId);
-            }
+            Buffer.WriteCString(_collectionFullName);
+            Buffer.WriteInt32(_numberToReturn);
+            Buffer.WriteInt64(_cursorId);
         }
     }
 }

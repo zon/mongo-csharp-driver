@@ -23,7 +23,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Messages
 {
     internal class MongoDeleteMessage : MongoRequestMessage
     {

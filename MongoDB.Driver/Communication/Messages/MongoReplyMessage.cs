@@ -24,7 +24,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Messages
 {
     internal class MongoReplyMessage<TDocument> : MongoMessage
     {

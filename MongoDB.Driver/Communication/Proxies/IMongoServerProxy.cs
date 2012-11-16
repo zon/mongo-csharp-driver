@@ -16,7 +16,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace MongoDB.Driver
+namespace MongoDB.Driver.Communication.Proxies
 {
     /// <summary>
     /// Abstraction for a compositing server instances based on type.
