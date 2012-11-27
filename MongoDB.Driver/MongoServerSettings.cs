@@ -410,8 +410,8 @@ namespace MongoDB.Driver
         /// <summary>
         /// Creates a new MongoServerSettings object from a MongoClientSettings object.
         /// </summary>
-        /// <param name="clientSettings"></param>
-        /// <returns></returns>
+        /// <param name="clientSettings">The MongoClientSettings.</param>
+        /// <returns>A MongoServerSettings.</returns>
         public static MongoServerSettings FromClientSettings(MongoClientSettings clientSettings)
         {
             var serverSettings = new MongoServerSettings();
@@ -439,8 +439,9 @@ namespace MongoDB.Driver
         }
 
         /// <summary>
-        /// Gets a MongoServerSettings object intialized with values from a URL.
+        /// Gets a MongoServerSettings object intialized with values from a MongoUrl.
         /// </summary>
+        /// <param name="url">The MongoUrl.</param>
         /// <returns>A MongoServerSettings.</returns>
         public static MongoServerSettings FromUrl(MongoUrl url)
         {

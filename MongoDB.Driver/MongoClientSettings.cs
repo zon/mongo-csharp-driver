@@ -389,8 +389,9 @@ namespace MongoDB.Driver
 
         // public static methods
         /// <summary>
-        /// Gets a MongoClientSettings object intialized with values from a URL.
+        /// Gets a MongoClientSettings object intialized with values from a MongoURL.
         /// </summary>
+        /// <param name="url">The MongoURL.</param>
         /// <returns>A MongoClientSettings.</returns>
         public static MongoClientSettings FromUrl(MongoUrl url)
         {
