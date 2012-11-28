@@ -13,13 +13,14 @@
 * limitations under the License.
 */
 
-using MongoDB.Driver.Communication;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+
+using MongoDB.Driver.Communication;
 
 namespace MongoDB.Driver
 {

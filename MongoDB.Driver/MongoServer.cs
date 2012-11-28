@@ -23,8 +23,8 @@ using System.Threading;
 
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using MongoDB.Driver.Communication.Proxies;
 using MongoDB.Driver.Communication;
+using MongoDB.Driver.Communication.Proxies;
 
 namespace MongoDB.Driver
 {
