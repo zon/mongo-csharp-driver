@@ -94,7 +94,7 @@ namespace MongoDB.Driver
         /// </summary>
         public int ExtentCount
         {
-            get { return Response["numExtents"].AsInt32; }
+            get { return Response["numExtents"].ToInt32(); }
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace MongoDB.Driver
         /// </summary>
         public int IndexCount
         {
-            get { return Response["nindexes"].AsInt32; }
+            get { return Response["nindexes"].ToInt32(); }
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace MongoDB.Driver
         /// </summary>
         public long MaxDocuments
         {
-            get { return Response.GetValue("max", 0).AsInt32; }
+            get { return Response.GetValue("max", 0).ToInt32(); }
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace MongoDB.Driver
                 BsonValue systemFlags;
                 if (Response.TryGetValue("systemFlags", out systemFlags) || Response.TryGetValue("flags", out systemFlags))
                 {
-                    return (CollectionSystemFlags)systemFlags.AsInt32;
+                    return (CollectionSystemFlags)systemFlags.ToInt32();
                 }
                 else
                 {
@@ -216,7 +216,7 @@ namespace MongoDB.Driver
                 BsonValue userFlags;
                 if (Response.TryGetValue("userFlags", out userFlags))
                 {
-                    return (CollectionUserFlags)userFlags.AsInt32;
+                    return (CollectionUserFlags)userFlags.ToInt32();
                 }
                 else
                 {
