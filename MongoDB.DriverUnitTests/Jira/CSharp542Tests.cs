@@ -22,8 +22,6 @@ using NUnit.Framework;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver.Builders;
 
 namespace MongoDB.DriverUnitTests.Jira.CSharp542
 {
