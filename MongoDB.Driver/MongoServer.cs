@@ -368,67 +368,6 @@ namespace MongoDB.Driver
             get { return _serverProxy.State; }
         }
 
-        // public indexers
-        /// <summary>
-        /// Gets a MongoDatabase instance representing a database on this server. Only one instance
-        /// is created for each combination of database settings.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[string databaseName]
-        {
-            get { return GetDatabase(databaseName); }
-        }
-
-        /// <summary>
-        /// Gets a MongoDatabase instance representing a database on this server. Only one instance
-        /// is created for each combination of database settings.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database (null if none).</param>
-        /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[string databaseName, MongoCredentials credentials]
-        {
-            get { return GetDatabase(databaseName, credentials); }
-        }
-
-        /// <summary>
-        /// Gets a MongoDatabase instance representing a database on this server. Only one instance
-        /// is created for each combination of database settings.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <param name="databaseSettings">The settings to use with this database.</param>
-        /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[string databaseName, MongoDatabaseSettings databaseSettings]
-        {
-            get { return GetDatabase(databaseName, databaseSettings); }
-        }
-
-        /// <summary>
-        /// Gets a MongoDatabase instance representing a database on this server. Only one instance
-        /// is created for each combination of database settings.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <param name="credentials">The credentials to use with this database (null if none).</param>
-        /// <param name="writeConcern">The write concern to use with this database.</param>
-        /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[string databaseName, MongoCredentials credentials, WriteConcern writeConcern]
-        {
-            get { return GetDatabase(databaseName, credentials, writeConcern); }
-        }
-
-        /// <summary>
-        /// Gets a MongoDatabase instance representing a database on this server. Only one instance
-        /// is created for each combination of database settings.
-        /// </summary>
-        /// <param name="databaseName">The name of the database.</param>
-        /// <param name="writeConcern">The write concern to use with this database.</param>
-        /// <returns>A new or existing instance of MongoDatabase.</returns>
-        public virtual MongoDatabase this[string databaseName, WriteConcern writeConcern]
-        {
-            get { return GetDatabase(databaseName, writeConcern); }
-        }
-
         // public static methods
         /// <summary>
         /// Gets an array containing a snapshot of the set of all servers that have been created so far.

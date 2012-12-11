@@ -196,30 +196,6 @@ namespace MongoDB.Driver
             get { return _settings; }
         }
 
-        // public indexers
-        /// <summary>
-        /// Gets a MongoCollection instance representing a collection on this database
-        /// with a default document type of BsonDocument.
-        /// </summary>
-        /// <param name="collectionName">The name of the collection.</param>
-        /// <returns>An instance of MongoCollection.</returns>
-        public virtual MongoCollection<BsonDocument> this[string collectionName]
-        {
-            get { return GetCollection(collectionName); }
-        }
-
-        /// <summary>
-        /// Gets a MongoCollection instance representing a collection on this database
-        /// with a default document type of BsonDocument.
-        /// </summary>
-        /// <param name="collectionName">The name of the collection.</param>
-        /// <param name="writeConcern">The write concern to use when accessing this collection.</param>
-        /// <returns>An instance of MongoCollection.</returns>
-        public virtual MongoCollection<BsonDocument> this[string collectionName, WriteConcern writeConcern]
-        {
-            get { return GetCollection(collectionName, writeConcern); }
-        }
-
         // public methods
         /// <summary>
         /// Adds a user to this database.

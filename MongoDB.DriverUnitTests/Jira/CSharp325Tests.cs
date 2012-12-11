@@ -46,7 +46,7 @@ namespace MongoDB.DriverUnitTests.Jira
             foreach (var c in invalidChars)
             {
                 var databaseName = new string(new char[] { 'x', c });
-                Assert.Throws<ArgumentOutOfRangeException>(() => { var database = _server[databaseName]; });
+                Assert.Throws<ArgumentOutOfRangeException>(() => { var database = _server.GetDatabase(databaseName); });
             }
         }
     }
