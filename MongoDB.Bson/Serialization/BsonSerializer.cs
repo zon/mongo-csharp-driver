@@ -33,7 +33,7 @@ namespace MongoDB.Bson.Serialization
     public static class BsonSerializer
     {
         // private static fields
-        private static ReaderWriterLockSlim __configLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private static ReaderWriterLock __configLock = new ReaderWriterLock();
         private static Dictionary<Type, IIdGenerator> __idGenerators = new Dictionary<Type, IIdGenerator>();
         private static Dictionary<Type, IBsonSerializer> __serializers = new Dictionary<Type, IBsonSerializer>();
         private static Dictionary<Type, Type> __genericSerializerDefinitions = new Dictionary<Type, Type>();
@@ -73,7 +73,7 @@ namespace MongoDB.Bson.Serialization
         }
 
         // internal static properties
-        internal static ReaderWriterLockSlim ConfigLock
+        internal static ReaderWriterLock ConfigLock
         {
             get { return __configLock; }
         }
@@ -306,7 +306,7 @@ namespace MongoDB.Bson.Serialization
             // note: EnsureKnownTypesAreRegistered handles its own locking so call from outside any lock
             EnsureKnownTypesAreRegistered(nominalType);
 
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 Type actualType = null;
@@ -354,7 +354,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
         }
 
@@ -365,7 +365,7 @@ namespace MongoDB.Bson.Serialization
         /// <returns>A discriminator convention.</returns>
         public static IDiscriminatorConvention LookupDiscriminatorConvention(Type type)
         {
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 IDiscriminatorConvention convention;
@@ -376,10 +376,10 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 IDiscriminatorConvention convention;
@@ -433,7 +433,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -444,7 +444,7 @@ namespace MongoDB.Bson.Serialization
         /// <returns>A generic serializer definition.</returns>
         public static Type LookupGenericSerializerDefinition(Type genericTypeDefinition)
         {
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 Type genericSerializerDefinition;
@@ -453,7 +453,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
         }
 
@@ -464,7 +464,7 @@ namespace MongoDB.Bson.Serialization
         /// <returns>An IdGenerator for the Id type.</returns>
         public static IIdGenerator LookupIdGenerator(Type type)
         {
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 IIdGenerator idGenerator;
@@ -475,10 +475,10 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 IIdGenerator idGenerator;
@@ -511,7 +511,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -528,7 +528,7 @@ namespace MongoDB.Bson.Serialization
                 return BsonDocumentSerializer.Instance;
             }
 
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 IBsonSerializer serializer;
@@ -539,10 +539,10 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 IBsonSerializer serializer;
@@ -594,7 +594,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -611,7 +611,7 @@ namespace MongoDB.Bson.Serialization
                 throw new BsonSerializationException(message);
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 HashSet<Type> hashSet;
@@ -634,7 +634,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -645,7 +645,7 @@ namespace MongoDB.Bson.Serialization
         /// <param name="convention">The discriminator convention.</param>
         public static void RegisterDiscriminatorConvention(Type type, IDiscriminatorConvention convention)
         {
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 if (!__discriminatorConventions.ContainsKey(type))
@@ -660,7 +660,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -673,14 +673,14 @@ namespace MongoDB.Bson.Serialization
             Type genericTypeDefinition,
             Type genericSerializerDefinition)
         {
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 __genericSerializerDefinitions[genericTypeDefinition] = genericSerializerDefinition;
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -691,14 +691,14 @@ namespace MongoDB.Bson.Serialization
         /// <param name="idGenerator">The IdGenerator for the Id Type.</param>
         public static void RegisterIdGenerator(Type type, IIdGenerator idGenerator)
         {
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 __idGenerators[type] = idGenerator;
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -708,7 +708,7 @@ namespace MongoDB.Bson.Serialization
         /// <param name="provider">The serialization provider.</param>
         public static void RegisterSerializationProvider(IBsonSerializationProvider provider)
         {
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 // add new provider to the front of the list
@@ -716,7 +716,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -734,7 +734,7 @@ namespace MongoDB.Bson.Serialization
                 throw new BsonSerializationException(message);
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 if (__serializers.ContainsKey(type))
@@ -746,7 +746,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
@@ -808,7 +808,7 @@ namespace MongoDB.Bson.Serialization
         // internal static methods
         internal static void EnsureKnownTypesAreRegistered(Type nominalType)
         {
-            __configLock.EnterReadLock();
+            __configLock.AcquireReaderLock(-1);
             try
             {
                 if (__typesWithRegisteredKnownTypes.Contains(nominalType))
@@ -818,10 +818,10 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitReadLock();
+                __configLock.ReleaseReaderLock();
             }
 
-            __configLock.EnterWriteLock();
+            __configLock.AcquireWriterLock(-1);
             try
             {
                 if (!__typesWithRegisteredKnownTypes.Contains(nominalType))
@@ -839,7 +839,7 @@ namespace MongoDB.Bson.Serialization
             }
             finally
             {
-                __configLock.ExitWriteLock();
+                __configLock.ReleaseWriterLock();
             }
         }
 
